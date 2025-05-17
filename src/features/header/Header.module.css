@@ -1,0 +1,47 @@
+.header {
+  font-size: 0.8rem;
+  background-color: #efdae3;
+  border-bottom: 1px solid #eee;
+  padding: 0.5rem 0;
+}
+
+.socials {
+  display: flex;
+  gap: 20px;
+}
+
+.socials a {
+  color: #2f0101;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.socials a:hover {
+  color: #000;
+}
+
+.description {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.contacts {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.contactItem {
+  color: #2f0101;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  gap: 6px;
+  transition: color 0.2s ease;
+}
+
+.contactItem:hover {
+  color: #000;
+}
