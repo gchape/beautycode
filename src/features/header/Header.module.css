@@ -16,8 +16,19 @@
   transition: color 0.2s;
 }
 
+.facebook {
+  color: #1877f2; /* Facebook Blue */
+}
+.instagram {
+  color: #e4405f; /* Instagram Pink */
+}
+.tiktok {
+  color: #000000; /* TikTok Black */
+}
+
 .socials a:hover {
-  color: #000;
+  opacity: 0.8;
+  transform: scale(1.2);
 }
 
 .description {
@@ -32,16 +43,73 @@
   align-items: center;
 }
 
+@keyframes ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(15deg);
+  }
+  20% {
+    transform: rotate(-15deg);
+  }
+  30% {
+    transform: rotate(10deg);
+  }
+  40% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  70%,
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes flap {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  20% {
+    transform: rotate(-5deg) translateY(-2px);
+  }
+  40% {
+    transform: rotate(5deg) translateY(-4px);
+  }
+  60% {
+    transform: rotate(-3deg) translateY(-2px);
+  }
+  80% {
+    transform: rotate(2deg) translateY(-1px);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+}
+
 .contactItem {
   color: #2f0101;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   font-size: 0.8rem;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  transition: color 0.2s ease;
 }
 
-.contactItem:hover {
-  color: #000;
+.contactItem:hover .phoneIcon {
+  animation: ring 0.6s ease-in-out;
+  transform-origin: center;
+}
+
+.contactItem:hover .emailIcon {
+  animation: flap 0.6s ease-in-out;
+  transform-origin: center;
 }

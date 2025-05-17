@@ -20,6 +20,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
+                className={styles.facebook}
               >
                 <FontAwesomeIcon icon={faFacebookF} />
               </a>
@@ -28,6 +29,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
+                className={styles.instagram}
               >
                 <FontAwesomeIcon icon={faInstagram} />
               </a>
@@ -36,6 +38,7 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok"
+                className={styles.tiktok}
               >
                 <FontAwesomeIcon icon={faTiktok} />
               </a>
@@ -44,7 +47,7 @@ export default function Header() {
 
           <Col xs={12} md={4} className="mb-2 mb-md-0">
             <p className={`mb-0 ${styles.description}`}>
-              სრულყოფილი თავის მოვლის პროდუქტები
+              სრულყოფილი თავის მოვლის საშუალებები
             </p>
           </Col>
 
@@ -57,14 +60,19 @@ export default function Header() {
                 className={styles.contactItem}
                 aria-label="Email info@morebeauty.ge"
               >
-                <FontAwesomeIcon icon={faEnvelope} /> info@morebeauty.ge
+                <FontAwesomeIcon
+                  className={styles.emailIcon}
+                  icon={faEnvelope}
+                />{" "}
+                info@morebeauty.ge
               </a>
               <a
                 href="tel:+995571113422"
                 className={styles.contactItem}
                 aria-label="Call +995 571 11 34 22"
               >
-                <FontAwesomeIcon icon={faPhone} /> (+995) 571 11 34 22
+                <FontAwesomeIcon className={styles.phoneIcon} icon={faPhone} />{" "}
+                (+995) 571 11 34 22
               </a>
             </div>
           </Col>
