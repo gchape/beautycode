@@ -7,7 +7,7 @@
 
 .socials {
   display: flex;
-  gap: 20px;
+  gap: 45px;
 }
 
 .socials a {
@@ -112,4 +112,18 @@
 .contactItem:hover .emailIcon {
   animation: flap 0.6s ease-in-out;
   transform-origin: center;
+}
+
+@media (min-width: 375px) and (max-width: 768px) {
+  .socials {
+    justify-content: center;
+  }
+
+  .description {
+    text-align: center;
+  }
+
+  .contacts {
+    justify-content: center;
+  }
 }

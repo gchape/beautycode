@@ -1,3 +1,15 @@
+import { Container } from "react-bootstrap";
+import FadeCarousel from "../carousel/FadeCarousel";
+
 export default function Home() {
-  return <></>;
+  return (
+    <Container
+      className="d-flex justify-content-center align-items-center"
+      style={{
+        height: "80vh",
+      }}
+    >
+      <FadeCarousel />
+    </Container>
+  );
 }
