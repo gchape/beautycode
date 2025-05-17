@@ -33,3 +33,14 @@
 .links .dropdown-menu {
   border: 1px solid #ddd;
 }
+
+.logo {
+  background-image: url("../../assets/logo.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 350%;
+
+  width: 100px;
+  height: 50px;
+  border: none;
+}

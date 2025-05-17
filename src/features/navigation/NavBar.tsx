@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Container, Image, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import styles from "./NavBar.module.css";
 
 export default function NavBar() {
@@ -7,7 +7,9 @@ export default function NavBar() {
       <Container className="px-4">
         <Navbar.Brand
           className={`d-flex align-items-center ${styles.brandTitle}`}
-        ></Navbar.Brand>
+        >
+          <a href="/" className={styles.logo} />
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={`ms-auto ${styles.links}`}>
