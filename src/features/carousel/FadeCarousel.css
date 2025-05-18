@@ -1,0 +1,90 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+.fadeCarousel {
+  width: 100vw;
+  overflow: hidden;
+  position: absolute;
+  background: #fff;
+  display: inline-block;
+}
+
+.carouselImageWrapper {
+  height: 70vh;
+}
+
+.carouselImage {
+  width: 100%;
+}
+
+.carouselImageWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom right,
+    rgba(239, 218, 227, 0.3),
+    rgba(47, 1, 1, 0.2)
+  );
+}
+
+.carouselCaption {
+  display: flex;
+  flex-flow: column;
+  gap: 30px;
+
+  width: fit-content;
+  height: fit-content;
+
+  position: relative;
+  top: 65%;
+  left: 15% !important;
+
+  font-family: "Poppins", sans-serif;
+}
+
+.captionTitle {
+  color: #efdae3;
+  font-weight: 650;
+  font-size: 2.4rem;
+
+  margin-bottom: 0.5rem;
+}
+
+.captionText {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.85);
+
+  text-align: left;
+  text-decoration: none;
+
+  font-size: 1.6em;
+  font-weight: 600;
+  font-family: "Poppins", Arial, sans-serif;
+
+  transition: transform 0.3s ease, color 0.3s ease;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.captionText:hover {
+  transform: scale(0.98);
+
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 1px;
+}
+
+.carousel-indicators {
+  display: none !important;
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon {
+  width: 40px;
+  height: 40px;
+
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}

@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import styles from "./NavBar.module.css";
 import { Link } from "react-router";
 
@@ -20,18 +20,18 @@ export default function NavBar() {
             <Nav.Link as={Link} to={"/products"}>
               პროდუქტები
             </Nav.Link>
-            {/* <NavDropdown title="კატეგორიები" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} to={""}>
+            <NavDropdown title="კატეგორიები" id="basic-nav-dropdown">
+              <NavDropdown.Item as={Link} to={"/"}>
                 ეპილატორები
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to={""}>
+              <NavDropdown.Item as={Link} to={"/"}>
                 ფენები
               </NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to={""}>
+              <NavDropdown.Item as={Link} to={"/"}>
                 აქსესუარები
               </NavDropdown.Item>
-            </NavDropdown> */}
+            </NavDropdown>
           </Nav>
         </Navbar.Collapse>
       </Container>
