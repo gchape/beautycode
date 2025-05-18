@@ -3,12 +3,7 @@ import FadeCarousel from "../carousel/FadeCarousel";
 
 export default function Home() {
   return (
-    <Container
-      className="d-flex justify-content-center align-items-center"
-      style={{
-        height: "80vh",
-      }}
-    >
+    <Container className="d-flex justify-content-center align-items-center">
       <FadeCarousel />
     </Container>
   );
