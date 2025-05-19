@@ -1,57 +1,40 @@
-import { Carousel, Image } from "react-bootstrap";
+import { Carousel } from "react-bootstrap";
 import "./FadeCarousel.css";
-import { Link } from "react-router";
 
 export default function FadeCarousel() {
   return (
-    <Carousel fade className="fadeCarousel">
-      <Carousel.Item>
-        <div className="carouselImageWrapper">
-          <Image
-            src="https://images.unsplash.com/photo-1726137569914-ae2ad1c634f6?w=700&auto=format&fit=crop&q=60"
-            alt="First slide"
-            className="carouselImage"
-          />
-        </div>
-        <Carousel.Caption className="carouselCaption">
-          <h3 className="captionTitle">ფრანგული სუნამოები</h3>
-          <Link to={"/"} className="captionText">
-            გაიგე მეტი <span>{">"}</span>
-          </Link>
-        </Carousel.Caption>
-      </Carousel.Item>
-
-      <Carousel.Item>
-        <div className="carouselImageWrapper">
-          <Image
-            src="https://plus.unsplash.com/premium_photo-1747371476846-1af8fbc9f3c3?w=700&auto=format&fit=crop&q=60"
-            alt="Second slide"
-            className="carouselImage"
-          />
-        </div>
-        <Carousel.Caption className="carouselCaption">
-          <h3 className="captionTitle">ფრანგული სუნამოები</h3>
-          <Link to={"/"} className="captionText">
-            გაიგე მეტი <span>{">"}</span>
-          </Link>
-        </Carousel.Caption>
-      </Carousel.Item>
-
-      <Carousel.Item>
-        <div className="carouselImageWrapper">
-          <Image
-            src="https://plus.unsplash.com/premium_photo-1747135794838-a6afe928a90c?w=700&auto=format&fit=crop&q=60"
-            alt="Third slide"
-            className="carouselImage"
-          />
-        </div>
-        <Carousel.Caption className="carouselCaption">
-          <h3 className="captionTitle">ფრანგული სუნამოები</h3>
-          <Link to={"/"} className="captionText">
-            გაიგე მეტი <span>{">"}</span>
-          </Link>
-        </Carousel.Caption>
-      </Carousel.Item>
+    <Carousel interval={3000} className="carousel">
+      {[1, 2, 3, 4, 5].map((i, index) => (
+        <Carousel.Item key={index}>
+          <picture>
+            {/* Small screens - portrait images */}
+            <source
+              srcSet={`/slides/${i}-540.jpg 540w, 
+                      /slides/${i}-810.jpg 810w, 
+                      /slides/${i}-1080.jpg 1080w`}
+              media="(max-width: 768px)"
+            />
+            {/* Larger screens - landscape images */}
+            <source
+              srcSet={`/slides/${i}-1440.jpg 1440w, 
+                      /slides/${i}-1920.jpg 1920w, 
+                      /slides/${i}-2400.jpg 2400w, 
+                      /slides/${i}-2880.jpg 2880w`}
+              media="(min-width: 769px)"
+            />
+            {/* Fallback image for older browsers or default */}
+            <img
+              src={`/slides/${i}-2400.jpg`}
+              srcSet={`/slides/${i}-1440.jpg 1440w,
+                       /slides/${i}-1920.jpg 1920w, 
+                       /slides/${i}-2400.jpg 2400w, 
+                       /slides/${i}-2880.jpg 2880w`}
+              sizes="100vw"
+              alt={`Slide ${i}`}
+            />
+          </picture>
+        </Carousel.Item>
+      ))}
     </Carousel>
   );
 }
