@@ -1,5 +1,5 @@
 .carousel {
-  height: 70vh;
+  height: 90vh;
   width: 100vw;
   max-width: 100%;
 
@@ -14,7 +14,8 @@
   height: 100%;
   width: 100%;
 
-  object-fit: contain;
+  object-fit: cover;
+  object-position: top;
 }
 
 .carousel .carousel-inner,
