@@ -1,0 +1,144 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&display=swap");
+@import url(https://db.onlinewebfonts.com/c/e7b466342e72089bd39975865c03be1e?family=Mark+GEO+CAPS);
+
+.productCard {
+  position: relative;
+  overflow: hidden;
+
+  height: 400px !important;
+  max-width: 300px !important;
+  min-width: 250px !important;
+
+  border-radius: 8px;
+  font-family: "Mark GEO CAPS", "Noto Sans Georgian", sans-serif;
+  background-color: #f3f4f4 !important;
+
+  transition: background-color 0.3s ease;
+}
+
+.discountBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  background-color: #ff5733;
+  color: white;
+
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.card-body {
+  padding: 1rem 0.8rem 0 0.8rem !important;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.card-img {
+  max-height: 250px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+
+  word-spacing: 0;
+  letter-spacing: 1px;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+.card-text {
+  text-align: center;
+  margin-top: 5px !important;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.oldPrice {
+  font-weight: 300;
+  font-size: 0.8rem !important;
+  text-decoration: line-through;
+}
+.newPrice {
+  font-weight: 500;
+  font-size: 0.9rem !important;
+}
+
+.button {
+  cursor: pointer;
+
+  width: 100% !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+
+  background-color: #f3f4f4 !important;
+
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #efdae3 !important;
+}
+
+.card-back-body {
+  padding: 5px !important;
+  font-size: 0.85rem !important;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: space-evenly;
+}
+
+.card-back-title {
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+
+  word-spacing: 0;
+  text-align: center;
+  letter-spacing: 1px;
+  overflow-wrap: break-word;
+}
+
+.card-back-text {
+  text-align: center;
+  letter-spacing: 1px;
+
+  overflow-wrap: break-word;
+}
+
+.cardFront,
+.cardBack {
+  height: 100%;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardBack {
+  display: none;
+}
+
+.productCard:hover .cardFront {
+  display: none;
+}
+
+.productCard:hover .cardBack {
+  display: flex;
+}
+
+.productCard:hover {
+  background-color: #efdae3 !important;
+}
