@@ -13,8 +13,10 @@ const hostname = process.env.SERVER_HOSTNAME || "localhost";
 
 app.use(cors());
 
-app.get("/api/products", (req, resp) => {
+app.get("/api/products", async (req, resp) => {
   const category = req.query.category;
+
+  await new Promise((resolve) => setTimeout(resolve, 5_000));
 
   if (category) {
     const categoryProducts = products.filter(
