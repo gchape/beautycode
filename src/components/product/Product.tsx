@@ -37,11 +37,7 @@ export default function Product({ product }: ProductProps) {
               {backText.map((text, i) => (
                 <span
                   key={i}
-                  className={
-                    i == 0
-                      ? "d-inline-block text-center mb-2 fw-bold text-decoration-underline"
-                      : "d-inline-block text-center fw-normal letter-spacing-1"
-                  }
+                  className="d-inline-block text-left fw-normal letter-spacing-1 p-1"
                 >
                   {text}
                 </span>
@@ -50,8 +46,12 @@ export default function Product({ product }: ProductProps) {
           </div>
         </Card.Body>
 
-        <Button variant="info" className={styles.button}>
-          კალათაში
+        <Button
+          variant="info"
+          className={styles.button}
+          href="https://m.me/Beatlovegeorgia"
+        >
+          შეუკვეთე
         </Button>
       </div>
     </Card>

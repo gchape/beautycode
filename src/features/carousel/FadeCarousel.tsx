@@ -1,60 +1,53 @@
-import { Carousel } from "react-bootstrap";
-import { generateSrcSet } from "../../app/api";
+import { Carousel, Card, Button } from "react-bootstrap";
+import type { Product } from "../../app/types";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./FadeCarousel.css";
 
-export default function FadeCarousel() {
+type FadeCarouselProps = {
+  products: Product[];
+};
+
+export default function FadeCarousel({ products }: FadeCarouselProps) {
   return (
-    <Carousel interval={3000} className="carousel fade-carousel">
-      {[1, 2, 3, 4, 5].map((id) => {
-        const mobileId = `${id}-1080`;
-        const desktopId = `${id}-1920`;
-
-        return (
-          <Carousel.Item key={id}>
-            <picture>
-              {/* Mobile Images */}
-              <source
-                media="(max-width: 480px)"
-                srcSet={generateSrcSet(mobileId, [320, 375, 414, 480])}
-                sizes="(max-width: 480px) 480px"
-              />
-              <source
-                media="(max-width: 768px)"
-                srcSet={generateSrcSet(mobileId, [600, 768])}
-                sizes="(max-width: 768px) 768px"
-              />
-              <source
-                media="(max-width: 1024px)"
-                srcSet={generateSrcSet(mobileId, [800, 1024])}
-                sizes="(max-width: 1024px) 1024px"
+    <Carousel interval={10_000} className="carousel fade-carousel">
+      {products.map(({ id, oldPrice, newPrice, discount }) => (
+        <Carousel.Item key={id}>
+          <div className="carousel-card-wrapper">
+            <Card className="carousel-card">
+              <Card.Img
+                variant="top"
+                src={`/${id}.svg`}
+                className="carousel-card-img"
               />
 
-              {/* Desktop Images */}
-              <source
-                media="(min-width: 769px)"
-                srcSet={generateSrcSet(
-                  desktopId,
-                  [1024, 1280, 1366, 1440, 1600, 1920, 2560]
-                )}
-                sizes="(min-width: 769px) 100vw"
-              />
-
-              <img
-                src={generateSrcSet(desktopId, [1920])}
-                alt={`Slide ${id}`}
-                loading="lazy"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "top",
-                }}
-              />
-            </picture>
-          </Carousel.Item>
-        );
-      })}
+              <Card.Body className="carousel-card-body d-flex justify-content-center align-items-center gap-3 positon-relative">
+                <Card.Text className="carousel-card-text d-flex gap-1 m-0">
+                  <span className="text-muted text-decoration-line-through h5 m-0">
+                    ₾{oldPrice}
+                  </span>
+                  <span className="fw-normal discounted h5 m-0">
+                    ₾{newPrice}
+                  </span>
+                </Card.Text>
+                <span className="discount-badge">-{discount}%</span>{" "}
+                <div className="order-button-wrapper position-relative d-inline-block">
+                  <Button
+                    className="carousel-card-order d-flex justify-content-center align-items-center"
+                    href="https://m.me/Beatlovegeorgia"
+                  >
+                    <FontAwesomeIcon icon={faArrowRight} className="icon" />
+                  </Button>
+                  <div className="order-label">
+                    <span className="label-text">შეუკვეთე აქ</span>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+        </Carousel.Item>
+      ))}
     </Carousel>
   );
 }

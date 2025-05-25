@@ -24,10 +24,10 @@ export default function NavBar() {
               <NavDropdown.Item as={Link} to={"/products/epilators"}>
                 ეპილატორები
               </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to={"/products/accessories"}>
-                აქსესუარები
+              <NavDropdown.Item as={Link} to={"/products/facial-cleansers"}>
+                სახის ვაკუუმ-წმენდა
               </NavDropdown.Item>
+              {/* <NavDropdown.Divider /> */}
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

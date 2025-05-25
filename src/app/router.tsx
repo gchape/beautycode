@@ -2,9 +2,8 @@ import { createBrowserRouter, type LoaderFunctionArgs } from "react-router";
 import App from "../App";
 import Home from "../features/home/Home";
 import type { Product } from "./types";
-import Fallback from "../components/spinner/Fallback";
-import { Suspense } from "react";
 import Products from "../features/products/Products";
+import FallbackSpinner from "../components/spinner/FallbackSpinner";
 
 export const productLoader = async () => {
   try {
@@ -41,24 +40,20 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: Home,
+        loader: productLoader,
+        hydrateFallbackElement: <FallbackSpinner />,
       },
       {
         path: "products",
-        Component: () => (
-          <Suspense fallback={<Fallback />}>
-            <Products />
-          </Suspense>
-        ),
+        Component: Products,
         loader: productLoader,
+        hydrateFallbackElement: <FallbackSpinner />,
       },
       {
         path: "products/:category",
-        Component: () => (
-          <Suspense fallback={<Fallback />}>
-            <Products />
-          </Suspense>
-        ),
+        Component: Products,
         loader: categoryLoader,
+        hydrateFallbackElement: <FallbackSpinner />,
       },
     ],
   },
