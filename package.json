@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "nodemon src/server/server.js || node src/server/server.js",
+    "start": "node src/server/server.js",
+    "start:live": "nodemon src/server/server.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
