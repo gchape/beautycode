@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 
-const port = process.env.SERVER_PORT || 3000;
+const PORT = process.env.PORT || 3000;
 const hostname = process.env.SERVER_HOSTNAME || "localhost";
 
 app.use(cors());
@@ -25,6 +25,6 @@ app.get("/api/products", (req, resp) => {
   } else resp.json(products);
 });
 
-app.listen(Number(port), () => {
-  console.log(`Server is running at http://${hostname}:${port}`);
+app.listen(Number(PORT), () => {
+  console.log(`Server is running at http://${hostname}:${PORT}`);
 });
