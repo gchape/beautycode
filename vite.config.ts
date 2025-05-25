@@ -6,6 +6,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    root: "./",
     server: {
       port: 5173,
       proxy: {
