@@ -3,8 +3,9 @@ import {
   faFacebookF,
   faInstagram,
   faTiktok,
+  faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
-import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./Header.module.css";
 
@@ -56,23 +57,26 @@ export default function Header() {
               className={`${styles.contacts} justify-content-center justify-content-md-end`}
             >
               <a
-                href="mailto:info@morebeauty.ge"
+                href="mailto:1beautyrecipe@gmail.com"
                 className={styles.contactItem}
-                aria-label="Email info@morebeauty.ge"
+                aria-label="Email 1beautyrecipe@gmail.com"
               >
                 <FontAwesomeIcon
                   className={styles.emailIcon}
                   icon={faEnvelope}
                 />{" "}
-                info@morebeauty.ge
+                1beautyrecipe@gmail.com
               </a>
               <a
-                href="tel:+995571113422"
+                href="https://wa.me/995574074833"
                 className={styles.contactItem}
-                aria-label="Call +995 571 11 34 22"
+                aria-label="Message on WhatsApp: +995 574-074-833"
               >
-                <FontAwesomeIcon className={styles.phoneIcon} icon={faPhone} />{" "}
-                (+995) 571 11 34 22
+                <FontAwesomeIcon
+                  className={styles.whatsappIcon}
+                  icon={faWhatsapp}
+                />{" "}
+                (+995) 574-074-833
               </a>
             </div>
           </Col>

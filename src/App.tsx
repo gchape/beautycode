@@ -6,11 +6,12 @@ import "./App.css";
 
 export default function App() {
   return (
-    <>
+    <div className="app">
       <Header />
       <NavBar />
-
-      <Outlet />
-    </>
+      <div className="outlet">
+        <Outlet />
+      </div>
+    </div>
   );
 }

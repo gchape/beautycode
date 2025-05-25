@@ -1,24 +1,16 @@
 import { Button, Card } from "react-bootstrap";
 
 import styles from "./Product.module.css";
+import type { Product } from "../../app/types";
 
 type ProductProps = {
-  imgUrl: string;
-  discount: number;
-  frontTitle: string;
-  oldPrice: number;
-  newPrice: number;
-  backText: string[];
+  product: Product;
 };
 
-export default function Product({
-  imgUrl,
-  discount,
-  frontTitle,
-  oldPrice,
-  newPrice,
-  backText,
-}: ProductProps) {
+export default function Product({ product }: ProductProps) {
+  const { imgUrl, discount, frontTitle, oldPrice, newPrice, backText } =
+    product;
+
   return (
     <Card className={`shadow p-2 ${styles.productCard}`}>
       <div className={styles.cardFront}>
@@ -41,20 +33,18 @@ export default function Product({
               {frontTitle}
             </Card.Title>
             <br />
-            <Card.Text className={styles["card-back-text"]}>
+            <Card.Text>
               {backText.map((text, i) => (
-                <p
+                <span
                   key={i}
-                  style={{
-                    fontWeight: i === 0 ? "600" : "400",
-                    margin: i === 0 ? "0 0 8px 0" : "0",
-                    letterSpacing: i === 0 ? "1.2px" : "normal",
-                    textDecoration: i === 0 ? "underline" : "none",
-                    cursor: "default",
-                  }}
+                  className={
+                    i == 0
+                      ? "d-inline-block text-center mb-2 fw-bold text-decoration-underline"
+                      : "d-inline-block text-center fw-normal letter-spacing-1"
+                  }
                 >
                   {text}
-                </p>
+                </span>
               ))}
             </Card.Text>
           </div>

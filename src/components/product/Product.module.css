@@ -5,9 +5,8 @@
   position: relative;
   overflow: hidden;
 
+  width: 300px !important;
   height: 400px !important;
-  max-width: 300px !important;
-  min-width: 250px !important;
 
   border-radius: 8px;
   font-family: "Mark GEO CAPS", "Noto Sans Georgian", sans-serif;
@@ -70,7 +69,8 @@
   text-decoration: line-through;
 }
 .newPrice {
-  font-weight: 500;
+  color: #ff5733;
+  font-weight: bold;
   font-size: 0.9rem !important;
 }
 
@@ -110,13 +110,6 @@
   overflow-wrap: break-word;
 }
 
-.card-back-text {
-  text-align: center;
-  letter-spacing: 1px;
-
-  overflow-wrap: break-word;
-}
-
 .cardFront,
 .cardBack {
   height: 100%;
@@ -142,3 +135,16 @@
 .productCard:hover {
   background-color: #efdae3 !important;
 }
+
+/* <p
+                  key={i}
+                  style={{
+                    fontWeight: i === 0 ? "600" : "400",
+                    margin: i === 0 ? "0 0 8px 0" : "0",
+                    letterSpacing: i === 0 ? "1.2px" : "normal",
+                    textDecoration: i === 0 ? "underline" : "none",
+                    cursor: "default",
+                  }}
+                >
+                  {text}
+                </p> */

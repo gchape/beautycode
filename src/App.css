@@ -2,13 +2,24 @@ html,
 body {
   margin: 0;
   padding: 0;
-
-  overflow: hidden;
 }
 
-#root {
+.app {
+  display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
+}
 
-  overflow: hidden;
+header {
+  flex-shrink: 0;
+}
+
+nav {
+  flex-shrink: 0;
+}
+
+.outlet {
+  flex: 1;
+  overflow-x: hidden;
 }

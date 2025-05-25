@@ -1,0 +1,30 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+
+import products from "./data/products.js";
+import { mute } from "@cloudinary/url-gen/qualifiers/volume";
+dotenv.config();
+
+const app = express();
+
+const port = process.env.SERVER_PORT || 3000;
+const hostname = process.env.SERVER_HOSTNAME || "localhost";
+
+app.use(cors());
+
+app.get("/api/products", (req, resp) => {
+  const category = req.query.category;
+
+  if (category) {
+    const categoryProducts = products.filter(
+      (product) => product.category === category
+    );
+
+    resp.json(categoryProducts);
+  } else resp.json(products);
+});
+
+app.listen(Number(port), () => {
+  console.log(`Server is running at http://${hostname}:${port}`);
+});

@@ -21,14 +21,11 @@ export default function NavBar() {
               პროდუქტები
             </Nav.Link>
             <NavDropdown title="კატეგორიები" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} to={"/"}>
+              <NavDropdown.Item as={Link} to={"/products/epilators"}>
                 ეპილატორები
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to={"/"}>
-                ფენები
-              </NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to={"/"}>
+              <NavDropdown.Item as={Link} to={"/products/accessories"}>
                 აქსესუარები
               </NavDropdown.Item>
             </NavDropdown>
