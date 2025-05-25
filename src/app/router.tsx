@@ -7,7 +7,7 @@ import FallbackSpinner from "../components/spinner/FallbackSpinner";
 
 export const productLoader = async () => {
   try {
-    const res = await fetch("/api/products");
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
     if (!res.ok) {
       throw new Error("Failed to load products");
     }
@@ -21,7 +21,9 @@ export const productLoader = async () => {
 export const categoryLoader = async ({ params }: LoaderFunctionArgs) => {
   const category = params.category;
   try {
-    const res = await fetch(`/api/products?category=${category}`);
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/products?category=${category}`
+    );
     if (!res.ok) {
       throw new Error("Failed to load products");
     }
