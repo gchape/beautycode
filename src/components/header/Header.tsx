@@ -17,7 +17,7 @@ export default function Header() {
           <Col xs={12} md={4} className="mb-2 mb-md-0">
             <div className={styles.socials}>
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/Beatlovegeorgia"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
@@ -26,7 +26,7 @@ export default function Header() {
                 <FontAwesomeIcon icon={faFacebookF} />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/beauty_recipe___/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -35,7 +35,7 @@ export default function Header() {
                 <FontAwesomeIcon icon={faInstagram} />
               </a>
               <a
-                href="https://tiktok.com"
+                href="https://www.tiktok.com/@beauty.recipe13"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok"
