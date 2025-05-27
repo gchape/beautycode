@@ -56,24 +56,28 @@
 }
 
 .card-text {
-  text-align: center;
+  width: 100%;
   margin-top: 5px !important;
 
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 1rem !important;
 }
 
 .oldPrice {
-  font-weight: 300;
-  font-size: 0.8rem !important;
+  display: inline-block !important;
+
+  font-weight: bold;
+  font-size: 0.85rem !important;
   text-decoration: line-through;
 }
 .newPrice {
+  display: inline-block !important;
+
   color: #ff5733;
   font-weight: bold;
-  font-size: 0.9rem !important;
+  font-size: 0.95rem !important;
 }
 
 .button {
@@ -87,6 +91,39 @@
   background-color: #f3f4f4 !important;
 
   transition: background-color 0.3s ease;
+}
+
+.order {
+  cursor: pointer;
+  pointer-events: all;
+
+  padding: 0 6px !important;
+  margin-left: auto !important;
+
+  font-weight: 500;
+  font-size: 1rem !important;
+
+  border: none !important;
+  border-top: 1px solid rgba(51, 51, 51, 0.2) !important;
+  border-bottom: 1px solid rgba(51, 51, 51, 0.2) !important;
+
+  color: #333 !important;
+  background-image: linear-gradient(90deg, #f7c1d9, #ffc107) !important;
+
+  transition: all 0.2s ease-in-out;
+  border-radius: 4px;
+}
+
+.order:hover {
+  color: #fff;
+  background-color: #007bff;
+  text-decoration: none !important;
+}
+
+.order:hover {
+  color: #fff;
+  background-color: #007bff;
+  text-decoration: none !important;
 }
 
 .button:hover {
@@ -115,7 +152,6 @@
 .cardFront,
 .cardBack {
   height: 100%;
-
   display: flex;
   flex-flow: column;
   justify-content: center;
@@ -126,14 +162,32 @@
   display: none;
 }
 
-.productCard:hover .cardFront {
+.flipped .cardFront {
   display: none;
 }
 
-.productCard:hover .cardBack {
+.flipped .cardBack {
   display: flex;
 }
 
-.productCard:hover {
+.productCard.flipped {
   background-color: #efdae3 !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .order {
+    display: none !important;
+  }
+
+  .productCard:hover .cardFront {
+    display: none;
+  }
+
+  .productCard:hover .cardBack {
+    display: flex;
+  }
+
+  .productCard:hover {
+    background-color: #efdae3 !important;
+  }
 }
