@@ -1,9 +1,5 @@
-import { useLoaderData } from "react-router";
-import { productLoader } from "../../app/router";
-import FadeCarousel from "../../features/carousel/FadeCarousel";
+import Products from "../../features/products/Products";
 
 export default function Home() {
-  const { products } = useLoaderData<typeof productLoader>();
-
-  return <FadeCarousel products={products} />;
+  return <Products />;
 }

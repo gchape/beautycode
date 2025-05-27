@@ -46,12 +46,6 @@ export const router = createBrowserRouter([
         hydrateFallbackElement: <FallbackSpinner />,
       },
       {
-        path: "products",
-        Component: Products,
-        loader: productLoader,
-        hydrateFallbackElement: <FallbackSpinner />,
-      },
-      {
         path: "products/:category",
         Component: Products,
         loader: categoryLoader,

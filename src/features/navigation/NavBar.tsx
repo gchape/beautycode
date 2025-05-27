@@ -17,9 +17,6 @@ export default function NavBar() {
             <Nav.Link as={Link} to={"/"}>
               მთავარი
             </Nav.Link>
-            <Nav.Link as={Link} to={"/products"}>
-              პროდუქტები
-            </Nav.Link>
             <NavDropdown title="კატეგორიები" id="basic-nav-dropdown">
               <NavDropdown.Item as={Link} to={"/products/epilator"}>
                 ეპილატორები
