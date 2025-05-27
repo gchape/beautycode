@@ -80,10 +80,8 @@
 }
 
 .carousel .carousel-item img {
-  max-height: 100% !important;
   max-width: 100% !important;
-
-  object-fit: contain;
+  max-height: 667px !important;
 }
 
 .carousel .carousel-inner,
@@ -161,4 +159,10 @@
 .carousel-control-prev .carousel-control-prev-icon,
 .carousel-control-next .carousel-control-next-icon {
   transition: all 0.3s ease;
+}
+
+@media (max-height: 800px) {
+  .carousel .carousel-item img {
+    max-height: 400px !important;
+  }
 }

@@ -1,5 +1,5 @@
 import { Container, Row, Col } from "react-bootstrap";
-import Product from "../../components/product/Product";
+import Product from "../product/Product";
 import { useLoaderData } from "react-router";
 import { productLoader } from "../../app/router";
 

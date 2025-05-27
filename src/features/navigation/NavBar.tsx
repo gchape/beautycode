@@ -21,11 +21,14 @@ export default function NavBar() {
               პროდუქტები
             </Nav.Link>
             <NavDropdown title="კატეგორიები" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} to={"/products/epilators"}>
+              <NavDropdown.Item as={Link} to={"/products/epilator"}>
                 ეპილატორები
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to={"/products/facial-cleansers"}>
+              <NavDropdown.Item as={Link} to={"/products/facial-cleanser"}>
                 სახის ვაკუუმ-წმენდა
+              </NavDropdown.Item>
+              <NavDropdown.Item as={Link} to={"/products/hair-dryer"}>
+                თმის ფენ-სავარცხელი
               </NavDropdown.Item>
               {/* <NavDropdown.Divider /> */}
             </NavDropdown>

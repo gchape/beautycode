@@ -1,9 +1,9 @@
 import { createBrowserRouter, type LoaderFunctionArgs } from "react-router";
 import App from "../App";
-import Home from "../features/home/Home";
 import type { Product } from "./types";
 import Products from "../features/products/Products";
 import FallbackSpinner from "../components/spinner/FallbackSpinner";
+import Home from "../components/home/Home";
 
 export const productLoader = async () => {
   try {
