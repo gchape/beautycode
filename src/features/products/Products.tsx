@@ -1,6 +1,4 @@
 import { Container, Row, Col } from "react-bootstrap";
-import { useQuery } from "@tanstack/react-query";
-import type { Product as TProduct } from "../../app/types";
 import Product from "../product/Product";
 import Loading from "../../components/spinner/Loading";
 import { useParams } from "react-router";

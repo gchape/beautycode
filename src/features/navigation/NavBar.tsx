@@ -1,6 +1,6 @@
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import styles from "./NavBar.module.css";
 import { Link } from "react-router";
+import styles from "./NavBar.module.css";
 
 export default function NavBar() {
   return (
