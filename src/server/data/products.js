@@ -101,7 +101,7 @@ const products = [
     imgUrl: "/7.svg",
     discount: 50,
     frontTitle:
-      "BeautiyRecipe-ის სახის ვაკუუმ გამწმენდი ✨ გაათავისუფლეთ თქვენი კანი სამუდამოდ შავი წერტილებისგან!",
+      "BeautiyRecipe-ის სახის ვაკუუმ აპარატი ✨ დაივიწყეთ შავი წერტილები სამუდამოდ!",
     oldPrice: 220.0,
     newPrice: 109.0,
     backText: [

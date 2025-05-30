@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import products from "./data/products.js";
-import { mute } from "@cloudinary/url-gen/qualifiers/volume";
 dotenv.config();
 
 const app = express();
@@ -13,16 +12,14 @@ const hostname = process.env.SERVER_HOSTNAME || "localhost";
 
 app.use(cors());
 
-app.get("/api/products", async (req, resp) => {
-  const category = req.query.category;
+app.get("/api/products", (request, response) => {
+  response.json(products);
+});
 
-  if (category) {
-    const categoryProducts = products.filter(
-      (product) => product.category === category
-    );
+app.get("/api/products/:category", (request, response) => {
+  const param = request.params.category;
 
-    resp.json(categoryProducts);
-  } else resp.json(products);
+  response.json(products.filter((p) => p.category === param));
 });
 
 app.listen(Number(PORT), () => {

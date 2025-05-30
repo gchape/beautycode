@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@100..900&display=swap");
 @import url(https://db.onlinewebfonts.com/c/e7b466342e72089bd39975865c03be1e?family=Mark+GEO+CAPS);
 
-.productCard {
+.card {
   position: relative;
   overflow: hidden;
 
@@ -15,7 +15,16 @@
   transition: background-color 0.3s ease;
 }
 
-.discountBadge {
+.card-inline {
+  height: 100%;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.discount-badge {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -65,37 +74,24 @@
   gap: 1rem !important;
 }
 
-.oldPrice {
-  display: inline-block !important;
-
+.old-price,
+.new-price {
   font-weight: bold;
+  display: inline-block !important;
+}
+
+.old-price {
   font-size: 0.85rem !important;
   text-decoration: line-through;
 }
-.newPrice {
-  display: inline-block !important;
 
+.new-price {
   color: #ff5733;
-  font-weight: bold;
   font-size: 0.95rem !important;
 }
 
-.button {
+.btn-order {
   cursor: pointer;
-
-  width: 100% !important;
-  border: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-
-  background-color: #f3f4f4 !important;
-
-  transition: background-color 0.3s ease;
-}
-
-.order {
-  cursor: pointer;
-  pointer-events: all;
 
   padding: 0 6px !important;
   margin-left: auto !important;
@@ -103,6 +99,7 @@
   font-weight: 500;
   font-size: 1rem !important;
 
+  border-radius: 4px;
   border: none !important;
   border-top: 1px solid rgba(51, 51, 51, 0.2) !important;
   border-bottom: 1px solid rgba(51, 51, 51, 0.2) !important;
@@ -111,83 +108,16 @@
   background-image: linear-gradient(90deg, #f7c1d9, #ffc107) !important;
 
   transition: all 0.2s ease-in-out;
-  border-radius: 4px;
 }
 
-.order:hover {
+.btn-order:hover {
   color: #fff;
   background-color: #007bff;
   text-decoration: none !important;
 }
 
-.order:hover {
+.btn-order:hover {
   color: #fff;
   background-color: #007bff;
   text-decoration: none !important;
-}
-
-.button:hover {
-  background-color: #efdae3 !important;
-}
-
-.card-back-body {
-  padding: 5px !important;
-  font-size: 0.85rem !important;
-
-  display: flex;
-  flex-flow: column;
-  justify-content: space-evenly;
-}
-
-.card-back-title {
-  font-size: 0.95rem !important;
-  font-weight: 600 !important;
-
-  word-spacing: 0;
-  text-align: center;
-  letter-spacing: 1px;
-  overflow-wrap: break-word;
-}
-
-.cardFront,
-.cardBack {
-  height: 100%;
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.cardBack {
-  display: none;
-}
-
-.flipped .cardFront {
-  display: none;
-}
-
-.flipped .cardBack {
-  display: flex;
-}
-
-.productCard.flipped {
-  background-color: #efdae3 !important;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .order {
-    display: none !important;
-  }
-
-  .productCard:hover .cardFront {
-    display: none;
-  }
-
-  .productCard:hover .cardBack {
-    display: flex;
-  }
-
-  .productCard:hover {
-    background-color: #efdae3 !important;
-  }
 }

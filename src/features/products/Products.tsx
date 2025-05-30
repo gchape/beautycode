@@ -1,15 +1,23 @@
 import { Container, Row, Col } from "react-bootstrap";
+import { useQuery } from "@tanstack/react-query";
+import type { Product as TProduct } from "../../app/types";
 import Product from "../product/Product";
-import { useLoaderData } from "react-router";
-import { productLoader } from "../../app/router";
+import Loading from "../../components/spinner/Loading";
+import { useParams } from "react-router";
+import { useProducts } from "../../hooks/useProducts";
 
 export default function Products() {
-  const { products } = useLoaderData<typeof productLoader>();
+  const { category } = useParams();
+  const { products, isPending } = useProducts(category);
+
+  if (isPending) {
+    return <Loading />;
+  }
 
   return (
-    <Container className="mt-4 mb-4">
+    <Container className="mt-4 mb-4 p-1">
       <Row className="d-flex justify-content-center gap-5">
-        {products?.map((product) => (
+        {products!.map((product) => (
           <Col
             className="d-flex justify-content-center"
             key={product.id}
