@@ -10,14 +10,14 @@ export function useProducts(category?: string) {
         : `${import.meta.env.VITE_API_URL}/api/products`;
 
       const response = await fetch(url);
-      
-      if (!response.ok) 
-        throw new Error("Failed to fetch");
+
+      if (!response.ok) throw new Error("Failed to fetch");
 
       return response.json();
     },
     enabled: true,
-    staleTime: 10_000,
+    staleTime: 60 * 1000 * 60,
+    refetchOnWindowFocus: false,
   });
 
   return { products, isPending };
