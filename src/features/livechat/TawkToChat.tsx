@@ -1,21 +1,24 @@
-import { useEffect } from "react";
+import {useEffect} from "react";
 
 const TawkToChat = () => {
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = `https://embed.tawk.to/${
-      import.meta.env.VITE_TAWK_TO_PROPERTY_ID
-    }/1is5g394b`;
-    script.async = true;
-    script.setAttribute("crossorigin", "*");
-    document.body.appendChild(script);
+    useEffect(() => {
+        const script = document.createElement("script");
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+        const propertyId = import.meta.env.VITE_TAWK_TO_PROPERTY_ID;
+        const widgetId = import.meta.env.VITE_TAWK_TO_WIDGET_ID;
 
-  return null;
+        script.src = `https://embed.tawk.to/${propertyId}/${widgetId}`;
+        script.async = true;
+        script.setAttribute("crossorigin", "*");
+
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
+
+    return null;
 };
 
 export default TawkToChat;
