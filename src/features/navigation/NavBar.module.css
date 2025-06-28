@@ -1,45 +1,45 @@
 .navbar {
-  background-color: #fff;
-  border-bottom: 1px solid #e6e6e6;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-  z-index: 1020;
+    background-color: #fff;
+    border-bottom: 1px solid #e6e6e6;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    z-index: 1020;
 }
 
 .brandTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #333;
-  letter-spacing: 0.5px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 0.5px;
 }
 
 .brandTitle:hover {
-  color: #000;
+    color: #000;
 }
 
 .links a {
-  color: #555;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  transition: color 0.2s;
+    color: #555;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s;
 }
 
 .links a:hover,
 .links .dropdown-item:hover {
-  color: #000;
-  background-color: #f8f9fa;
+    color: #000;
+    background-color: #f8f9fa;
 }
 
 .links .dropdown-menu {
-  border: 1px solid #ddd;
+    border: 1px solid #ddd;
 }
 
 .logo {
-  background-image: url("../../assets/logo.svg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 300%;
+    background-image: url("../../assets/logo.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 300%;
 
-  width: 100px;
-  height: 50px;
-  border: none;
+    width: 100px;
+    height: 50px;
+    border: none;
 }

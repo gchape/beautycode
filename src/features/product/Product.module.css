@@ -2,123 +2,123 @@
 @import url(https://db.onlinewebfonts.com/c/e7b466342e72089bd39975865c03be1e?family=Mark+GEO+CAPS);
 
 .card {
-  position: relative;
-  overflow: hidden;
+    position: relative;
+    overflow: hidden;
 
-  width: 300px !important;
-  height: 400px !important;
+    width: 300px !important;
+    height: 400px !important;
 
-  border-radius: 8px;
-  font-family: "Mark GEO CAPS", "Noto Sans Georgian", sans-serif;
-  background-color: #f3f4f4 !important;
+    border-radius: 8px;
+    font-family: "Mark GEO CAPS", "Noto Sans Georgian", sans-serif;
+    background-color: #f3f4f4 !important;
 
-  transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 
 .card-inline {
-  height: 100%;
+    height: 100%;
 
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .discount-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 
-  background-color: #ff5733;
-  color: white;
+    background-color: #ff5733;
+    color: white;
 
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
 }
 
 .card-body {
-  padding: 1rem 0.8rem 0 0.8rem !important;
+    padding: 1rem 0.8rem 0 0.8rem !important;
 
-  display: flex;
-  flex-flow: column;
-  justify-content: space-around;
-  align-items: center;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .card-img {
-  height: 250px;
-  width: 100%;
+    height: 250px;
+    width: 100%;
 
-  object-fit: cover;
-  object-position: center;
+    object-fit: cover;
+    object-position: center;
 }
 
 .card-title {
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
 
-  word-spacing: 0;
-  letter-spacing: 1px;
-  overflow-wrap: break-word;
-  text-align: center;
+    word-spacing: 0;
+    letter-spacing: 1px;
+    overflow-wrap: break-word;
+    text-align: center;
 }
 
 .card-text {
-  width: 100%;
-  margin-top: 5px !important;
+    width: 100%;
+    margin-top: 5px !important;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem !important;
 }
 
 .old-price,
 .new-price {
-  font-weight: bold;
-  display: inline-block !important;
+    font-weight: bold;
+    display: inline-block !important;
 }
 
 .old-price {
-  font-size: 0.85rem !important;
-  text-decoration: line-through;
+    font-size: 0.85rem !important;
+    text-decoration: line-through;
 }
 
 .new-price {
-  color: #ff5733;
-  font-size: 0.95rem !important;
+    color: #ff5733;
+    font-size: 0.95rem !important;
 }
 
 .btn-order {
-  cursor: pointer;
+    cursor: pointer;
 
-  padding: 0 6px !important;
-  margin-left: auto !important;
+    padding: 0 6px !important;
+    margin-left: auto !important;
 
-  font-weight: 500;
-  font-size: 1rem !important;
+    font-weight: 500;
+    font-size: 1rem !important;
 
-  border-radius: 4px;
-  border: none !important;
-  border-top: 1px solid rgba(51, 51, 51, 0.2) !important;
-  border-bottom: 1px solid rgba(51, 51, 51, 0.2) !important;
+    border-radius: 4px;
+    border: none !important;
+    border-top: 1px solid rgba(51, 51, 51, 0.2) !important;
+    border-bottom: 1px solid rgba(51, 51, 51, 0.2) !important;
 
-  color: #ffffff !important; /* Messenger text color */
-  background-image: linear-gradient(90deg, #0084ff, #00b0ff) !important; /* Messenger gradient colors */
+    color: #ffffff !important; /* Messenger text color */
+    background-image: linear-gradient(90deg, #0084ff, #00b0ff) !important; /* Messenger gradient colors */
 
-  transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 
 .btn-order:hover {
-  color: #fff;
-  background-color: #007bff;
-  text-decoration: none !important;
+    color: #fff;
+    background-color: #007bff;
+    text-decoration: none !important;
 }
 
 .btn-order:hover {
-  color: #fff;
-  background-color: #007bff;
-  text-decoration: none !important;
+    color: #fff;
+    background-color: #007bff;
+    text-decoration: none !important;
 }

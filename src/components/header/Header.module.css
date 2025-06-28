@@ -1,134 +1,134 @@
 .header {
-  font-size: 0.8rem;
-  background-color: #efdae3;
-  border-bottom: 1px solid #eee;
-  padding: 0.5rem 0;
+    font-size: 0.8rem;
+    background-color: #efdae3;
+    border-bottom: 1px solid #eee;
+    padding: 0.5rem 0;
 }
 
 .socials {
-  display: flex;
-  gap: 45px;
+    display: flex;
+    gap: 45px;
 }
 
 .socials a {
-  font-size: 1rem;
-  transition: color 0.2s;
+    font-size: 1rem;
+    transition: color 0.2s;
 }
 
 .facebook {
-  color: #1877f2; /* Facebook Blue */
+    color: #1877f2; /* Facebook Blue */
 }
+
 .instagram {
-  color: #e4405f; /* Instagram Pink */
+    color: #e4405f; /* Instagram Pink */
 }
+
 .tiktok {
-  color: #000000; /* TikTok Black */
+    color: #000000; /* TikTok Black */
 }
 
 .whatsappIcon {
-  color: #25d366;
-  font-weight: bold;
+    color: #25d366;
+    font-weight: bold;
 }
 
 .socials a:hover {
-  opacity: 0.8;
-  transform: scale(1.2);
+    opacity: 0.8;
+    transform: scale(1.2);
 }
 
 .description {
-  font-weight: 500;
-  font-size: 0.9rem;
-  text-align: center;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-align: center;
 }
 
 .contacts {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 @keyframes ring {
-  0% {
-    transform: rotate(0deg);
-  }
-  10% {
-    transform: rotate(15deg);
-  }
-  20% {
-    transform: rotate(-15deg);
-  }
-  30% {
-    transform: rotate(10deg);
-  }
-  40% {
-    transform: rotate(-10deg);
-  }
-  50% {
-    transform: rotate(5deg);
-  }
-  60% {
-    transform: rotate(-5deg);
-  }
-  70%,
-  100% {
-    transform: rotate(0deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    10% {
+        transform: rotate(15deg);
+    }
+    20% {
+        transform: rotate(-15deg);
+    }
+    30% {
+        transform: rotate(10deg);
+    }
+    40% {
+        transform: rotate(-10deg);
+    }
+    50% {
+        transform: rotate(5deg);
+    }
+    60% {
+        transform: rotate(-5deg);
+    }
+    70%,
+    100% {
+        transform: rotate(0deg);
+    }
 }
 
 @keyframes flap {
-  0% {
-    transform: rotate(0deg) translateY(0);
-  }
-  20% {
-    transform: rotate(-5deg) translateY(-2px);
-  }
-  40% {
-    transform: rotate(5deg) translateY(-4px);
-  }
-  60% {
-    transform: rotate(-3deg) translateY(-2px);
-  }
-  80% {
-    transform: rotate(2deg) translateY(-1px);
-  }
-  100% {
-    transform: rotate(0deg) translateY(0);
-  }
+    0% {
+        transform: rotate(0deg) translateY(0);
+    }
+    20% {
+        transform: rotate(-5deg) translateY(-2px);
+    }
+    40% {
+        transform: rotate(5deg) translateY(-4px);
+    }
+    60% {
+        transform: rotate(-3deg) translateY(-2px);
+    }
+    80% {
+        transform: rotate(2deg) translateY(-1px);
+    }
+    100% {
+        transform: rotate(0deg) translateY(0);
+    }
 }
 
 .contactItem {
-  color: #2f0101;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.8rem;
-  transition: color 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+    color: #2f0101;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    transition: color 0.3s ease;
+    gap: 6px;
 }
 
 .contactItem:hover .whatsappIcon {
-  animation: ring 0.6s ease-in-out;
-  transform-origin: center;
+    animation: ring 0.6s ease-in-out;
+    transform-origin: center;
 }
 
 .contactItem:hover .emailIcon {
-  animation: flap 0.6s ease-in-out;
-  transform-origin: center;
+    animation: flap 0.6s ease-in-out;
+    transform-origin: center;
 }
 
 @media (min-width: 375px) and (max-width: 768px) {
-  .socials {
-    justify-content: center;
-  }
+    .socials {
+        justify-content: center;
+    }
 
-  .description {
-    text-align: center;
-  }
+    .description {
+        text-align: center;
+    }
 
-  .contacts {
-    justify-content: center;
-  }
+    .contacts {
+        justify-content: center;
+    }
 }

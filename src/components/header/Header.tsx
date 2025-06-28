@@ -57,15 +57,15 @@ export default function Header() {
                             className={`${styles.contacts} justify-content-center justify-content-md-end`}
                         >
                             <a
-                                href="mailto:13beautycode@gmail.com"
+                                href="mailto:13beauty.code@gmail.com"
                                 className={styles.contactItem}
-                                aria-label="Email 13beautycode@gmail.com"
+                                aria-label="Email 13beauty.code@gmail.com"
                             >
                                 <FontAwesomeIcon
                                     className={styles.emailIcon}
                                     icon={faEnvelope}
                                 />{" "}
-                                13beautycode@gmail.com
+                                13beauty.code@gmail.com
                             </a>
                             <a
                                 href="https://wa.me/995574074833"
