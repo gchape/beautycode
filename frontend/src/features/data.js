@@ -123,17 +123,9 @@ export const PRODUCTS = [
 
 export const NAV_LINKS = ["მთავარი", "მაღაზია", "ჩვენს შესახებ", "ბლოგი"];
 
-export const CONTACT_ITEMS = [
-  "+995 5XX XX XX XX",
-  "info@beautycode.ge",
-  "თბილისი, საქართველო",
-];
-
-export const LEGAL_LINKS = ["Privacy Policy", "Terms of Service"];
-
 export const NAV_ITEMS = [
   { label: "მთავარი", to: "/" },
-  { label: "პროდუქტები", to: "/shop" },
+  { label: "პროდუქტები", to: "/products" },
   { label: "კალათა", to: "/cart" },
   { label: "პროფილი", to: "/profile" },
 ];

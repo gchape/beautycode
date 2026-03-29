@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { CONTACT_ITEMS, LEGAL_LINKS, NAV_LINKS } from "../data";
+import { Link } from "react-router";
+import { NAV_LINKS } from "../data";
 import RightArrowIcon from "../icon/RightArrowIcon";
-import FooterLinkList from "./FooterLinkList";
+import Contacts from "./Contacts";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -34,8 +35,25 @@ const Footer = () => {
             </div>
           </div>
 
-          <FooterLinkList title="ნავიგაცია" items={NAV_LINKS} />
-          <FooterLinkList title="კონტაქტი" items={CONTACT_ITEMS} />
+          <div>
+            <h5 className="font-label text-xs uppercase tracking-[0.2em] text-on-surface mb-6">
+              ნავიგაცია
+            </h5>
+            <ul className="space-y-4">
+              {NAV_LINKS.map((item) => (
+                <li key={item}>
+                  <Link
+                    to={"/"}
+                    className="font-body text-on-surface-variant no-underline relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-on-surface-variant after:transition-all after:duration-300 hover:after:w-full"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Contacts />
         </div>
 
         <div className="pt-8 border-t border-outline-variant/5 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -44,15 +62,19 @@ const Footer = () => {
           </p>
 
           <div className="flex gap-8">
-            {LEGAL_LINKS.map((link) => (
-              <a
-                key={link}
-                href="#"
-                className="text-xs font-label tracking-widest text-on-surface-variant/60 hover:text-primary transition-colors no-underline"
-              >
-                {link}
-              </a>
-            ))}
+            <Link
+              to={"/terms-of-service"}
+              className="text-xs font-label tracking-widest text-on-surface-variant/60 hover:text-primary transition-colors no-underline"
+            >
+              Terms of Service
+            </Link>
+
+            <Link
+              to={"/privacy-policy"}
+              className="text-xs font-label tracking-widest text-on-surface-variant/60 hover:text-primary transition-colors no-underline"
+            >
+              Privacy Policy
+            </Link>
           </div>
         </div>
       </div>

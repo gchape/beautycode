@@ -1,12 +1,12 @@
 import { PRODUCTS } from "../data";
-import ProductCard from "../product/ProductCard";
+import ProductCard from "./ProductCard";
 
 const col = (index) =>
   ["md:col-span-5", "md:col-span-4", "md:col-span-3"][index % 3];
 const aspect = (index) =>
   ["aspect-[4/5]", "aspect-square", "aspect-video"][index % 3];
 
-const FeaturedCollection = () => (
+const FeaturedProducts = () => (
   <section className="px-6 py-24 bg-surface-container-low/30">
     <div className="max-w-7xl mx-auto">
       <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -42,4 +42,4 @@ const FeaturedCollection = () => (
   </section>
 );
 
-export default FeaturedCollection;
+export default FeaturedProducts;
