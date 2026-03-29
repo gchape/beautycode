@@ -1,5 +1,5 @@
 import { PRODUCTS } from "../data";
-import ProductCard from "./ProductCard";
+import FeaturedProductCard from "./FeaturedProductCard";
 
 const col = (index) =>
   ["md:col-span-5", "md:col-span-4", "md:col-span-3"][index % 3];
@@ -29,7 +29,7 @@ const FeaturedProducts = () => (
       <div className="columns-1 md:columns-2 lg:columns-3 gap-8">
         {PRODUCTS.map((product, index) => (
           <div key={product.id} className="break-inside-avoid mb-8">
-            <ProductCard
+            <FeaturedProductCard
               key={product.id}
               aspect={aspect(index)}
               col={col(index)}

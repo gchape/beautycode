@@ -1,4 +1,4 @@
-const ProductCard = ({ imgUrl, badge, title, newPrice, oldPrice }) => (
+const FeaturedProductCard = ({ imgUrl, badge, title, newPrice, oldPrice }) => (
   <div className="group bg-surface-container p-6 rounded-xl transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 break-inside-avoid mb-8">
     <img
       src={imgUrl}
@@ -24,4 +24,4 @@ const ProductCard = ({ imgUrl, badge, title, newPrice, oldPrice }) => (
   </div>
 );
 
-export default ProductCard;
+export default FeaturedProductCard;

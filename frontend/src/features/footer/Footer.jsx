@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { NAV_LINKS } from "../data";
-import RightArrowIcon from "../icon/RightArrowIcon";
 import Contacts from "./Contacts";
 
 const Footer = () => {
@@ -30,7 +29,9 @@ const Footer = () => {
               />
 
               <button className="px-6 py-2 text-primary bg-transparent border-none cursor-pointer">
-                <RightArrowIcon />
+                <span className="material-symbols-outlined text-lg">
+                  arrow_forward
+                </span>
               </button>
             </div>
           </div>

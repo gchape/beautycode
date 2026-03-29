@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
 import { NAV_ITEMS } from "../data";
-import SearchIcon from "../icon/SearchIcon";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,45 +9,25 @@ const Navbar = () => {
     <header className="sticky top-0 z-60 bg-surface-container-low shadow-sm">
       <div className="flex justify-between items-center px-6 py-4">
         <button
-          className="text-primary p-2.5 rounded-full hover:bg-primary-container/40 transition-all duration-300 cursor-pointer"
+          className="text-primary flex p-2.5 rounded-full hover:bg-primary-container/40 transition-all duration-300 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? (
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            >
-              <line x1="4" y1="4" x2="20" y2="20" />
-              <line x1="20" y1="4" x2="4" y2="20" />
-            </svg>
+            <span className="material-symbols-outlined text-lg">close</span>
           ) : (
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            >
-              <line x1="4" y1="7" x2="20" y2="7" />
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="17" x2="20" y2="17" />
-            </svg>
+            <span className="material-symbols-outlined text-lg">menu</span>
           )}
         </button>
 
-        <h1 className="text-3xl font-company text-primary tracking-tight cursor-pointer">
+        <Link
+          className="text-3xl font-company text-primary tracking-tight cursor-pointer"
+          to={"/"}
+        >
           BeautyCode
-        </h1>
+        </Link>
 
-        <button className="text-primary p-2.5 rounded-full hover:bg-primary-container/40 transition-all duration-300 cursor-pointer">
-          <SearchIcon />
+        <button className="text-primary flex p-2.5 rounded-full hover:bg-primary-container/40 transition-all duration-300 cursor-pointer">
+          <span className="material-symbols-outlined text-lg">search</span>
         </button>
       </div>
 
