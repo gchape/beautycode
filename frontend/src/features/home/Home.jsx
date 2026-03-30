@@ -3,7 +3,7 @@ import CrispChat from "../chat/CrispChat";
 import Navbar from "../navbar/Navbar";
 
 const Home = () => (
-  <div className="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container min-h-screen">
+  <div className="bg-background min-h-screen">
     <Navbar />
     <CrispChat />
 

@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Cart from "./features/cart/Cart";
-import BrandEthos from "./features/footer/BrandEthos";
+import BrandEthos from "./features/home/BrandEthos";
 import Footer from "./features/footer/Footer";
 import Hero from "./features/home/Hero";
 import Home from "./features/home/Home";
@@ -10,6 +10,7 @@ import PrivacyPolicy from "./features/legal/PrivacyPolicy";
 import TermsOfService from "./features/legal/TermsOfService";
 import FeaturedProducts from "./features/product/FeaturedProducts";
 import Products from "./features/product/Products";
+import Profile from "./features/profile/Profile";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
@@ -31,6 +32,7 @@ createRoot(document.getElementById("root")).render(
           }
         />
         <Route path="cart" element={<Cart />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="products" element={<Products />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="terms-of-service" element={<TermsOfService />} />

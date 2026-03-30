@@ -9,8 +9,8 @@ const CategoryFilter = ({ active, onChange }) => (
         className={`px-8 py-2.5 rounded-full font-label text-xs uppercase tracking-widest transition-all duration-300 whitespace-nowrap cursor-pointer
           ${
             active === category.value
-              ? "bg-surface-container-high text-on-primary"
-              : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+              ? "bg-pink-100 text-taupe-600"
+              : "bg-pink-50 text-taupe-500 hover:bg-pink-100"
           }`}
       >
         {category.label}

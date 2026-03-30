@@ -29,7 +29,7 @@ const Products = () => {
 
       <CategoryFilter active={active} onChange={setActive} />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12 mt-8">
         {filtered.map((product, index) => (
           <ProductCatalogCard
             key={product.id}

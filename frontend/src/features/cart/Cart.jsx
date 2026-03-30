@@ -6,7 +6,7 @@ const INITIAL_CART = [
     id: 6,
     imgUrl: "/6.svg",
     badge: "Premium",
-    title: "BeautiyCode-ის ✨ პრემიუმ კატეგორიის 𝗜𝗣𝗟 ლაზერული ეპილატორი💜",
+    title: "✨ პრემიუმ კატეგორიის 𝗜𝗣𝗟 ლაზერული ეპილატორი💜",
     oldPrice: 700.0,
     newPrice: 379.0,
     quantity: 1,
@@ -42,10 +42,10 @@ const Cart = () => {
   return (
     <main className="max-w-7xl mx-auto px-6 pt-10 pb-32">
       <div className="mb-12">
-        <h2 className="text-4xl font-headline font-bold text-on-surface tracking-tight mb-2">
+        <h2 className="text-4xl font-headline font-bold text-taupe-600 tracking-tight mb-2">
           კალათა
         </h2>
-        <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
+        <p className="font-label text-sm uppercase tracking-widest text-taupe-500">
           თქვენი შერჩეული პროდუქცია
         </p>
       </div>
