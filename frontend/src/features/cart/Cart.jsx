@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { CartContext } from "../state/store";
+import { CartStateContext } from "../state/store";
 import { CartItem, CartSummary, EmptyCart } from "./CartComponents";
 
 const Cart = () => {
-  const [state, dispatch] = useContext(CartContext);
+  const cart = useContext(CartStateContext);
 
   return (
     <main className="max-w-7xl mx-auto px-6 pt-10 pb-32">
@@ -16,25 +16,19 @@ const Cart = () => {
         </p>
       </div>
 
-      {state.length === 0 ? (
+      {cart.length === 0 ? (
         <EmptyCart />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
           <div className="lg:col-span-8 space-y-8">
-            {state.map((item) => (
-              <CartItem
-                key={item.id}
-                item={item}
-                onIncrease={() => dispatch({ item: item, action: "INCREASE" })}
-                onDecrease={() => dispatch({ item: item, action: "DECREASE" })}
-                onRemove={() => dispatch({ item: item, action: "REMOVE" })}
-              />
+            {cart.map((item) => (
+              <CartItem key={item.id} item={item} />
             ))}
           </div>
 
           <div className="lg:col-span-4">
             <CartSummary
-              total={state.reduce(
+              total={cart.reduce(
                 (prev, curr) => prev + curr.quantity * curr.newPrice,
                 0,
               )}

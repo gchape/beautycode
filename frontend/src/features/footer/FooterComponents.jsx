@@ -1,17 +1,45 @@
-// FooterComponents.jsx
 import { useState } from "react";
 import { Link } from "react-router";
-import { CONTACT_LINKS, NAV_ITEMS } from "../data";
+import { CONTACT_LINKS, LEGAL_LINKS, NAV_ITEMS } from "../data";
 
-export const FooterBrand = () => {
+const EmailForm = ({ onSubmit }) => {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = () => {
     if (!email) return;
-    setSubmitted(true);
+    onSubmit();
     setEmail("");
   };
+
+  return (
+    <div className="flex max-w-md border-b border-stone-300 focus-within:border-taupe-600 transition-colors duration-300">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        placeholder="ელ-ფოსტა"
+        className="grow bg-transparent border-none focus:ring-0 px-0 py-3 font-label text-sm outline-none text-taupe-500 placeholder:text-taupe-400"
+      />
+      <button
+        onClick={handleSubmit}
+        aria-label="გამოწერა"
+        className="p-2 text-stone-600 bg-transparent border-none cursor-pointer hover:opacity-60 transition-opacity"
+      >
+        <span className="material-symbols-outlined text-lg">arrow_forward</span>
+      </button>
+    </div>
+  );
+};
+
+const FooterSectionTitle = ({ children }) => (
+  <h5 className="font-label text-xs uppercase tracking-[0.2em] text-taupe-600 mb-6">
+    {children}
+  </h5>
+);
+
+export const FooterBrand = () => {
+  const [submitted, setSubmitted] = useState(false);
 
   return (
     <div className="md:col-span-2">
@@ -22,41 +50,20 @@ export const FooterBrand = () => {
         გამოიწერეთ ჩვენი სიახლეები და მიიღეთ ექსკლუზიური შეთავაზებები პირდაპირ
         თქვენს ფოსტაზე.
       </p>
-
       {submitted ? (
         <p className="font-label text-sm text-taupe-500 tracking-wide">
           ✓ გმადლობთ! მალე დაგიკავშირდებით.
         </p>
       ) : (
-        <div className="flex max-w-md border-b border-stone-300 focus-within:border-taupe-600 transition-colors duration-300">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="ელ-ფოსტა"
-            className="grow bg-transparent border-none focus:ring-0 px-0 py-3 font-label text-sm outline-none text-taupe-500 placeholder:text-taupe-400"
-          />
-          <button
-            onClick={handleSubmit}
-            aria-label="გამოწერა"
-            className="px-6 py-2 text-stone-600 bg-transparent border-none cursor-pointer hover:opacity-60 transition-opacity"
-          >
-            <span className="material-symbols-outlined text-lg">
-              arrow_forward
-            </span>
-          </button>
-        </div>
+        <EmailForm onSubmit={() => setSubmitted(true)} />
       )}
     </div>
   );
 };
 
-export const FooterNav = () => (
+export const FooterNavigation = () => (
   <div>
-    <h5 className="font-label text-xs uppercase tracking-[0.2em] text-taupe-600 mb-6">
-      ნავიგაცია
-    </h5>
+    <FooterSectionTitle>ნავიგაცია</FooterSectionTitle>
     <ul className="space-y-4">
       {NAV_ITEMS.map((item) => (
         <li key={item.label}>
@@ -74,28 +81,24 @@ export const FooterNav = () => (
 
 export const FooterContacts = () => (
   <div>
-    <h5 className="font-label text-xs uppercase tracking-[0.2em] text-taupe-600 mb-6">
-      კონტაქტი
-    </h5>
+    <FooterSectionTitle>კონტაქტი</FooterSectionTitle>
     <ul className="flex flex-col place-content-center gap-4 text-taupe-500 text-sm">
-      {CONTACT_LINKS.map(({ href, icon, label, external }) => (
-        <a
-          key={href}
-          href={href}
-          {...(external && { target: "_blank", rel: "noopener noreferrer" })}
-          className="w-fit flex items-center gap-1 no-underline relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-taupe-400 after:transition-all after:duration-300 hover:after:w-full"
-        >
-          <span className="material-symbols-outlined text-base">{icon}</span>
-          <span>{label}</span>
-        </a>
+      {CONTACT_LINKS.map(({ href, icon, label }) => (
+        <li key={href}>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-fit flex items-center gap-1 no-underline relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-taupe-400 after:transition-all after:duration-300 hover:after:w-full"
+          >
+            <span className="material-symbols-outlined text-base">{icon}</span>
+            <span>{label}</span>
+          </a>
+        </li>
       ))}
-      <li>
-        <p className="font-label flex items-center gap-1">
-          <span className="material-symbols-outlined text-base">
-            location_on
-          </span>
-          თბილისი, საქართველო
-        </p>
+      <li className="font-label flex items-center gap-1">
+        <span className="material-symbols-outlined text-base">location_on</span>
+        თბილისი, საქართველო
       </li>
     </ul>
   </div>
@@ -103,17 +106,14 @@ export const FooterContacts = () => (
 
 export const FooterLegal = () => (
   <div className="flex gap-8">
-    <Link
-      to="/terms-of-service"
-      className="text-xs font-label tracking-widest text-taupe-400 hover:text-taupe-600 transition-colors no-underline"
-    >
-      Terms of Service
-    </Link>
-    <Link
-      to="/privacy-policy"
-      className="text-xs font-label tracking-widest text-taupe-400 hover:text-taupe-600 transition-colors no-underline"
-    >
-      Privacy Policy
-    </Link>
+    {LEGAL_LINKS.map(({ to, label }) => (
+      <Link
+        key={to}
+        to={to}
+        className="text-xs font-label tracking-widest text-taupe-400 hover:text-taupe-600 transition-colors no-underline"
+      >
+        {label}
+      </Link>
+    ))}
   </div>
 );

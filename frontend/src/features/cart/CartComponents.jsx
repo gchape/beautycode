@@ -1,71 +1,100 @@
-const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => (
-  <div className="bg-pink-50 p-6 rounded-xl flex flex-col md:flex-row gap-8 items-center md:items-start">
-    <div className="w-full md:w-48 h-48 rounded-lg overflow-hidden shrink-0 border border-stone-200">
-      <img
-        src={item.imgUrl}
-        alt={item.title}
-        className="w-full h-full object-contain p-4"
-      />
-    </div>
+import { useContext } from "react";
+import { CartActionsContext } from "../state/store";
 
-    <div className="grow flex flex-col justify-between h-full py-2">
-      <div className="space-y-3">
-        <div className="flex justify-between place-items-center">
-          <h3 className="text-lg md:text-xl font-headline font-bold text-taupe-800 leading-tight max-w-md">
-            {item.title}
-          </h3>
+const QuantityControl = ({ item, dispatch }) => (
+  <div className="flex items-center bg-pink-100 text-taupe-500 rounded-full px-2 py-1">
+    <button
+      onClick={() => dispatch({ item, action: "DECREASE" })}
+      className="w-10 h-10 flex items-center justify-center hover:opacity-80 rounded-full transition-opacity cursor-pointer"
+    >
+      <span className="material-symbols-outlined">remove</span>
+    </button>
 
-          <button
-            onClick={() => onRemove(item)}
-            className="text-taupe-400 hover:text-red-500 transition-colors p-2 cursor-pointer"
-          >
-            <span className="material-symbols-outlined">delete</span>
-          </button>
-        </div>
+    <span className="w-12 text-center font-bold">{item.quantity}</span>
 
-        <p className="font-label text-xs text-taupe-500 uppercase tracking-wider">
-          {item.badge}
-        </p>
-      </div>
-
-      <div className="mt-8 flex flex-wrap justify-between items-end gap-6">
-        <div className="flex items-center bg-pink-100 text-taupe-500 rounded-full px-2 py-1">
-          <button
-            onClick={() => onDecrease(item)}
-            className="w-10 h-10 flex items-center justify-center hover:opacity-80 rounded-full transition-opacity cursor-pointer"
-          >
-            <span className="material-symbols-outlined">remove</span>
-          </button>
-
-          <span className="w-12 text-center font-bold">{item.quantity}</span>
-
-          <button
-            onClick={() => onIncrease(item)}
-            className="w-10 h-10 flex items-center justify-center hover:opacity-80 rounded-full transition-opacity cursor-pointer"
-          >
-            <span className="material-symbols-outlined">add</span>
-          </button>
-        </div>
-
-        <div className="text-right">
-          <span className="block font-label text-xs text-taupe-600 uppercase tracking-widest mb-1">
-            ფასი
-          </span>
-
-          <span className="text-xl md:text-2xl font-headline font-bold text-taupe-700">
-            {(item.newPrice * item.quantity).toFixed(0)} ₾
-          </span>
-
-          {item.oldPrice && (
-            <span className="block font-label text-sm text-taupe-400 line-through">
-              {(item.oldPrice * item.quantity).toFixed(0)} ₾
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
+    <button
+      onClick={() => dispatch({ item, action: "INCREASE" })}
+      className="w-10 h-10 flex items-center justify-center hover:opacity-80 rounded-full transition-opacity cursor-pointer"
+    >
+      <span className="material-symbols-outlined">add</span>
+    </button>
   </div>
 );
+
+const ItemPricing = ({ newPrice, oldPrice, quantity }) => (
+  <div className="text-right">
+    <span className="block font-label text-xs text-taupe-600 uppercase tracking-widest mb-1">
+      ფასი
+    </span>
+
+    <span className="text-xl md:text-2xl font-headline font-bold text-taupe-700">
+      {(newPrice * quantity).toFixed(0)} ₾
+    </span>
+
+    {oldPrice && (
+      <span className="block font-label text-sm text-taupe-400 line-through">
+        {(oldPrice * quantity).toFixed(0)} ₾
+      </span>
+    )}
+  </div>
+);
+
+const SummaryRow = ({ label, value }) => (
+  <div className="flex justify-between items-center">
+    <span className="font-label text-sm uppercase tracking-widest">
+      {label}
+    </span>
+
+    <span className="font-label font-semibold">{value}</span>
+  </div>
+);
+
+const CartItem = ({ item }) => {
+  const dispatch = useContext(CartActionsContext);
+
+  return (
+    <div className="bg-pink-50 p-6 rounded-xl flex flex-col md:flex-row gap-8 items-center md:items-start">
+      <div className="w-full md:w-48 h-48 rounded-lg overflow-hidden shrink-0 border border-stone-200">
+        <img
+          src={item.imgUrl}
+          alt={item.title}
+          className="w-full h-full object-contain p-4"
+        />
+      </div>
+
+      <div className="grow flex flex-col justify-between h-full py-2">
+        <div className="space-y-3">
+          <div className="flex justify-between place-items-center">
+            <h3 className="text-lg md:text-xl font-headline font-bold text-taupe-800 leading-tight max-w-md">
+              {item.title}
+            </h3>
+
+            <button
+              onClick={() => dispatch({ item, action: "REMOVE" })}
+              className="text-taupe-400 hover:text-red-500 transition-colors p-2 cursor-pointer"
+            >
+              <span className="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+
+          <p className="font-label text-xs text-taupe-500 uppercase tracking-wider">
+            {item.badge}
+          </p>
+        </div>
+
+        <div className="mt-8 flex flex-wrap justify-between items-end gap-6">
+          <QuantityControl item={item} dispatch={dispatch} />
+
+          <ItemPricing
+            newPrice={item.newPrice}
+            oldPrice={item.oldPrice}
+            quantity={item.quantity}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CartSummary = ({ total }) => (
   <div className="sticky top-32 bg-pink-100 p-8 rounded-xl shadow-sm">
@@ -74,28 +103,14 @@ const CartSummary = ({ total }) => (
     </h3>
 
     <div className="space-y-6 text-taupe-500">
-      <div className="flex justify-between items-center">
-        <span className="font-label text-sm uppercase tracking-widest">
-          ჯამი
-        </span>
-
-        <span className="font-label font-semibold">{total} ₾</span>
-      </div>
-
-      <div className="flex justify-between items-center">
-        <span className="font-label text-sm uppercase tracking-widest">
-          მიწოდება
-        </span>
-
-        <span className="font-label font-semibold">უფასო</span>
-      </div>
+      <SummaryRow label="ჯამი" value={`${total} ₾`} />
+      <SummaryRow label="მიწოდება" value="უფასო" />
 
       <div className="pt-6 mt-6 text-taupe-600">
         <div className="flex justify-between items-end mb-8">
           <span className="font-headline text-lg md:text-xl font-bold">
             სულ:
           </span>
-
           <span className="text-xl md:text-2xl font-headline font-bold tracking-tight">
             {total} ₾
           </span>

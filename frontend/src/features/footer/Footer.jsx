@@ -1,9 +1,8 @@
-// Footer.jsx
 import {
   FooterBrand,
   FooterContacts,
   FooterLegal,
-  FooterNav,
+  FooterNavigation,
 } from "./FooterComponents";
 
 const Footer = () => (
@@ -11,7 +10,7 @@ const Footer = () => (
     <div className="max-w-7xl mx-auto px-6">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12 mb-20">
         <FooterBrand />
-        <FooterNav />
+        <FooterNavigation />
         <FooterContacts />
       </div>
 
