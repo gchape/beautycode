@@ -1,26 +1,22 @@
 import { useState } from "react";
-import { HomeBar, MenuBar, NavLinks, SearchBar } from "./NavbarComponents";
+import { BrandLogo, CartIcon, MenuToggle, NavMenu } from "./NavbarComponents";
 
-const HomeBar_ = () => <HomeBar />;
-const SearchBar_ = () => <SearchBar />;
-
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const Navbar = ({ cartCount = 0 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-60 bg-pink-50 shadow-sm">
       <div className="flex justify-between items-center px-6 py-4 text-taupe-600">
-        <MenuBar isOpen={isOpen} setIsOpen={setIsOpen} />
-
-        <HomeBar_ />
-        <SearchBar_ />
+        <MenuToggle isOpen={menuOpen} onToggle={() => setMenuOpen((p) => !p)} />
+        <BrandLogo />
+        <CartIcon count={cartCount} />
       </div>
 
       <nav
         className={`flex flex-col overflow-hidden transition-all duration-300 ease-out
-          ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+          ${menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
       >
-        <NavLinks onClick={() => setIsOpen(false)} />
+        <NavMenu onClick={() => setMenuOpen(false)} />
       </nav>
     </header>
   );

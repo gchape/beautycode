@@ -16,7 +16,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => (
           </h3>
 
           <button
-            onClick={() => onRemove(item.id)}
+            onClick={() => onRemove(item)}
             className="text-taupe-400 hover:text-red-500 transition-colors p-2 cursor-pointer"
           >
             <span className="material-symbols-outlined">delete</span>
@@ -31,16 +31,16 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove }) => (
       <div className="mt-8 flex flex-wrap justify-between items-end gap-6">
         <div className="flex items-center bg-pink-100 text-taupe-500 rounded-full px-2 py-1">
           <button
-            onClick={() => onDecrease(item.id)}
+            onClick={() => onDecrease(item)}
             className="w-10 h-10 flex items-center justify-center hover:opacity-80 rounded-full transition-opacity cursor-pointer"
           >
             <span className="material-symbols-outlined">remove</span>
           </button>
 
-          <span className="w-12 text-center">{item.quantity}</span>
+          <span className="w-12 text-center font-bold">{item.quantity}</span>
 
           <button
-            onClick={() => onIncrease(item.id)}
+            onClick={() => onIncrease(item)}
             className="w-10 h-10 flex items-center justify-center hover:opacity-80 rounded-full transition-opacity cursor-pointer"
           >
             <span className="material-symbols-outlined">add</span>

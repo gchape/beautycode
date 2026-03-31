@@ -21,7 +21,7 @@ const orders = [
 
 const Profile = () => {
   return (
-    <div className="min-h-screen text-taupe-600 bg-white p-8 space-y-10">
+    <div className="min-h-screen text-taupe-600 p-8 space-y-10">
       <div className="flex items-center gap-6">
         <img
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBPf0f0u9i_OF61Vj1uDgmZZRD2aVbJpQ4LktqTJLcwDLueYQ7EjMH8yMG1sxuHjr1fwFtrPqVSVyqti57PcIblc71_FSxF56__5El_5J5BJEJ3z8r9oLAPR2Nmh7mbOW7dCbeh7QPa27KaK7w9vb8HjSTK0v1s-ihSDwAwNcOb-8UAJrwPe99km0B_xMsimoOwkZGECMfnAN-eEW9CKM8hftNP_muerY1x5ypCpC-bSDxAFSWqoEZ4XN17084yqOeyDhd3QAeds0y"
