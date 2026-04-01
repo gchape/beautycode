@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { BrandLogo, Burger, Menu, ShoppingCart } from "./NavbarComponents";
 
+const BrandLogo_ = () => <BrandLogo />;
+const ShoppingCart_ = () => <ShoppingCart />;
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -8,8 +11,8 @@ const Navbar = () => {
     <header className="sticky top-0 z-60 bg-pink-50 shadow-sm">
       <div className="flex justify-between items-center px-6 py-4 text-taupe-600">
         <Burger isOpen={isOpen} onClick={() => setIsOpen((prev) => !prev)} />
-        <BrandLogo />
-        <ShoppingCart />
+        <BrandLogo_ />
+        <ShoppingCart_ />
       </div>
 
       <nav

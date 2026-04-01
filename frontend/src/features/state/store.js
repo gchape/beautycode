@@ -4,3 +4,5 @@ export const CartStateContext = createContext([]);
 export const CartActionsContext = createContext(() => {});
 
 export const ProductCategoryContext = createContext("");
+
+export const LoginContext = createContext(null);

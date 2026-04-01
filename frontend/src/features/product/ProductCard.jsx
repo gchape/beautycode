@@ -17,6 +17,7 @@ const ProductCard = ({
           alt={title}
           className="w-full mb-4 group-hover:scale-105 transition-transform duration-400"
         />
+
         <div className="flex place-content-around place-items-start gap-2">
           <div>
             <span className="font-label text-xs uppercase tracking-wider text-taupe-500">
@@ -24,6 +25,7 @@ const ProductCard = ({
             </span>
             <h4 className="font-headline text-lg md:text-xl mt-1">{title}</h4>
           </div>
+
           <div className="text-left shrink-0">
             <span className="font-headline text-lg whitespace-nowrap">
               {newPrice} GEL
@@ -46,6 +48,7 @@ const ProductCard = ({
           className="w-full h-full object-contain p-6 hover:scale-105 transition-transform duration-700 ease-in-out"
         />
       </div>
+
       <div className="flex flex-col gap-1 px-1">
         <span className="font-label text-[10px] uppercase tracking-[0.2em] text-taupe-400 font-semibold">
           {badge}
@@ -58,6 +61,7 @@ const ProductCard = ({
             {description}
           </p>
         )}
+
         <div className="mt-3 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
             <span className="text-md font-bold text-taupe-500">

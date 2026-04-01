@@ -1,21 +1,16 @@
 import { useContext } from "react";
 import { CartStateContext } from "../state/store";
-import { CartItem, CartSummary, EmptyCart } from "./CartComponents";
+import { CartHeader, CartItem, CartSummary, EmptyCart } from "./CartComponents";
+
+const CartHeader_ = () => <CartHeader />;
 
 const Cart = () => {
   const cart = useContext(CartStateContext);
 
   return (
     <main className="max-w-7xl mx-auto px-6 pt-10 pb-32">
-      <div className="mb-12">
-        <h2 className="text-4xl font-headline font-bold text-taupe-600 tracking-tight mb-2">
-          კალათა
-        </h2>
-        <p className="font-label text-sm uppercase tracking-widest text-taupe-500">
-          თქვენი შერჩეული პროდუქცია
-        </p>
-      </div>
-
+      <CartHeader_ />
+      
       {cart.length === 0 ? (
         <EmptyCart />
       ) : (

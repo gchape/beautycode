@@ -38,18 +38,25 @@ const FooterSectionTitle = ({ children }) => (
   </h5>
 );
 
+const FooterBrandHeader = () => (
+  <header>
+    <h4 className="text-3xl font-script italic text-taupe-600 mb-6">
+      BeautyCode
+    </h4>
+    <p className="max-w-sm text-taupe-500 mb-8 leading-relaxed">
+      გამოიწერეთ ჩვენი სიახლეები და მიიღეთ ექსკლუზიური შეთავაზებები პირდაპირ
+      თქვენს ფოსტაზე.
+    </p>
+  </header>
+);
+
 export const FooterBrand = () => {
   const [submitted, setSubmitted] = useState(false);
 
   return (
     <div className="md:col-span-2">
-      <h4 className="text-3xl font-script italic text-taupe-600 mb-6">
-        BeautyCode
-      </h4>
-      <p className="max-w-sm text-taupe-500 mb-8 leading-relaxed">
-        გამოიწერეთ ჩვენი სიახლეები და მიიღეთ ექსკლუზიური შეთავაზებები პირდაპირ
-        თქვენს ფოსტაზე.
-      </p>
+      <FooterBrandHeader />
+
       {submitted ? (
         <p className="font-label text-sm text-taupe-500 tracking-wide">
           ✓ გმადლობთ! მალე დაგიკავშირდებით.
@@ -64,6 +71,7 @@ export const FooterBrand = () => {
 export const FooterNavigation = () => (
   <div>
     <FooterSectionTitle>ნავიგაცია</FooterSectionTitle>
+
     <ul className="space-y-4">
       {NAV_ITEMS.map((item) => (
         <li key={item.label}>
@@ -82,6 +90,7 @@ export const FooterNavigation = () => (
 export const FooterContacts = () => (
   <div>
     <FooterSectionTitle>კონტაქტი</FooterSectionTitle>
+
     <ul className="flex flex-col place-content-center gap-4 text-taupe-500 text-sm">
       {CONTACT_LINKS.map(({ href, icon, label }) => (
         <li key={href}>
