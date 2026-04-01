@@ -1,5 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
+import Login from "./features/auth/Login";
+import Register from "./features/auth/Register";
 import Cart from "./features/cart/Cart";
 import BrandEthos from "./features/home/BrandEthos";
 import Hero from "./features/home/Hero";
@@ -10,8 +12,8 @@ import FeaturedProducts from "./features/product/FeaturedProducts";
 import ProductsCatalog from "./features/product/ProductsCatalog";
 import Profile from "./features/profile/Profile";
 import CartContextStateProvider from "./features/state/CartContextProvider";
-import LoginContextProvider from "./features/state/LoginContextProvider";
 import ProductCategoryProvider from "./features/state/ProductCategoryProvider";
+import LoginContextProvider from "./features/state/LoginContextProvider";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
@@ -37,6 +39,9 @@ createRoot(document.getElementById("root")).render(
               <Route path="privacy-policy" element={<PrivacyPolicy />} />
               <Route path="terms-of-service" element={<TermsOfService />} />
             </Route>
+
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </BrowserRouter>
       </LoginContextProvider>

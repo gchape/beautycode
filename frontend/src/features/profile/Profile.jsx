@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { LoginContext } from "../state/store";
+import { UserContext } from "../state/store";
 import {
   AccountForm,
   OrderList,
@@ -9,7 +9,7 @@ import {
 } from "./ProfileComponents";
 
 const Profile = () => {
-  const { user, logout } = useContext(LoginContext);
+  const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
