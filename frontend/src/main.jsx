@@ -1,5 +1,8 @@
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
+import { loginAction } from "./features/auth/actions/loginAction";
+import { logoutAction } from "./features/auth/actions/logoutAction";
+import { registerAction } from "./features/auth/actions/registerAction";
 import Login from "./features/auth/Login";
 import Register from "./features/auth/Register";
 import Cart from "./features/cart/Cart";
@@ -8,43 +11,77 @@ import Hero from "./features/home/Hero";
 import Home from "./features/home/Home";
 import PrivacyPolicy from "./features/legal/PrivacyPolicy";
 import TermsOfService from "./features/legal/TermsOfService";
+import { authMiddleware } from "./features/middleware/authMiddleware";
+import { userContext } from "./features/middleware/context/userContext";
 import FeaturedProducts from "./features/product/FeaturedProducts";
 import ProductsCatalog from "./features/product/ProductsCatalog";
 import Profile from "./features/profile/Profile";
-import CartContextStateProvider from "./features/state/CartContextProvider";
-import ProductCategoryProvider from "./features/state/ProductCategoryProvider";
-import LoginContextProvider from "./features/state/LoginContextProvider";
+import CartContextStateProvider from "./features/providers/CartProvider";
+import CategoryProvider from "./features/providers/CategoryProvider";
 import "./index.css";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />,
+    children: [
+      {
+        index: true,
+        element: (
+          <main>
+            <Hero />
+            <FeaturedProducts />
+            <BrandEthos />
+          </main>
+        ),
+      },
+      {
+        path: "cart",
+        element: <Cart />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
+        middleware: [authMiddleware],
+        loader: ({ context }) => {
+          const user = context.get(userContext);
+          return { user };
+        },
+      },
+      {
+        path: "products",
+        element: <ProductsCatalog />,
+      },
+    ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    action: loginAction,
+  },
+  {
+    path: "/logout",
+    action: logoutAction,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+    action: registerAction,
+  },
+  {
+    path: "privacy-policy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: "terms-of-service",
+    element: <TermsOfService />,
+  },
+]);
 
 createRoot(document.getElementById("root")).render(
   <CartContextStateProvider>
-    <ProductCategoryProvider>
-      <LoginContextProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home />}>
-              <Route
-                index
-                element={
-                  <main>
-                    <Hero />
-                    <FeaturedProducts />
-                    <BrandEthos />
-                  </main>
-                }
-              />
-              <Route path="cart" element={<Cart />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="products" element={<ProductsCatalog />} />
-              <Route path="privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="terms-of-service" element={<TermsOfService />} />
-            </Route>
-
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </BrowserRouter>
-      </LoginContextProvider>
-    </ProductCategoryProvider>
+    <CategoryProvider>
+      <RouterProvider router={router} />
+    </CategoryProvider>
   </CartContextStateProvider>,
 );

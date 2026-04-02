@@ -1,9 +1,7 @@
-import {
-  FooterBrand,
-  FooterContacts,
-  FooterLegal,
-  FooterNavigation,
-} from "./FooterComponents";
+import { FooterBrand } from "./components/FooterBrand";
+import { FooterContacts } from "./components/FooterContacts";
+import { FooterLegal } from "./components/FooterLegal";
+import { FooterNavigation } from "./components/FooterNavigation";
 
 const Footer = () => (
   <footer className="pt-20 pb-32">
@@ -13,7 +11,6 @@ const Footer = () => (
         <FooterNavigation />
         <FooterContacts />
       </div>
-
       <div className="pt-8 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-xs font-label uppercase tracking-widest text-taupe-400">
           © 2026 BeautyCode. All rights reserved.

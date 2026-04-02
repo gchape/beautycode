@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { CartActionsContext, CartStateContext } from "./store";
+import { CartActionsContext, CartStateContext } from "./cartContext";
 
 const cartReducer = (prev, payload) => {
   switch (payload.action) {
@@ -33,7 +33,7 @@ const cartReducer = (prev, payload) => {
   }
 };
 
-const CartContextProvider = ({ children }) => {
+const CartProvider = ({ children }) => {
   const [cart, dispatch] = useReducer(cartReducer, []);
 
   return (
@@ -45,4 +45,4 @@ const CartContextProvider = ({ children }) => {
   );
 };
 
-export default CartContextProvider;
+export default CartProvider;

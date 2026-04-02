@@ -1,16 +1,20 @@
 import { useContext } from "react";
-import { CartStateContext } from "../state/store";
-import { CartHeader, CartItem, CartSummary, EmptyCart } from "./CartComponents";
-
-const CartHeader_ = () => <CartHeader />;
+import { CartStateContext } from "../providers/cartContext";
+import { CartHeader } from "./components/CartHeader";
+import { CartItem } from "./components/CartItem";
+import { CartSummary } from "./components/CartSummary";
+import { EmptyCart } from "./components/EmptyCart";
 
 const Cart = () => {
   const cart = useContext(CartStateContext);
+  const total = cart.reduce(
+    (acc, item) => acc + item.quantity * item.newPrice,
+    0,
+  );
 
   return (
     <main className="max-w-7xl mx-auto px-6 pt-10 pb-32">
-      <CartHeader_ />
-      
+      <CartHeader />
       {cart.length === 0 ? (
         <EmptyCart />
       ) : (
@@ -20,14 +24,8 @@ const Cart = () => {
               <CartItem key={item.id} item={item} />
             ))}
           </div>
-
           <div className="lg:col-span-4">
-            <CartSummary
-              total={cart.reduce(
-                (prev, curr) => prev + curr.quantity * curr.newPrice,
-                0,
-              )}
-            />
+            <CartSummary total={total} />
           </div>
         </div>
       )}

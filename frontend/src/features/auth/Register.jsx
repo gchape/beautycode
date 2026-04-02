@@ -1,100 +1,74 @@
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router";
-import { UserContext } from "../state/store";
-import {
-  AuthButton,
-  AuthInput,
-  AuthLayout,
-  AuthLink,
-  AuthLogo,
-} from "./AuthComponents";
+import { AuthError } from "./components/AuthError";
+import { AuthField } from "./components/AuthField";
+import { AuthFooter } from "./components/AuthFooter";
+import { AuthSubmit } from "./components/AuthSubmit";
+import { AuthWrapper } from "./components/AuthWrapper";
+import { useAuthFetcher } from "./hooks/useAuthFetcher";
 
 const Register = () => {
-  const navigate = useNavigate();
-  const { login } = useContext(UserContext);
-  const [form, setForm] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirm: "",
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login({ email: form.email, firstname: form.firstname, orders: [] });
-    navigate("/profile");
-  };
+  const { isSubmitting, error } = useAuthFetcher();
 
   return (
-    <AuthLayout>
-      <AuthLogo />
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <AuthWrapper>
+      <AuthError message={error} />
+      <fetcher.Form method="post" className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-4">
-          <AuthInput
+          <AuthField
             label="სახელი"
+            name="firstName"
             type="text"
             placeholder="მარიამი"
-            value={form.firstname}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, firstname: e.target.value }))
-            }
+            disabled={isSubmitting}
           />
-          <AuthInput
+          <AuthField
             label="გვარი"
+            name="lastName"
             type="text"
             placeholder="გელაშვილი"
-            value={form.lastname}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, lastname: e.target.value }))
-            }
+            disabled={isSubmitting}
           />
         </div>
-        <AuthInput
+        <AuthField
           label="ელ-ფოსტა"
+          name="email"
           type="email"
           placeholder="mariam@example.com"
-          value={form.email}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, email: e.target.value }))
-          }
+          disabled={isSubmitting}
         />
-        <AuthInput
+        <AuthField
           label="ტელეფონი"
+          name="phone"
           type="tel"
           placeholder="(+995) 599-000-000"
-          value={form.phone}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, phone: e.target.value }))
-          }
+          disabled={isSubmitting}
         />
-        <AuthInput
+        <AuthField
           label="პაროლი"
+          name="password"
           type="password"
           placeholder="••••••••"
-          value={form.password}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, password: e.target.value }))
-          }
+          disabled={isSubmitting}
         />
-        <AuthInput
+        <AuthField
           label="გაიმეორე პაროლი"
+          name="confirmPassword"
           type="password"
           placeholder="••••••••"
-          value={form.confirm}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, password: e.target.value }))
-          }
+          disabled={isSubmitting}
         />
-        <AuthButton>რეგისტრაცია</AuthButton>
-      </form>
-      <AuthLink
+        <AuthSubmit
+          label="რეგისტრაცია"
+          loadingLabel="დაელოდეთ..."
+          isSubmitting={isSubmitting}
+        />
+      </fetcher.Form>
+      <AuthFooter
         label="უკვე გაქვს ანგარიში?"
         linkText="შესვლა"
-        onClick={() => navigate("/login")}
+        to="/login"
+        isSubmitting={isSubmitting}
       />
-    </AuthLayout>
+    </AuthWrapper>
   );
 };
 
