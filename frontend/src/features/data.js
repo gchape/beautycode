@@ -1,7 +1,8 @@
 export const PRODUCTS = [
   {
     id: 1,
-    imgUrl: "/1.svg",
+    imgUrl:
+      "https://res.cloudinary.com/dc19ujgye/image/upload/v1775298146/1_nlzxyl.svg",
     badge: "New Arrival",
     category: "facial-cleanser",
     discount: 50,
@@ -19,7 +20,8 @@ export const PRODUCTS = [
   },
   {
     id: 2,
-    imgUrl: "/2.svg",
+    imgUrl:
+      "https://res.cloudinary.com/dc19ujgye/image/upload/v1775298152/2_ewk11d.svg",
     badge: "Bestseller",
     category: "epilator",
     discount: 70,
@@ -36,7 +38,8 @@ export const PRODUCTS = [
   },
   {
     id: 3,
-    imgUrl: "/3.svg",
+    imgUrl:
+      "https://res.cloudinary.com/dc19ujgye/image/upload/v1775298145/3_zaqfcm.svg",
     badge: "Styling",
     category: "hair-dryer",
     discount: 50,
@@ -53,7 +56,8 @@ export const PRODUCTS = [
   },
   {
     id: 4,
-    imgUrl: "/4.svg",
+    imgUrl:
+      "https://res.cloudinary.com/dc19ujgye/image/upload/v1775298145/4_j0ylif.svg",
     badge: "Styling",
     category: "hair-dryer",
     discount: 50,
@@ -70,7 +74,8 @@ export const PRODUCTS = [
   },
   {
     id: 5,
-    imgUrl: "/5.svg",
+    imgUrl:
+      "https://res.cloudinary.com/dc19ujgye/image/upload/v1775298146/5_l3arnw.svg",
     badge: "Styling",
     category: "hair-dryer",
     discount: 50,
@@ -87,7 +92,8 @@ export const PRODUCTS = [
   },
   {
     id: 6,
-    imgUrl: "/6.svg",
+    imgUrl:
+      "https://res.cloudinary.com/dc19ujgye/image/upload/v1775298146/6_r92zyt.svg",
     badge: "Premium",
     category: "epilator",
     discount: 60,
@@ -104,7 +110,8 @@ export const PRODUCTS = [
   },
   {
     id: 7,
-    imgUrl: "/7.svg",
+    imgUrl:
+      "https://res.cloudinary.com/dc19ujgye/image/upload/v1775298154/7_fj1dgf.svg",
     badge: "New Arrival",
     category: "facial-cleanser",
     discount: 50,

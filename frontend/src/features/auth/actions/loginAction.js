@@ -4,7 +4,7 @@ import { LoginForm } from "src/features/schema/loginSchema";
 export const loginAction = async ({ request }) => {
   const formData = await request.formData();
   const formEntries = Object.fromEntries(formData.entries());
-  
+
   const login = LoginForm.safeParse(formEntries);
 
   if (!login.success) {
