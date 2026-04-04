@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import { loginAction } from "./features/auth/actions/loginAction";
 import { logoutAction } from "./features/auth/actions/logoutAction";
 import { registerAction } from "./features/auth/actions/registerAction";
+import { updateProfileAction } from "./features/auth/actions/updateProfileAction";
 import Login from "./features/auth/Login";
 import Register from "./features/auth/Register";
 import Cart from "./features/cart/Cart";
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
   {
     path: "terms-of-service",
     element: <TermsOfService />,
+  },
+  {
+    path: "/profile/update",
+    action: updateProfileAction,
   },
 ]);
 

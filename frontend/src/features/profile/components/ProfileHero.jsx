@@ -3,7 +3,7 @@ export const ProfileHero = ({ name }) => (
     <div className="relative shrink-0">
       <img
         alt={name}
-        src="/girl.png"
+        src="/avatar/girl.png"
         className="w-16 h-16 rounded-full object-cover"
       />
       <span className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-500 ring-2 ring-pink-50" />
