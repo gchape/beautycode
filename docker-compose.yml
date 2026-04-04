@@ -1,0 +1,21 @@
+services:
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_CRISP_WEBSITE_ID: ${CRISP_WEBSITE_ID}
+    container_name: beauty-code-frontend
+    ports:
+      - "80:80"
+
+  database:
+    image: amazon/dynamodb-local:latest
+    container_name: beauty-code-dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
+    volumes:
+      - dynamodb_data:/home/dynamodblocal/data
+
+volumes:
+  dynamodb_data:

@@ -16,4 +16,13 @@ export default defineConfig({
       src: path.resolve(import.meta.dirname, "./src"),
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          
+        },
+      },
+    },
+  },
 });

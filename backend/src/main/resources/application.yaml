@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: backend
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+logging:
+  level:
+    root: debug
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  level:
+    root: error
+    sql: off

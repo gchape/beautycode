@@ -31,9 +31,11 @@ const Hero = () => {
 
       <div className="w-full md:w-1/2 h-[500px] md:h-[700px] rounded-l-[5rem] md:rounded-l-[10rem] overflow-hidden shadow-2xl bg-pink-50">
         <img
-          className="w-full h-full object-contain relative z-10"
-          src={product.imgUrl}
+          loading="eager"
+          fetchPriority="high"
           alt={product.title}
+          src={product.imgUrl}
+          className="w-full h-full object-contain relative z-10"
         />
       </div>
     </section>
