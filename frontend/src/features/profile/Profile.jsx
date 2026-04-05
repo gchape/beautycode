@@ -24,6 +24,7 @@ const Profile = () => {
         </section>
 
         <ProfileAccountForm
+          id={user.id}
           firstName={user.firstName}
           lastName={user.lastName}
           phone={user.phone}
