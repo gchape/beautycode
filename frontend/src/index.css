@@ -1,6 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap");
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Dancing Script";
+  src: url("/font/DancingScript-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
 
 @font-face {
   font-family: "MChNeobau";
@@ -14,24 +19,6 @@
   src: url("/font/MChNeobau-Bold-3394124541.otf") format("opentype");
   font-weight: 700;
   font-style: normal;
-}
-
-.material-symbols-outlined {
-  font-family: "Material Symbols Outlined";
-  font-variation-settings:
-    "FILL" 0,
-    "wght" 400,
-    "GRAD" 0,
-    "opsz" 24;
-  font-style: normal;
-  display: inline-block;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
 }
 
 * {

@@ -144,24 +144,6 @@ export const CATEGORIES = [
   { label: "თმის მოვლა", value: "hair-dryer" },
 ];
 
-export const CONTACT_LINKS = [
-  {
-    href: "https://www.facebook.com/Beatlovegeorgia",
-    icon: "public",
-    label: "Beatlovegeorgia",
-  },
-  {
-    href: "https://wa.me/995574074833",
-    icon: "call",
-    label: "(+995) 574-074-833",
-  },
-  {
-    href: "mailto:13beauty.code@gmail.com",
-    icon: "email",
-    label: "13beauty.code@gmail.com",
-  },
-];
-
 export const LEGAL_LINKS = [
   { to: "/terms-of-service", label: "Terms of Service" },
   { to: "/privacy-policy", label: "Privacy Policy" },

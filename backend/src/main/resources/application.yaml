@@ -1,6 +1,9 @@
 spring:
   application:
     name: backend
+springdoc:
+  packages-to-scan: ge.beauty_code.backend.controller
+  paths-to-match: /*
 
 ---
 

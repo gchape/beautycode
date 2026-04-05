@@ -1,4 +1,25 @@
-import { CONTACT_LINKS } from "../../data";
+import { EmailIcon } from "src/features/icon/EmailIcon";
+import { FacebookIcon } from "src/features/icon/FacebookIcon";
+import { LocationPinIcon } from "src/features/icon/LocationPinIcon";
+import { PhoneIcon } from "src/features/icon/PhoneIcon";
+
+const CONTACT_LINKS = [
+  {
+    href: "https://www.facebook.com/Beatlovegeorgia",
+    icon: <FacebookIcon />,
+    label: "Beatlovegeorgia",
+  },
+  {
+    href: "https://wa.me/995574074833",
+    icon: <PhoneIcon />,
+    label: "(+995) 574-074-833",
+  },
+  {
+    href: "mailto:13beauty.code@gmail.com",
+    icon: <EmailIcon />,
+    label: "13beauty.code@gmail.com",
+  },
+];
 
 export const FooterContacts = () => (
   <div>
@@ -14,13 +35,13 @@ export const FooterContacts = () => (
             rel="noopener noreferrer"
             className="w-fit flex items-center gap-1 no-underline relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-taupe-400 after:transition-all after:duration-300 hover:after:w-full"
           >
-            <span className="material-symbols-outlined text-base">{icon}</span>
+            <span>{icon}</span>
             <span>{label}</span>
           </a>
         </li>
       ))}
       <li className="flex items-center gap-1">
-        <span className="material-symbols-outlined text-base">location_on</span>
+        <LocationPinIcon />
         თბილისი, საქართველო
       </li>
     </ul>

@@ -1,4 +1,5 @@
 import { useFetcher } from "react-router";
+import { ArrowForwardIcon } from "src/features/icon/ArrowForwardIcon";
 
 export const FooterBrand = () => {
   const fetcher = useFetcher();
@@ -38,9 +39,7 @@ export const FooterBrand = () => {
             disabled={fetcher.state !== "idle"}
             className="p-2 text-stone-600 bg-transparent border-none cursor-pointer hover:opacity-60 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span className="material-symbols-outlined text-lg">
-              {fetcher.state !== "idle" ? "hourglass_empty" : "arrow_forward"}
-            </span>
+            <ArrowForwardIcon />
           </button>
         </fetcher.Form>
       )}

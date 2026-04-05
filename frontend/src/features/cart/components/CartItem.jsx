@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { DeleteIcon } from "src/features/icon/DeleteIcon";
 import { CartActionsContext } from "../../providers/cartContext";
 import { CartItemPrice } from "./CartItemPrice";
 import { CartQuantityControl } from "./CartQuantityControl";
@@ -26,7 +27,7 @@ export const CartItem = ({ item }) => {
               aria-label={`${item.title} კალათიდან წაშლა`}
               className="text-taupe-400 hover:text-red-500 transition-colors p-2 cursor-pointer"
             >
-              <span className="material-symbols-outlined">delete</span>
+              <DeleteIcon />
             </button>
           </div>
           <p className="font-label text-xs text-taupe-500 uppercase tracking-wider">

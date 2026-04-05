@@ -24,7 +24,7 @@ const Hero = () => {
           </span>
         </div>
 
-        <button className="bg-pink-100 px-12 py-4 rounded-full font-label uppercase tracking-widest text-sm hover:opacity-80 transition-opacity cursor-pointer">
+        <button className="bg-pink-100 px-8 py-2.5 md:px-12 md:py-4 rounded-full font-label uppercase tracking-widest text-sm hover:opacity-80 transition-opacity cursor-pointer">
           ყიდვა
         </button>
       </div>

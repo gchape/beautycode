@@ -7,6 +7,10 @@ services:
     container_name: beauty-code-frontend
     ports:
       - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8080
 
   database:
     image: amazon/dynamodb-local:latest
@@ -16,6 +20,21 @@ services:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
     volumes:
       - dynamodb_data:/home/dynamodblocal/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: beauty-code-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - AWS_REGION=us-east-1
+      - DYNAMODB_ENDPOINT=http://database:8000
+      - SPRING_PROFILES_ACTIVE=prod
 
 volumes:
   dynamodb_data:

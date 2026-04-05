@@ -1,3 +1,5 @@
+import { ArrowForwardIcon } from "src/features/icon/ArrowForwardIcon";
+import { VerifiedIcon } from "src/features/icon/VerifiedIcon";
 import { CartSummaryRow } from "./CartSummaryRow";
 
 export const CartSummary = ({ total }) => (
@@ -17,18 +19,14 @@ export const CartSummary = ({ total }) => (
             {total} ₾
           </span>
         </div>
-        <button className="w-full py-3 text-sm md:text-md border border-stone-400 rounded-full font-label font-bold uppercase tracking-[0.15em] transition-shadow duration-300 hover:shadow-lg flex items-center justify-center gap-3 cursor-pointer">
+        <button className="w-full py-3 text-sm md:text-md border border-stone-400 rounded-full font-label font-bold uppercase tracking-[0.15em] transition-shadow duration-300 hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer">
           გადახდა
-          <span className="material-symbols-outlined text-lg">
-            arrow_forward
-          </span>
+          <ArrowForwardIcon />
         </button>
       </div>
     </div>
     <div className="mt-8 flex items-center gap-4 p-4">
-      <span className="material-symbols-outlined text-taupe-600">
-        verified_user
-      </span>
+      <VerifiedIcon size={24} />
       <p className="text-[11px] font-label text-taupe-500 uppercase tracking-tighter leading-relaxed">
         უსაფრთხო გადახდა გარანტირებულია პარტნიორი ბანკების მიერ
       </p>
