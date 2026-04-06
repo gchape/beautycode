@@ -1,33 +1,13 @@
-# dependencies
-node_modules
-npm-debug.log
-yarn-error.log
-
-# build output
-dist
-build
-
-# environment
-.env
-.env.*
-!.env.example
-
-# git
+node_modules/
+dist/
+build/
 .git
 .gitignore
-
-# docker
-Dockerfile*
-.dockerignore
-
-# logs
-*.log
-
-# OS / editor junk
+.idea/
+.vscode/
+.env
+.env.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 .DS_Store
-Thumbs.db
-.vscode
-.idea
-
-# docs (optional)
-*.md
