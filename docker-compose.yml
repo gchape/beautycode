@@ -18,9 +18,12 @@ services:
     expose:
       - "8080"
     environment:
+      # dynamodb
+      - DYNAMODB_TABLE_NAME=BeautyCode
+      # aws
+      - AWS_REGION=eu-central-1
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=${AWS_REGION}
-      - DYNAMODB_TABLE_NAME=${DYNAMODB_TABLE_NAME}
+      # backend
       - SPRING_PROFILES_ACTIVE=prod
     restart: unless-stopped
