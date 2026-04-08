@@ -11,6 +11,7 @@ const Register = () => {
   return (
     <AuthWrapper>
       <AuthError message={error} />
+
       <fetcher.Form method="post" className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-4">
           <AuthField
@@ -28,6 +29,7 @@ const Register = () => {
             disabled={isSubmitting}
           />
         </div>
+
         <AuthField
           label="ელ-ფოსტა"
           name="email"
@@ -56,12 +58,14 @@ const Register = () => {
           placeholder="••••••••"
           disabled={isSubmitting}
         />
+
         <AuthSubmit
           label="რეგისტრაცია"
           loadingLabel="დაელოდეთ..."
           isSubmitting={isSubmitting}
         />
       </fetcher.Form>
+
       <AuthFooter
         label="უკვე გაქვს ანგარიში?"
         linkText="შესვლა"

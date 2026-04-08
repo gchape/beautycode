@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router";
 import { User } from "../schema/userSchema";
-import { ProfileAccountForm } from "./components/ProfileAccountForm";
+import { ProfileAccount } from "./components/ProfileAccountForm";
 import { ProfileFooter } from "./components/ProfileFooter";
 import { ProfileHero } from "./components/ProfileHero";
 import { ProfileOrderCard } from "./components/ProfileOrderCard";
@@ -16,6 +16,7 @@ const Profile = () => {
 
         <section>
           <ProfileSectionTitle>ჩემი შეკვეთები</ProfileSectionTitle>
+
           <div className="flex flex-col">
             {user.orders.map((order) => (
               <ProfileOrderCard key={order.id} {...order} />
@@ -23,13 +24,13 @@ const Profile = () => {
           </div>
         </section>
 
-        <ProfileAccountForm
-          id={user.id}
+        <ProfileAccount
           firstName={user.firstName}
           lastName={user.lastName}
           phone={user.phone}
           email={user.email}
         />
+
         <ProfileFooter />
       </div>
     </div>

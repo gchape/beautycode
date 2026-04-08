@@ -26,6 +26,7 @@ export const FooterContacts = () => (
     <h5 className="text-xs uppercase tracking-[0.2em] text-taupe-600 mb-6">
       კონტაქტი
     </h5>
+
     <ul className="flex flex-col place-content-center gap-4 text-taupe-500 text-sm">
       {CONTACT_LINKS.map(({ href, icon, label }) => (
         <li key={href}>
@@ -40,6 +41,7 @@ export const FooterContacts = () => (
           </a>
         </li>
       ))}
+
       <li className="flex items-center gap-1">
         <LocationPinIcon />
         თბილისი, საქართველო

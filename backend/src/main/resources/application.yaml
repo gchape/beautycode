@@ -1,27 +1,33 @@
 spring:
   application:
     name: backend
+
 springdoc:
   packages-to-scan: ge.beauty_code.backend.controller
   paths-to-match: /*
 
 ---
-
 spring:
   config:
     activate:
       on-profile: dev
+
+aws:
+  region: eu-central-1
+
 logging:
   level:
     root: debug
 
 ---
-
 spring:
   config:
     activate:
       on-profile: prod
+
+aws:
+  region: ${AWS_REGION}
+
 logging:
   level:
     root: error
-    sql: off

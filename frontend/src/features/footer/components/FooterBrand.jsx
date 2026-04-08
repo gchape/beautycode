@@ -16,6 +16,7 @@ export const FooterBrand = () => {
           თქვენს ფოსტაზე.
         </p>
       </header>
+      
       {submitted ? (
         <p className="text-sm text-taupe-500 tracking-wide">
           ✓ გმადლობთ! მალე დაგიკავშირდებით.

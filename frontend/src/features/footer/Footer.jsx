@@ -11,6 +11,7 @@ const Footer = () => (
         <FooterNavigation />
         <FooterContacts />
       </div>
+
       <div className="pt-8 border-t border-stone-200 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-xs font-label uppercase tracking-widest text-taupe-400">
           © 2026 BeautyCode. All rights reserved.
