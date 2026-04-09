@@ -43,13 +43,7 @@ public class UserDao {
         if (user.isEmpty()) {
             return Optional.empty();
         }
-
-        return Optional.of(new UserDto(
-                user.get("FirstName").s(),
-                user.get("LastName").s(),
-                user.get("Email").s(),
-                user.get("Phone").s()
-        ));
+        return Optional.of(UserDto.mapToDto(user));
     }
 
     public boolean save(@NonNull UserItem user) {
@@ -80,8 +74,9 @@ public class UserDao {
                 .key(Map.of(
                         "PK", AttributeValue.fromS("USER#" + email),
                         "SK", AttributeValue.fromS("USER#" + email)
-                )).projectionExpression("#email, #password")
-                .expressionAttributeNames(Map.of(
+                )).projectionExpression(
+                        "#email, #password"
+                ).expressionAttributeNames(Map.of(
                         "#email", "Email",
                         "#password", "Password"
                 ))

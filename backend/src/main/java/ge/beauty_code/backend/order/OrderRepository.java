@@ -9,7 +9,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +53,7 @@ public class OrderDao {
                         ))
                 ).items()
                 .stream()
-                .map(item -> new OrderDto(
-                        item.get("OrderId").s(),
-                        item.get("OrderSummary").s(),
-                        LocalDateTime.parse(item.get("OrderDate").s(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                ))
+                .map(OrderDto::mapToDto)
                 .toList();
     }
 }

@@ -66,7 +66,7 @@ public class ProductDao {
             return Optional.empty();
         }
 
-        return Optional.of(mapToDto(item));
+        return Optional.of(ProductDto.mapToDto(item));
     }
 
     public List<ProductDto> findAll() {
@@ -79,7 +79,7 @@ public class ProductDao {
                         ))
                 ).items()
                 .stream()
-                .map(this::mapToDto)
+                .map(ProductDto::mapToDto)
                 .toList();
     }
 
@@ -93,23 +93,7 @@ public class ProductDao {
                         ))
                 ).items()
                 .stream()
-                .map(this::mapToDto)
+                .map(ProductDto::mapToDto)
                 .toList();
-    }
-
-    private ProductDto mapToDto(Map<String, AttributeValue> item) {
-        return new ProductDto(
-                item.get("Id").s(),
-                item.get("ImgUrl").s(),
-                item.get("Badge").s(),
-                ProductCategory.valueOf(item.get("Category").s().toUpperCase().replace("-", "_")),
-                Integer.parseInt(item.get("Discount").n()),
-                item.get("Title").s(),
-                Double.parseDouble(item.get("OldPrice").n()),
-                Double.parseDouble(item.get("NewPrice").n()),
-                item.get("Features").l().stream()
-                        .map(AttributeValue::s)
-                        .toList()
-        );
     }
 }
