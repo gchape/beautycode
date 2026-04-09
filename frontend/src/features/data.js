@@ -1,3 +1,5 @@
+import { EmailIcon, FacebookIcon, PhoneIcon } from "./icon/SimpleIcons";
+
 export const PRODUCTS = [
   {
     id: 1,
@@ -147,4 +149,22 @@ export const CATEGORIES = [
 export const LEGAL_LINKS = [
   { to: "/terms-of-service", label: "Terms of Service" },
   { to: "/privacy-policy", label: "Privacy Policy" },
+];
+
+export const CONTACT_LINKS = [
+  {
+    href: "https://www.facebook.com/Beatlovegeorgia",
+    icon: <FacebookIcon />,
+    label: "Beatlovegeorgia",
+  },
+  {
+    href: "https://wa.me/995574074833",
+    icon: <PhoneIcon />,
+    label: "(+995) 574-074-833",
+  },
+  {
+    href: "mailto:13beauty.code@gmail.com",
+    icon: <EmailIcon />,
+    label: "13beauty.code@gmail.com",
+  },
 ];

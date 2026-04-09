@@ -1,12 +1,14 @@
 import { redirect } from "react-router";
+import { api } from "src/lib/api";
 import { userContext } from "./context/userContext";
 
 export const authMiddleware = async ({ context, request }) => {
-  const response = await fetch("/api/me", {
-    headers: {
-      cookie: request.headers.get("cookie"),
-    },
-  });
+  let response;
+  try {
+    response = await api.get("/me", { cookie: request.headers.get("cookie") });
+  } catch {
+    return redirect("/login");
+  }
 
   if (!response.ok) return redirect("/login");
 

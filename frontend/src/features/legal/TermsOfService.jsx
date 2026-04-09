@@ -1,13 +1,13 @@
 const TermsOfService = () => (
-  <div class="mx-auto px-5 py-10 text-black bg-white font-serif">
-    <h1 class="text-2xl font-bold mb-1">Terms of Service</h1>
-    <p class="text-sm text-gray-500 mb-8">Last updated: March 29, 2026</p>
+  <div className="mx-auto px-5 py-10 text-black bg-white font-serif">
+    <h1 className="text-2xl font-bold mb-1">Terms of Service</h1>
+    <p className="text-sm text-gray-500 mb-8">Last updated: March 29, 2026</p>
 
-    <p class="text-sm leading-relaxed mb-8">
+    <p className="text-sm leading-relaxed mb-8">
       These Legal Terms constitute a legally binding agreement between you and{" "}
       <strong>BeautyCode</strong> concerning your access to and use of our
       Services at{" "}
-      <a href="https://www.beauty-code.ge/" class="underline">
+      <a href="https://www.beauty-code.ge/" className="underline">
         beauty-code.ge
       </a>
       . By accessing the Services, you have read, understood, and agreed to be
@@ -15,9 +15,9 @@ const TermsOfService = () => (
       are at least 13 years of age.
     </p>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">1. Our Services</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">1. Our Services</h2>
+      <p className="text-sm leading-relaxed">
         The information provided when using the Services is not intended for
         distribution to or use by any person or entity in any jurisdiction or
         country where such distribution or use would be contrary to law or
@@ -29,10 +29,10 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">2. Intellectual Property Rights</h2>
-      <p class="text-sm font-semibold mt-4 mb-1">Our intellectual property</p>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">2. Intellectual Property Rights</h2>
+      <p className="text-sm font-semibold mt-4 mb-1">Our intellectual property</p>
+      <p className="text-sm leading-relaxed">
         We are the owner or the licensee of all intellectual property rights in
         our Services, including all source code, databases, functionality,
         software, website designs, audio, video, text, photographs, and graphics
@@ -42,8 +42,8 @@ const TermsOfService = () => (
         treaties around the world. The Content and Marks are provided in or
         through the Services "AS IS" for your personal, non-commercial use only.
       </p>
-      <p class="text-sm font-semibold mt-4 mb-1">Your use of our Services</p>
-      <p class="text-sm leading-relaxed">
+      <p className="text-sm font-semibold mt-4 mb-1">Your use of our Services</p>
+      <p className="text-sm leading-relaxed">
         Subject to your compliance with these Legal Terms, we grant you a
         non-exclusive, non-transferable, revocable license to access the
         Services and download or print a copy of any portion of the Content to
@@ -57,8 +57,8 @@ const TermsOfService = () => (
         Rights will constitute a material breach of our Legal Terms and your
         right to use our Services will terminate immediately.
       </p>
-      <p class="text-sm font-semibold mt-4 mb-1">Your submissions</p>
-      <p class="text-sm leading-relaxed">
+      <p className="text-sm font-semibold mt-4 mb-1">Your submissions</p>
+      <p className="text-sm leading-relaxed">
         By directly sending us any question, comment, suggestion, idea,
         feedback, or other information about the Services ("Submissions"), you
         agree to assign to us all intellectual property rights in such
@@ -72,9 +72,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">3. User Representations</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">3. User Representations</h2>
+      <p className="text-sm leading-relaxed">
         By using the Services, you represent and warrant that: (1) all
         registration information you submit will be true, accurate, current, and
         complete; (2) you will maintain the accuracy of such information; (3)
@@ -86,16 +86,16 @@ const TermsOfService = () => (
         Services for any illegal or unauthorized purpose; and (8) your use of
         the Services will not violate any applicable law or regulation.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         If you provide any information that is untrue, inaccurate, not current,
         or incomplete, we have the right to suspend or terminate your account
         and refuse any and all current or future use of the Services.
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">4. User Registration</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">4. User Registration</h2>
+      <p className="text-sm leading-relaxed">
         You may be required to register to use the Services. You agree to keep
         your password confidential and will be responsible for all use of your
         account and password. We reserve the right to remove, reclaim, or change
@@ -104,9 +104,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">5. Products</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">5. Products</h2>
+      <p className="text-sm leading-relaxed">
         We make every effort to display as accurately as possible the colors,
         features, specifications, and details of the products available on the
         Services. However, we do not guarantee that the colors, features,
@@ -118,47 +118,47 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">6. Purchases and Payment</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">6. Purchases and Payment</h2>
+      <p className="text-sm leading-relaxed">
         We accept the following forms of payment: Visa and Mastercard.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         You agree to provide current, complete, and accurate purchase and
         account information for all purchases made via the Services. Sales tax
         will be added to the price of purchases as deemed required by us. We may
         change prices at any time. All payments shall be in Georgian Lari.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         You agree to pay all charges at the prices then in effect for your
         purchases and any applicable shipping fees, and you authorize us to
         charge your chosen payment provider for any such amounts upon placing
         your order. We reserve the right to correct any errors or mistakes in
         pricing, even if we have already requested or received payment.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         We reserve the right to refuse any order placed through the Services. We
         may, in our sole discretion, limit or cancel quantities purchased per
         person, per household, or per order.
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">7. Return Policy</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">7. Return Policy</h2>
+      <p className="text-sm leading-relaxed">
         Please review our Return Policy posted on the Services prior to making
         any purchases.
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">8. Prohibited Activities</h2>
-      <p class="text-sm leading-relaxed mb-3">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">8. Prohibited Activities</h2>
+      <p className="text-sm leading-relaxed mb-3">
         You may not access or use the Services for any purpose other than that
         for which we make the Services available. As a user of the Services, you
         agree not to:
       </p>
-      <ul class="list-disc pl-5 text-sm leading-relaxed space-y-1">
+      <ul className="list-disc pl-5 text-sm leading-relaxed space-y-1">
         <li>
           Systematically retrieve data or other content from the Services to
           create or compile, directly or indirectly, a collection, compilation,
@@ -219,9 +219,9 @@ const TermsOfService = () => (
       </ul>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">9. User Generated Contributions</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">9. User Generated Contributions</h2>
+      <p className="text-sm leading-relaxed">
         The Services may provide you with the opportunity to create, submit,
         post, display, transmit, perform, publish, distribute, or broadcast
         content and materials to us or on the Services (collectively,
@@ -234,28 +234,28 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">10. Contribution License</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">10. Contribution License</h2>
+      <p className="text-sm leading-relaxed">
         You and Services agree that we may access, store, process, and use any
         information and personal data that you provide and your choices
         (including settings).
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         By submitting suggestions or other feedback regarding the Services, you
         agree that we can use and share such feedback for any purpose without
         compensation to you.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         We do not assert any ownership over your Contributions. You retain full
         ownership of all of your Contributions and any intellectual property
         rights or other proprietary rights associated with your Contributions.
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">11. Guidelines for Reviews</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">11. Guidelines for Reviews</h2>
+      <p className="text-sm leading-relaxed">
         We may provide you areas on the Services to leave reviews or ratings.
         When posting a review, you must comply with the following criteria: (1)
         you should have firsthand experience with the person/entity being
@@ -270,18 +270,18 @@ const TermsOfService = () => (
         (8) you may not organize a campaign encouraging others to post reviews,
         whether positive or negative.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         We may accept, reject, or remove reviews in our sole discretion. Reviews
         are not endorsed by us, and do not necessarily represent our opinions or
         the views of any of our affiliates or partners.
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">
         12. Third-Party Websites and Content
       </h2>
-      <p class="text-sm leading-relaxed">
+      <p className="text-sm leading-relaxed">
         The Services may contain links to other websites ("Third-Party
         Websites") as well as articles, photographs, text, graphics, pictures,
         designs, music, sound, video, information, applications, software, and
@@ -290,7 +290,7 @@ const TermsOfService = () => (
         Content are not investigated, monitored, or checked for accuracy,
         appropriateness, or completeness by us.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         If you decide to leave the Services and access the Third-Party Websites,
         you do so at your own risk, and you should be aware these Legal Terms no
         longer govern. Any purchases you make through Third-Party Websites will
@@ -299,9 +299,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">13. Services Management</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">13. Services Management</h2>
+      <p className="text-sm leading-relaxed">
         We reserve the right, but not the obligation, to: (1) monitor the
         Services for violations of these Legal Terms; (2) take appropriate legal
         action against anyone who, in our sole discretion, violates the law or
@@ -316,9 +316,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">14. Privacy Policy</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">14. Privacy Policy</h2>
+      <p className="text-sm leading-relaxed">
         We care about data privacy and security. By using the Services, you
         agree to be bound by our Privacy Policy posted on the Services, which is
         incorporated into these Legal Terms. Please be advised the Services are
@@ -331,16 +331,16 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">15. Term and Termination</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">15. Term and Termination</h2>
+      <p className="text-sm leading-relaxed">
         These Legal Terms shall remain in full force and effect while you use
         the Services. WITHOUT LIMITING ANY OTHER PROVISION OF THESE LEGAL TERMS,
         WE RESERVE THE RIGHT TO, IN OUR SOLE DISCRETION AND WITHOUT NOTICE OR
         LIABILITY, DENY ACCESS TO AND USE OF THE SERVICES (INCLUDING BLOCKING
         CERTAIN IP ADDRESSES), TO ANY PERSON FOR ANY REASON OR FOR NO REASON.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         If we terminate or suspend your account for any reason, you are
         prohibited from registering and creating a new account under your name,
         a fake or borrowed name, or the name of any third party, even if you may
@@ -351,11 +351,11 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">
         16. Modifications and Interruptions
       </h2>
-      <p class="text-sm leading-relaxed">
+      <p className="text-sm leading-relaxed">
         We reserve the right to change, modify, or remove the contents of the
         Services at any time or for any reason at our sole discretion without
         notice. We also reserve the right to modify or discontinue all or part
@@ -363,7 +363,7 @@ const TermsOfService = () => (
         or any third party for any modification, price change, suspension, or
         discontinuance of the Services.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         We cannot guarantee the Services will be available at all times. We may
         experience hardware, software, or other problems or need to perform
         maintenance related to the Services, resulting in interruptions, delays,
@@ -371,9 +371,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">17. Governing Law</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">17. Governing Law</h2>
+      <p className="text-sm leading-relaxed">
         These Legal Terms shall be governed by and defined following the laws of
         Georgia. BeautyCode and yourself irrevocably consent that the courts of
         Georgia shall have exclusive jurisdiction to resolve any dispute which
@@ -381,10 +381,10 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">18. Dispute Resolution</h2>
-      <p class="text-sm font-semibold mt-4 mb-1">Informal Negotiations</p>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">18. Dispute Resolution</h2>
+      <p className="text-sm font-semibold mt-4 mb-1">Informal Negotiations</p>
+      <p className="text-sm leading-relaxed">
         To expedite resolution and control the cost of any dispute, controversy,
         or claim related to these Legal Terms (each a "Dispute"), the Parties
         agree to first attempt to negotiate any Dispute informally for at least
@@ -392,8 +392,8 @@ const TermsOfService = () => (
         negotiations commence upon written notice from one Party to the other
         Party.
       </p>
-      <p class="text-sm font-semibold mt-4 mb-1">Binding Arbitration</p>
-      <p class="text-sm leading-relaxed">
+      <p className="text-sm font-semibold mt-4 mb-1">Binding Arbitration</p>
+      <p className="text-sm leading-relaxed">
         Any dispute arising out of or in connection with these Legal Terms shall
         be referred to and finally resolved by the International Commercial
         Arbitration Court under the European Arbitration Chamber (Belgium,
@@ -402,8 +402,8 @@ const TermsOfService = () => (
         Tbilisi, Georgia. The language of the proceedings shall be Georgian. The
         governing law shall be the substantive law of Georgia.
       </p>
-      <p class="text-sm font-semibold mt-4 mb-1">Restrictions</p>
-      <p class="text-sm leading-relaxed">
+      <p className="text-sm font-semibold mt-4 mb-1">Restrictions</p>
+      <p className="text-sm leading-relaxed">
         The Parties agree that any arbitration shall be limited to the Dispute
         between the Parties individually. To the full extent permitted by law,
         (a) no arbitration shall be joined with any other proceeding; (b) there
@@ -414,9 +414,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">19. Corrections</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">19. Corrections</h2>
+      <p className="text-sm leading-relaxed">
         There may be information on the Services that contains typographical
         errors, inaccuracies, or omissions, including descriptions, pricing,
         availability, and various other information. We reserve the right to
@@ -425,9 +425,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">20. Disclaimer</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">20. Disclaimer</h2>
+      <p className="text-sm leading-relaxed">
         THE SERVICES ARE PROVIDED ON AN AS-IS AND AS-AVAILABLE BASIS. YOU AGREE
         THAT YOUR USE OF THE SERVICES WILL BE AT YOUR SOLE RISK. TO THE FULLEST
         EXTENT PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,
@@ -440,9 +440,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">21. Limitations of Liability</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">21. Limitations of Liability</h2>
+      <p className="text-sm leading-relaxed">
         IN NO EVENT WILL WE OR OUR DIRECTORS, EMPLOYEES, OR AGENTS BE LIABLE TO
         YOU OR ANY THIRD PARTY FOR ANY DIRECT, INDIRECT, CONSEQUENTIAL,
         EXEMPLARY, INCIDENTAL, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING LOST
@@ -450,7 +450,7 @@ const TermsOfService = () => (
         USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF
         SUCH DAMAGES.
       </p>
-      <p class="text-sm leading-relaxed mt-3">
+      <p className="text-sm leading-relaxed mt-3">
         NOTWITHSTANDING ANYTHING TO THE CONTRARY CONTAINED HEREIN, OUR LIABILITY
         TO YOU FOR ANY CAUSE WHATSOEVER AND REGARDLESS OF THE FORM OF THE
         ACTION, WILL AT ALL TIMES BE LIMITED TO THE AMOUNT PAID, IF ANY, BY YOU
@@ -459,9 +459,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">22. Indemnification</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">22. Indemnification</h2>
+      <p className="text-sm leading-relaxed">
         You agree to defend, indemnify, and hold us harmless, including our
         subsidiaries, affiliates, and all of our respective officers, agents,
         partners, and employees, from and against any loss, damage, liability,
@@ -475,9 +475,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">23. User Data</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">23. User Data</h2>
+      <p className="text-sm leading-relaxed">
         We will maintain certain data that you transmit to the Services for the
         purpose of managing the performance of the Services, as well as data
         relating to your use of the Services. Although we perform regular
@@ -488,11 +488,11 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">
         24. Electronic Communications, Transactions, and Signatures
       </h2>
-      <p class="text-sm leading-relaxed">
+      <p className="text-sm leading-relaxed">
         Visiting the Services, sending us emails, and completing online forms
         constitute electronic communications. You consent to receive electronic
         communications, and you agree that all agreements, notices, disclosures,
@@ -505,9 +505,9 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">25. Miscellaneous</h2>
-      <p class="text-sm leading-relaxed">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">25. Miscellaneous</h2>
+      <p className="text-sm leading-relaxed">
         These Legal Terms and any policies or operating rules posted by us on
         the Services or in respect to the Services constitute the entire
         agreement and understanding between you and us. Our failure to exercise
@@ -522,32 +522,32 @@ const TermsOfService = () => (
       </p>
     </div>
 
-    <div class="mb-7">
-      <h2 class="text-base font-bold mb-2">26. Contact Us</h2>
-      <p class="text-sm leading-relaxed mb-3">
+    <div className="mb-7">
+      <h2 className="text-base font-bold mb-2">26. Contact Us</h2>
+      <p className="text-sm leading-relaxed mb-3">
         In order to resolve a complaint regarding the Services or to receive
         further information regarding use of the Services, please contact us at:
       </p>
-      <div class="text-sm leading-loose">
+      <div className="text-sm leading-loose">
         <p>
           <strong>BeautyCode</strong>
         </p>
         <p>Vazha Pshavela avenue, 21, Tbilisi, 0144, Georgia</p>
         <p>
           Phone:{" "}
-          <a href="tel:+995574074833" class="underline">
+          <a href="tel:+995574074833" className="underline">
             +995 574 074 833
           </a>
         </p>
         <p>
           Email:{" "}
-          <a href="mailto:13beauty.code@gmail.com" class="underline">
+          <a href="mailto:13beauty.code@gmail.com" className="underline">
             13beauty.code@gmail.com
           </a>
         </p>
         <p>
           Web:{" "}
-          <a href="https://www.beauty-code.ge/" class="underline">
+          <a href="https://www.beauty-code.ge/" className="underline">
             beauty-code.ge
           </a>
         </p>

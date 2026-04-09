@@ -1,12 +1,14 @@
-import { useContext } from "react";
-import { CartStateContext } from "../providers/cartContext";
-import { CartHeader } from "./components/CartHeader";
-import { CartItem } from "./components/CartItem";
-import { CartSummary } from "./components/CartSummary";
-import { EmptyCart } from "./components/EmptyCart";
+import { useCart } from "../providers/cartContext";
+import {
+  CartHeader,
+  CartItem,
+  CartSummary,
+  EmptyCart,
+} from "./components/CartComponents";
 
 const Cart = () => {
-  const cart = useContext(CartStateContext);
+  const cart = useCart();
+
   const total = cart.reduce(
     (acc, item) => acc + item.quantity * item.newPrice,
     0,

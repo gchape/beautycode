@@ -4,11 +4,10 @@ import ge.beauty_code.backend.repository.DynamoDbTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,16 +15,14 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class WebSecurityConfig {
+    private final UserDetailsService userDetailsService;
     private final DynamoDbTokenRepository dynamoDbTokenRepository;
 
     @Autowired
-    public WebSecurityConfig(DynamoDbTokenRepository dynamoDbTokenRepository) {
+    public WebSecurityConfig(UserDetailsService userDetailsService,
+                             DynamoDbTokenRepository dynamoDbTokenRepository) {
+        this.userDetailsService = userDetailsService;
         this.dynamoDbTokenRepository = dynamoDbTokenRepository;
-    }
-
-    @Bean
-    UserDetailsService userDetailsService() {
-        return username -> null;
     }
 
     @Bean
@@ -35,36 +32,34 @@ public class WebSecurityConfig {
 
     @Bean
     AuthenticationProvider authenticationProvider() {
-        var daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService());
+        var daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
     SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        return http.authenticationProvider(authenticationProvider())
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/users").authenticated()
-                        .requestMatchers("/orders").authenticated()
-                        .requestMatchers("/logout").authenticated()
-                        .requestMatchers("/products", "/login").permitAll()
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .authenticationProvider(authenticationProvider())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/products/**", "/login", "/me").permitAll()
+                        .requestMatchers("/users/**", "/orders/**", "/logout").authenticated()
                         .anyRequest().denyAll()
-                ).rememberMe(
-                        configurer -> configurer
-                                .tokenRepository(dynamoDbTokenRepository)
-                                .useSecureCookie(true)
-                                .tokenValiditySeconds(60 * 60 * 6)
-                ).formLogin(
-                        configurer -> configurer
-                                .loginPage("http://frontend/login")
-                                .usernameParameter("email")
-                                .passwordParameter("password")
-                ).logout(
-                        configurer -> configurer
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("http://frontend/")
-                                .clearAuthentication(false)
+                )
+                .rememberMe(rm -> rm
+                        .tokenRepository(dynamoDbTokenRepository)
+                        .rememberMeParameter("remember-me")
+                        .tokenValiditySeconds(60 * 60 * 6)
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                 ).build();
     }
 }

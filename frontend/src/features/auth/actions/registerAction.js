@@ -1,35 +1,24 @@
 import { redirect } from "react-router";
 import { RegisterForm } from "src/features/schema/registerSchema";
+import { api } from "src/lib/api";
 
 export const registerAction = async ({ request }) => {
   const formData = await request.formData();
-  const formEntries = Object.fromEntries(formData.entries());
+  const entries = Object.fromEntries(formData.entries());
 
-  const register = RegisterForm.safeParse(formEntries);
-
-  if (!register.success) {
-    return {
-      error: register.error.issues[0].message,
-    };
-  }
+  const parsed = RegisterForm.safeParse(entries);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   let response;
   try {
-    response = await fetch("/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(register.data),
-      credentials: "include",
-    });
+    response = await api.post("/register", parsed.data);
   } catch {
-    return { error: "Network error, please try again later" };
+    return { error: "ქსელის შეცდომა, გთხოვთ სცადოთ მოგვიანებით" };
   }
 
-  if (response.status === 409) {
-    return { error: "Email already exists" };
-  }
+  if (response.status === 409) return { error: "ელ-ფოსტა უკვე გამოყენებულია" };
+  
+  if (!response.ok) return { error: "დაფიქსირდა შეცდომა, სცადეთ მოგვიანებით" };
 
   return redirect("/login");
 };

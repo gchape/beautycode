@@ -1,22 +1,25 @@
-import { AuthError } from "./components/AuthError";
-import { AuthField } from "./components/AuthField";
-import { AuthFooter } from "./components/AuthFooter";
-import { AuthSubmit } from "./components/AuthSubmit";
-import { AuthWrapper } from "./components/AuthWrapper";
-import { useAuthFetcher } from "./hooks/useAuthFetcher";
+import { useFetcher } from "react-router";
+import {
+  AuthError,
+  AuthField,
+  AuthFooter,
+  AuthSubmit,
+  AuthWrapper,
+} from "./components/AuthComponents";
 
 const Login = () => {
-  const { isSubmitting, error } = useAuthFetcher();
+  const fetcher = useFetcher();
+  const isSubmitting = fetcher.state !== "idle";
 
   return (
     <AuthWrapper>
-      <AuthError message={error} />
       <fetcher.Form method="post" className="flex flex-col gap-5">
+        <AuthError message={fetcher.error} />
         <AuthField
           label="ელ-ფოსტა"
           name="email"
           type="email"
-          placeholder="example.com"
+          placeholder="example@mail.com"
           disabled={isSubmitting}
         />
         <AuthField

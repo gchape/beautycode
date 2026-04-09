@@ -1,3 +1,5 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 
 export const CategoryContext = createContext("");
+
+export const useCategory = () => useContext(CategoryContext);

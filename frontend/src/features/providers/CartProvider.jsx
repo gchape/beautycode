@@ -1,35 +1,32 @@
 import { useReducer } from "react";
 import { CartActionsContext, CartStateContext } from "./cartContext";
 
-const cartReducer = (prev, payload) => {
-  switch (payload.action) {
+const cartReducer = (state, payload) => {
+  const { action, item } = payload;
+  switch (action) {
     case "ADD": {
-      const exists = prev.find((item) => item.id === payload.item.id);
+      const exists = state.find((i) => i.id === item.id);
       if (exists) {
-        return prev.map((item) =>
-          item.id === payload.item.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
+        return state.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
         );
       }
-      return [...prev, { ...payload.item, quantity: 1 }];
+      return [...state, { ...item, quantity: 1 }];
     }
     case "INCREASE":
-      return prev.map((item) =>
-        item.id === payload.item.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item,
+      return state.map((i) =>
+        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
       );
     case "DECREASE":
-      return prev.map((item) =>
-        item.id === payload.item.id && item.quantity !== 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item,
+      return state.map((i) =>
+        i.id === item.id && i.quantity > 1
+          ? { ...i, quantity: i.quantity - 1 }
+          : i,
       );
     case "REMOVE":
-      return prev.filter((item) => item.id !== payload.item.id);
+      return state.filter((i) => i.id !== item.id);
     default:
-      return prev;
+      return state;
   }
 };
 

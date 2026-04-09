@@ -15,7 +15,8 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {
         "ge.beauty_code.backend.config",
         "ge.beauty_code.backend.controller",
-        "ge.beauty_code.backend.services",
+        "ge.beauty_code.backend.service",
+        "ge.beauty_code.backend.dao",
         "ge.beauty_code.backend.components",
         "ge.beauty_code.backend.repository"
 })

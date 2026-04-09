@@ -1,19 +1,18 @@
 package ge.beauty_code.backend.dto;
 
 import ge.beauty_code.backend.model.ProductCategory;
-import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
 public record ProductDto(
-        @NonNull String id,
-        @NonNull String title,
-        @NonNull String badge,
-        @NonNull String imageUrl,
-        @NonNull ProductCategory category,
-        @NonNull List<String> features,
-        double discount,
+        String id,
+        String imgUrl,
+        String badge,
+        ProductCategory category,
+        int discount,
+        String title,
         double oldPrice,
-        double newPrice
+        double newPrice,
+        List<String> features
 ) {
 }

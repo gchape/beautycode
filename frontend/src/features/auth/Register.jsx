@@ -1,18 +1,20 @@
-import { AuthError } from "./components/AuthError";
-import { AuthField } from "./components/AuthField";
-import { AuthFooter } from "./components/AuthFooter";
-import { AuthSubmit } from "./components/AuthSubmit";
-import { AuthWrapper } from "./components/AuthWrapper";
-import { useAuthFetcher } from "./hooks/useAuthFetcher";
+import { useFetcher } from "react-router";
+import {
+  AuthError,
+  AuthField,
+  AuthFooter,
+  AuthSubmit,
+  AuthWrapper,
+} from "./components/AuthComponents";
 
 const Register = () => {
-  const { isSubmitting, error } = useAuthFetcher();
+  const fetcher = useFetcher();
+  const isSubmitting = fetcher.state !== "idle";
 
   return (
     <AuthWrapper>
-      <AuthError message={error} />
-
       <fetcher.Form method="post" className="flex flex-col gap-5">
+        <AuthError message={fetcher.error} />
         <div className="grid grid-cols-2 gap-4">
           <AuthField
             label="სახელი"
@@ -29,7 +31,6 @@ const Register = () => {
             disabled={isSubmitting}
           />
         </div>
-
         <AuthField
           label="ელ-ფოსტა"
           name="email"
@@ -58,14 +59,12 @@ const Register = () => {
           placeholder="••••••••"
           disabled={isSubmitting}
         />
-
         <AuthSubmit
           label="რეგისტრაცია"
           loadingLabel="დაელოდეთ..."
           isSubmitting={isSubmitting}
         />
       </fetcher.Form>
-
       <AuthFooter
         label="უკვე გაქვს ანგარიში?"
         linkText="შესვლა"
