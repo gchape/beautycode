@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.dto;
+package ge.beauty_code.backend.product.dto;
 
 import ge.beauty_code.backend.model.ProductCategory;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;

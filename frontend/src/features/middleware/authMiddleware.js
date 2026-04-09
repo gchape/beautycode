@@ -1,17 +1,26 @@
+import { createContext } from "react";
 import { redirect } from "react-router";
-import { api } from "src/lib/api";
-import { userContext } from "./context/userContext";
+import { api } from "../../services/api";
+
+export const userContext = createContext(null);
 
 export const authMiddleware = async ({ context, request }) => {
-  let response;
-  try {
-    response = await api.get("/me", { cookie: request.headers.get("cookie") });
-  } catch {
-    return redirect("/login");
-  }
+  return api
+    .get("/me", {
+      headers: {
+        "X-API-Version": "1",
+        Cookie: request.headers.get("cookie"),
+      },
+    })
+    .then((response) => {
+      if (!response.ok) throw redirect("/login");
 
-  if (!response.ok) return redirect("/login");
+      return response.json();
+    })
+    .then((user) => {
+      if (!user) throw redirect("/login");
 
-  const user = await response.json();
-  context.set(userContext, user);
+      context.set(userContext, user);
+    })
+    .catch(() => redirect("/login"));
 };

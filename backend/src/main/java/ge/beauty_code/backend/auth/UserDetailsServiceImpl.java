@@ -1,6 +1,6 @@
-package ge.beauty_code.backend.service;
+package ge.beauty_code.backend.auth;
 
-import ge.beauty_code.backend.dao.UserDao;
+import ge.beauty_code.backend.user.UserRepository;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserDao userDao;
+    private final UserRepository userRepository;
 
-    public UserDetailsServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
+    public UserDetailsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public @NonNull UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
-        return userDao.findCredentialsByEmail(email)
+        return userRepository.findCredentialsByEmail(email)
                 .orElseThrow(
                         () -> new UsernameNotFoundException("მომხმარებელი Email-ით " + email + " ვერ მოიძებნა")
                 );

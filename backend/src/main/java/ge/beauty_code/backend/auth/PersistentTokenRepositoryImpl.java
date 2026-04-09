@@ -4,6 +4,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -11,13 +12,14 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
-public class DynamoDbTokenRepository implements PersistentTokenRepository {
+@Repository
+public class PersistentTokenRepositoryImpl implements PersistentTokenRepository {
 
     private static final String TABLE = "RememberMeTokens";
 
     private final DynamoDbClient dynamoDbClient;
 
-    public DynamoDbTokenRepository(DynamoDbClient dynamoDbClient) {
+    public PersistentTokenRepositoryImpl(DynamoDbClient dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
     }
 

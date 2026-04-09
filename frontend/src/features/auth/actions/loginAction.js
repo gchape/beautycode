@@ -1,28 +1,30 @@
 import { redirect } from "react-router";
-import { LoginForm } from "src/features/schema/loginSchema";
-import { api } from "src/lib/api";
+import { api } from "src/services/api";
 
-export const loginAction = async ({ request }) => {
-  const formData = await request.formData();
-  const entries = Object.fromEntries(formData.entries());
+export const loginAction = ({ request }) => {
+  return request
+    .formData()
+    .then((formData) => {
+      const entries = Object.fromEntries(formData.entries());
 
-  const parsed = LoginForm.safeParse(entries);
-  if (!parsed.success) return { error: parsed.error.issues[0].message };
+      return api.postForm("/login", {
+        email: entries.email,
+        password: entries.password,
+        "remember-me": "true",
+      });
+    })
+    .then((response) => {
+      if (response.status === 401) {
+        return { error: "არასწორი მონაცემები, სცადეთ თავიდან" };
+      }
 
-  let response;
-  try {
-    response = await api.postForm("/login", {
-      email: parsed.data.email,
-      password: parsed.data.password,
-      "remember-me": "true",
-    });
-  } catch {
-    return { error: "ქსელის შეცდომა, გთხოვთ სცადოთ მოგვიანებით" };
-  }
+      if (!response.ok) {
+        return { error: "დაფიქსირდა შეცდომა, სცადეთ მოგვიანებით" };
+      }
 
-  if (response.status === 401)
-    return { error: "არასწორი მონაცემები, სცადეთ თავიდან" };
-  if (!response.ok) return { error: "დაფიქსირდა შეცდომა, სცადეთ მოგვიანებით" };
-
-  return redirect("/profile");
+      return redirect("/profile");
+    })
+    .catch(() => ({
+      error: "ქსელის შეცდომა, გთხოვთ სცადოთ მოგვიანებით",
+    }));
 };

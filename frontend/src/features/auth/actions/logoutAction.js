@@ -1,11 +1,11 @@
 import { redirect } from "react-router";
-import { api } from "src/lib/api";
+import { api } from "src/services/api";
 
 export const logoutAction = async () => {
   try {
     await api.post("/logout");
+    return redirect("/login");
   } catch {
-    // best-effort logout — redirect regardless
+    return redirect("/login");
   }
-  return redirect("/login");
 };

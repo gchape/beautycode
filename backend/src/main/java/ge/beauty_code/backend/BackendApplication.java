@@ -10,15 +10,14 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootConfiguration(proxyBeanMethods = false)
 @EnableAutoConfiguration(exclude = {
-        JmxAutoConfiguration.class
+        JmxAutoConfiguration.class,
 })
 @ComponentScan(basePackages = {
+        "ge.beauty_code.backend.user",
+        "ge.beauty_code.backend.product",
+        "ge.beauty_code.backend.order",
         "ge.beauty_code.backend.config",
-        "ge.beauty_code.backend.controller",
-        "ge.beauty_code.backend.service",
-        "ge.beauty_code.backend.dao",
-        "ge.beauty_code.backend.components",
-        "ge.beauty_code.backend.repository"
+        "ge.beauty_code.backend.auth",
 })
 public class BackendApplication {
     static void main(String[] args) {

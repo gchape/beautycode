@@ -1,8 +1,8 @@
-package ge.beauty_code.backend.dao;
+package ge.beauty_code.backend.product;
 
-import ge.beauty_code.backend.dto.ProductDto;
 import ge.beauty_code.backend.model.ProductCategory;
 import ge.beauty_code.backend.model.items.ProductItem;
+import ge.beauty_code.backend.product.dto.ProductDto;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class ProductDao {
+public class ProductRepository {
 
     private final DynamoDbClient dynamoDbClient;
 
     @Autowired
-    public ProductDao(DynamoDbClient dynamoDbClient) {
+    public ProductRepository(DynamoDbClient dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
     }
 

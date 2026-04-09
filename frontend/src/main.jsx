@@ -1,24 +1,23 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
-import { loginAction } from "./features/auth/actions/loginAction";
-import { logoutAction } from "./features/auth/actions/logoutAction";
-import { registerAction } from "./features/auth/actions/registerAction";
-import Login from "./features/auth/Login";
-import Register from "./features/auth/Register";
-import Cart from "./features/cart/Cart";
-import BrandEthos from "./features/home/BrandEthos";
-import Hero from "./features/home/Hero";
-import Home from "./features/home/Home";
-import PrivacyPolicy from "./features/legal/PrivacyPolicy";
-import TermsOfService from "./features/legal/TermsOfService";
+import {
+  Login,
+  loginAction,
+  logoutAction,
+  Register,
+  registerAction,
+} from "./features/auth";
+import { Cart, CartProvider } from "./features/cart";
+import { BrandEthos, Hero, Home } from "./features/home";
+import { PrivacyPolicy, TermsOfService } from "./features/legal";
 import { authMiddleware } from "./features/middleware/authMiddleware";
-import { userContext } from "./features/middleware/context/userContext";
-import FeaturedProducts from "./features/product/FeaturedProducts";
-import ProductsCatalog from "./features/product/ProductsCatalog";
-import Profile from "./features/profile/Profile";
-import CartContextStateProvider from "./features/providers/CartProvider";
-import CategoryProvider from "./features/providers/CategoryProvider";
+import {
+  CategoryProvider,
+  FeaturedProducts,
+  ProductsCatalog,
+} from "./features/product";
+import { Profile, profileLoader } from "./features/profile";
 import "./index.css";
 
 const router = createBrowserRouter([
@@ -44,10 +43,7 @@ const router = createBrowserRouter([
         path: "profile",
         element: <Profile />,
         middleware: [authMiddleware],
-        loader: ({ context }) => {
-          const user = context.get(userContext);
-          return { user };
-        },
+        loader: profileLoader,
       },
       {
         path: "products",
@@ -82,11 +78,11 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
-  <CartContextStateProvider>
+  <CartProvider>
     <CategoryProvider>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
     </CategoryProvider>
-  </CartContextStateProvider>,
+  </CartProvider>,
 );

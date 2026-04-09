@@ -1,11 +1,12 @@
-package ge.beauty_code.backend.dao;
+package ge.beauty_code.backend.user;
 
-import ge.beauty_code.backend.dto.UserDto;
 import ge.beauty_code.backend.model.items.UserItem;
+import ge.beauty_code.backend.user.dto.UserDto;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -15,13 +16,17 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class UserDao {
+public class UserRepository {
 
     private final DynamoDbClient dynamoDbClient;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserDao(DynamoDbClient dynamoDbClient) {
+    public UserRepository(DynamoDbClient dynamoDbClient,
+                          PasswordEncoder passwordEncoder) {
         this.dynamoDbClient = dynamoDbClient;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<UserDto> findUserByEmail(@NonNull String email) {
@@ -56,7 +61,7 @@ public class UserDao {
                             "FirstName", AttributeValue.fromS(user.firstName()),
                             "LastName", AttributeValue.fromS(user.lastName()),
                             "Email", AttributeValue.fromS(user.email()),
-                            "Password", AttributeValue.fromS(user.password()),
+                            "Password", AttributeValue.fromS(passwordEncoder.encode(user.password())),
                             "Phone", AttributeValue.fromS(user.phone())
                     )).conditionExpression(
                             "attribute_not_exists(PK)"

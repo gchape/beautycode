@@ -1,7 +1,7 @@
-package ge.beauty_code.backend.dao;
+package ge.beauty_code.backend.order;
 
-import ge.beauty_code.backend.dto.OrderDto;
 import ge.beauty_code.backend.model.items.OrderItem;
+import ge.beauty_code.backend.order.dto.OrderDto;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class OrderDao {
+public class OrderRepository {
 
     private final DynamoDbClient dynamoDbClient;
 
     @Autowired
-    public OrderDao(DynamoDbClient dynamoDbClient) {
+    public OrderRepository(DynamoDbClient dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
     }
 

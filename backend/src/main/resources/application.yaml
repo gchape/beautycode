@@ -2,9 +2,17 @@ spring:
   application:
     name: backend
 
+  profiles:
+    default: dev
+  mvc:
+    apiversion:
+      use:
+        header: API-Version
+
 springdoc:
   packages-to-scan: ge.beauty_code.backend.controller
   paths-to-match: /*
+
 
 ---
 spring:
