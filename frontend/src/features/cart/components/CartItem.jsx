@@ -1,4 +1,4 @@
-import { TrashIcon } from "src/features/icon";
+import { TrashIcon } from "src/components/icons";
 import { useCartDispatch } from "../cartContext";
 import { CartItemPrice } from "./CartItemPrice";
 import { CartQuantityControl } from "./CartQuantityControl";

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { BagIcon } from "src/features/icon";
+import { BagIcon } from "src/components/icons";
 
 export const EmptyCart = () => (
   <div className="flex flex-col items-center justify-center py-32 gap-6 text-taupe-400">

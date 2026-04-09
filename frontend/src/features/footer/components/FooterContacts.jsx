@@ -3,7 +3,7 @@ import {
   FacebookIcon,
   LocationIcon,
   PhoneIcon,
-} from "src/features/icon";
+} from "src/components/icons";
 
 const CONTACT_LINKS = [
   {

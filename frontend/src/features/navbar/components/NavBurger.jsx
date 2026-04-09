@@ -1,4 +1,4 @@
-import { CloseIcon, MenuIcon } from "src/features/icon";
+import { CloseIcon, MenuIcon } from "src/components/icons";
 
 export const NavBurger = ({ isOpen, onClick }) => (
   <button

@@ -1,6 +1,6 @@
 import { Link } from "react-router";
+import { CartIcon } from "src/components/icons";
 import { useCart } from "src/features/cart";
-import { CartIcon } from "src/features/icon";
 
 export const NavCartButton = () => {
   const count = useCart().length;

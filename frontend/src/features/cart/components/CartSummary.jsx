@@ -1,4 +1,4 @@
-import { ArrowRightIcon, BadgeCheckIcon } from "src/features/icon";
+import { ArrowRightIcon, BadgeCheckIcon } from "src/components/icons";
 import { CartSummaryRow } from "./CartSummaryRow";
 
 export const CartSummary = ({ total }) => (

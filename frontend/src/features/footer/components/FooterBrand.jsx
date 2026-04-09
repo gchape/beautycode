@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from "src/features/icon";
+import { ArrowRightIcon } from "src/components/icons";
 import { useFormFetcher } from "src/hooks/useFormFetcher";
 
 export const FooterBrand = () => {
