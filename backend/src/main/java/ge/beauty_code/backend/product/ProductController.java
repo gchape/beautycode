@@ -1,10 +1,9 @@
 package ge.beauty_code.backend.product;
 
 import ge.beauty_code.backend.product.dto.ProductDto;
+import ge.beauty_code.backend.product.model.Category;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,8 +17,16 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping(version = "1")
-    public List<ProductDto> getProducts() {
+    @GetMapping
+    public List<ProductDto> getProducts(@RequestParam(required = false) Category category) {
+        if (category != null) {
+            return productService.findByCategory(category);
+        }
         return productService.findAll();
+    }
+
+    @GetMapping(value = "/{id}")
+    public ProductDto getProduct(@PathVariable String id) {
+        return productService.findById(id);
     }
 }

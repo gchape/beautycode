@@ -5,7 +5,7 @@ export const registerAction = ({ request }) => {
   return request
     .formData()
     .then((formData) => Object.fromEntries(formData.entries()))
-    .then((entries) => api.post("/users", entries))
+    .then((entries) => api.post("/users/register", entries))
     .then((response) => {
       if (response.status === 409) {
         return { error: "ელ-ფოსტა უკვე გამოყენებულია" };

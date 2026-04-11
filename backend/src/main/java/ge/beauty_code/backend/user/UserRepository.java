@@ -5,6 +5,7 @@ import ge.beauty_code.backend.user.dto.UserDto;
 import ge.beauty_code.backend.user.model.UserItem;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -18,20 +19,24 @@ import java.util.Optional;
 @Repository
 public class UserRepository {
 
+    private final String tableName;
+
     private final DynamoDbClient dynamoDbClient;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserRepository(DynamoDbClient dynamoDbClient,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          @Value("${aws.dynamo_db.table-name}") String tableName) {
+        this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<UserDto> findUserByEmail(@NonNull String email) {
         var response = dynamoDbClient.getItem(r -> r
-                .tableName("BeautyCode")
+                .tableName(tableName)
                 .key(Map.of(
                         "PK", AttributeValue.fromS("USER#" + email),
                         "SK", AttributeValue.fromS("USER#" + email)
@@ -56,7 +61,7 @@ public class UserRepository {
     public boolean save(@NonNull UserItem user) {
         try {
             dynamoDbClient.putItem(r -> r
-                    .tableName("BeautyCode")
+                    .tableName(tableName)
                     .item(Map.of(
                             "PK", AttributeValue.fromS("USER#" + user.email()),
                             "SK", AttributeValue.fromS("USER#" + user.email()),
@@ -79,7 +84,7 @@ public class UserRepository {
 
     public Optional<UserDetails> findCredentialsByEmail(@NonNull String email) {
         var response = dynamoDbClient.getItem(r -> r
-                .tableName("BeautyCode")
+                .tableName(tableName)
                 .key(Map.of(
                         "PK", AttributeValue.fromS("USER#" + email),
                         "SK", AttributeValue.fromS("USER#" + email)
@@ -99,5 +104,16 @@ public class UserRepository {
         var user = DefaultUserDetails.USER.with(item.get("Email").s(), item.get("Password").s());
 
         return Optional.of(user);
+    }
+
+    public boolean contains(@NonNull String email) {
+        return dynamoDbClient.getItem(r -> r
+                .tableName(tableName)
+                .key(Map.of(
+                        "PK", AttributeValue.fromS("USER#" + email),
+                        "SK", AttributeValue.fromS("USER#" + email)
+                ))
+                .projectionExpression("PK")
+        ).hasItem();
     }
 }

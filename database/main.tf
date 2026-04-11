@@ -103,10 +103,10 @@ data "aws_iam_policy_document" "bc_dev_policy_doc" {
       "dynamodb:UpdateItem"
     ]
     resources = [
-      "arn:aws:dynamodb:eu-central-1:ACCOUNT_ID:table/BeautyCode",
-      "arn:aws:dynamodb:eu-central-1:ACCOUNT_ID:table/BeautyCode/index/*",
-      "arn:aws:dynamodb:eu-central-1:ACCOUNT_ID:table/RememberMeTokens",
-      "arn:aws:dynamodb:eu-central-1:ACCOUNT_ID:table/RememberMeTokens/index/*"
+      "arn:aws:dynamodb:eu-central-1:933428634968:table/BeautyCode",
+      "arn:aws:dynamodb:eu-central-1:933428634968:table/BeautyCode/index/*",
+      "arn:aws:dynamodb:eu-central-1:933428634968:table/RememberMeTokens",
+      "arn:aws:dynamodb:eu-central-1:933428634968:table/RememberMeTokens/index/*"
     ]
   }
 

@@ -4,7 +4,7 @@ import ge.beauty_code.backend.product.dto.ProductDto;
 import ge.beauty_code.backend.product.model.Category;
 import ge.beauty_code.backend.product.model.ProductItem;
 import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -17,19 +17,20 @@ import java.util.Optional;
 @Repository
 public class ProductRepository {
 
-    private final static String TABLE = "BeautyCode";
+    private final String tableName;
 
     private final DynamoDbClient dynamoDbClient;
 
-    @Autowired
-    public ProductRepository(DynamoDbClient dynamoDbClient) {
+    public ProductRepository(DynamoDbClient dynamoDbClient,
+                             @Value("${aws.dynamo_db.table-name}") String tableName) {
+        this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
     }
 
     public boolean save(@NonNull ProductItem product) {
         try {
             dynamoDbClient.putItem(r -> r
-                    .tableName(TABLE)
+                    .tableName(tableName)
                     .item(Map.ofEntries(
                             Map.entry("PK", AttributeValue.fromS("PRODUCT#" + product.id())),
                             Map.entry("SK", AttributeValue.fromS("PRODUCT#" + product.id())),
@@ -59,7 +60,7 @@ public class ProductRepository {
 
     public Optional<ProductDto> findById(@NonNull String id) {
         var response = dynamoDbClient.getItem(r -> r
-                .tableName(TABLE)
+                .tableName(tableName)
                 .key(Map.of(
                         "PK", AttributeValue.fromS("PRODUCT#" + id),
                         "SK", AttributeValue.fromS("PRODUCT#" + id)
@@ -76,7 +77,7 @@ public class ProductRepository {
 
     public List<ProductDto> findAll() {
         return dynamoDbClient.query(r -> r
-                        .tableName(TABLE)
+                        .tableName(tableName)
                         .indexName("ProductsByType")
                         .keyConditionExpression("#t = :type")
                         .expressionAttributeNames(Map.of("#t", "Type"))
@@ -91,7 +92,7 @@ public class ProductRepository {
 
     public List<ProductDto> findByCategory(@NonNull Category category) {
         return dynamoDbClient.query(r -> r
-                        .tableName(TABLE)
+                        .tableName(tableName)
                         .indexName("ProductsByCategory")
                         .keyConditionExpression("Category = :category")
                         .expressionAttributeValues(Map.of(

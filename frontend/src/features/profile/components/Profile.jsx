@@ -19,7 +19,7 @@ const Profile = () => {
     <div className="min-h-screen flex justify-center items-start pt-12 px-6">
       <div className="w-full max-w-md flex flex-col gap-8 pb-16">
         <ProfileHero name={user.firstName} />
-        <ProfileOrders orders={user.orders} />
+        <ProfileOrders />
         <ProfileAccount user={user} />
         <ProfileFooter />
       </div>

@@ -3,14 +3,14 @@ package ge.beauty_code.backend.config.security;
 import ge.beauty_code.backend.authentication.PersistentTokenRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -19,51 +19,27 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class WebSecurityConfig {
 
-    private final List<UserDetailsService> userDetailsServices;
     private final PersistentTokenRepository persistentTokenRepository;
 
-    public WebSecurityConfig(
-            List<UserDetailsService> userDetailsServices,
-            PersistentTokenRepository persistentTokenRepository
-    ) {
-        this.userDetailsServices = userDetailsServices;
+    public WebSecurityConfig(PersistentTokenRepository persistentTokenRepository) {
         this.persistentTokenRepository = persistentTokenRepository;
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        return new ProviderManager(
-                new DaoAuthenticationProvider(userDetailsServices.getFirst()),
-                new DaoAuthenticationProvider(userDetailsServices.getLast())
-        );
-    }
-
-    @Bean
-    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+    UrlBasedCorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
+                "http://localhost",
                 "https://beauty-code.ge"
         ));
 
-        config.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "PATCH", "DELETE"
-        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
 
-        config.setAllowedHeaders(List.of(
-                "Content-Type",
-                "X-API-Version",
-                "X-XSRF-TOKEN"
-        ));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
 
         config.setAllowCredentials(true);
 
@@ -74,40 +50,50 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        return http
-                .csrf(CsrfConfigurer::spa)
-                .cors(Customizer.withDefaults())
-                .authenticationManager(authenticationManager())
+    AuthenticationManager authenticationManager(
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder
+    ) {
+        var provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
 
-                .formLogin(form -> form
-                        .loginProcessingUrl("/api/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .defaultSuccessUrl("/api/me", true)
-                )
+        return new ProviderManager(provider);
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AuthenticationManager authenticationManager
+    ) {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
+
+                .authenticationManager(authenticationManager)
 
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
-                        .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID", "remember-me")
+                        .logoutSuccessHandler((_, res, _) -> res.setStatus(200))
                 )
 
                 .rememberMe(rm -> rm
-                        .tokenRepository(persistentTokenRepository)
                         .rememberMeParameter("remember-me")
+                        .tokenRepository(persistentTokenRepository)
                         .tokenValiditySeconds(PersistentTokenRepositoryImpl.TOKEN_VALIDITY_SECONDS)
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/products/**").permitAll()
-                        .requestMatchers("/api/me").authenticated()
-                        .requestMatchers("/api/users/**").authenticated()
-                        .requestMatchers("/api/orders/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/orders/**").authenticated()
+
                         .anyRequest().denyAll()
                 )
-
                 .build();
     }
 }

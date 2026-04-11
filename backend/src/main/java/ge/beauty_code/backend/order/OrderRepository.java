@@ -4,6 +4,7 @@ import ge.beauty_code.backend.order.dto.OrderDto;
 import ge.beauty_code.backend.order.model.OrderItem;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -18,15 +19,18 @@ public class OrderRepository {
 
     private final DynamoDbClient dynamoDbClient;
 
-    @Autowired
-    public OrderRepository(DynamoDbClient dynamoDbClient) {
+    private final String tableName;
+
+    public OrderRepository(@Autowired DynamoDbClient dynamoDbClient,
+                           @Value("${aws.dynamo_db.table-name}") String tableName) {
         this.dynamoDbClient = dynamoDbClient;
+        this.tableName = tableName;
     }
 
     public boolean save(@NonNull String userEmail, @NonNull OrderItem orderItem) {
         try {
             dynamoDbClient.putItem(r -> r
-                    .tableName("BeautyCode")
+                    .tableName(tableName)
                     .item(Map.of(
                             "PK", AttributeValue.fromS("USER#" + userEmail),
                             "SK", AttributeValue.fromS("ORDER#" + orderItem.id()),

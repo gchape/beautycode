@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
+import { ErrorPage } from "./components/ErrorPage";
 import {
   Login,
   loginAction,
@@ -11,7 +12,6 @@ import {
 import { Cart, CartProvider } from "./features/cart";
 import { BrandEthos, Hero, Home } from "./features/home";
 import { PrivacyPolicy, TermsOfService } from "./features/legal";
-import { authMiddleware } from "./features/middleware/authMiddleware";
 import {
   CategoryProvider,
   FeaturedProducts,
@@ -20,10 +20,13 @@ import {
 import { Profile, profileLoader } from "./features/profile";
 import "./index.css";
 
+const queryClient = new QueryClient();
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -42,12 +45,15 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
-        middleware: [authMiddleware],
         loader: profileLoader,
       },
       {
         path: "products",
-        element: <ProductsCatalog />,
+        element: (
+          <CategoryProvider>
+            <ProductsCatalog />
+          </CategoryProvider>
+        ),
       },
     ],
   },
@@ -75,14 +81,10 @@ const router = createBrowserRouter([
   },
 ]);
 
-const queryClient = new QueryClient();
-
 createRoot(document.getElementById("root")).render(
   <CartProvider>
-    <CategoryProvider>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </CategoryProvider>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </CartProvider>,
 );
