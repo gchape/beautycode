@@ -1,6 +1,4 @@
-package ge.beauty_code.backend.model.items;
-
-import ge.beauty_code.backend.model.ProductCategory;
+package ge.beauty_code.backend.product.model;
 
 import java.util.List;
 
@@ -8,7 +6,7 @@ public record ProductItem(
         String id,
         String imgUrl,
         String badge,
-        ProductCategory category,
+        Category category,
         int discount,
         String title,
         double oldPrice,

@@ -5,7 +5,7 @@ const formatOrderDate = (dateStr) =>
     year: "numeric",
   }).format(new Date(dateStr));
 
-export const OrderCard = ({ id, summary, date }) => (
+export const ProfileOrderCard = ({ id, summary, date }) => (
   <div className="flex justify-between items-center py-4 border-b border-taupe-200 last:border-0">
     <div>
       <p className="text-base font-medium tracking-wide text-taupe-800">

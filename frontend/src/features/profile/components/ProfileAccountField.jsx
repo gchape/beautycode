@@ -1,4 +1,4 @@
-export const AccountField = ({ label, name, type, value }) => (
+export const ProfileAccountField = ({ label, name, type, value }) => (
   <div>
     <label className="block text-xs tracking-[0.16em] uppercase text-taupe-600 mb-2">
       {label}

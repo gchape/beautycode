@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.auth;
+package ge.beauty_code.backend.authentication;
 
 import ge.beauty_code.backend.user.UserRepository;
 import org.jspecify.annotations.NonNull;

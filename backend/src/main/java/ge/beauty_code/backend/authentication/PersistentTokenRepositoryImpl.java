@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.auth;
+package ge.beauty_code.backend.authentication;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -15,6 +15,8 @@ import java.util.Map;
 @Repository
 public class PersistentTokenRepositoryImpl implements PersistentTokenRepository {
 
+    public static final int TOKEN_VALIDITY_SECONDS = 6 * 60 * 60;
+
     private static final String TABLE = "RememberMeTokens";
 
     private final DynamoDbClient dynamoDbClient;
@@ -26,17 +28,16 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     @Override
     public void createNewToken(@NonNull PersistentRememberMeToken token) {
         Map<String, AttributeValue> item = Map.of(
-                "series", AttributeValue.fromS(token.getSeries()),
-                "email", AttributeValue.fromS(token.getUsername()),
-                "tokenValue", AttributeValue.fromS(token.getTokenValue()),
-                "lastUsed", AttributeValue.fromS(token.getDate().toInstant().toString()),
-                "expiresAt", AttributeValue.fromN(
+                "Series", AttributeValue.fromS(token.getSeries()),
+                "Email", AttributeValue.fromS(token.getUsername()),
+                "TokenValue", AttributeValue.fromS(token.getTokenValue()),
+                "LastUsed", AttributeValue.fromS(token.getDate().toInstant().toString()),
+                "ExpiresAt", AttributeValue.fromN(
                         String.valueOf(
-                                token.getDate().toInstant().plusSeconds(60 * 60 * 6).getEpochSecond()
+                                token.getDate().toInstant().plusSeconds(TOKEN_VALIDITY_SECONDS).getEpochSecond()
                         )
                 )
         );
-
         dynamoDbClient.putItem(r -> r
                 .tableName(TABLE)
                 .item(item)
@@ -47,31 +48,38 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     public void updateToken(@NonNull String series, @NonNull String tokenValue, @NonNull Date lastUsed) {
         dynamoDbClient.updateItem(r -> r
                 .tableName(TABLE)
-                .key(Map.of("series", AttributeValue.fromS(series)))
-                .updateExpression("SET tokenValue = :tv, lastUsed = :lu")
+                .key(Map.of("Series", AttributeValue.fromS(series)))
+                .conditionExpression("attribute_exists(Series)")
+                .updateExpression("SET TokenValue = :tv, LastUsed = :lu, ExpiresAt = :ea")
                 .expressionAttributeValues(Map.of(
                         ":tv", AttributeValue.fromS(tokenValue),
-                        ":lu", AttributeValue.fromS(lastUsed.toInstant().toString())
-                )));
+                        ":lu", AttributeValue.fromS(lastUsed.toInstant().toString()),
+                        ":ea", AttributeValue.fromN(
+                                String.valueOf(
+                                        lastUsed.toInstant().plusSeconds(TOKEN_VALIDITY_SECONDS).getEpochSecond()
+                                )
+                        )
+                ))
+        );
     }
 
     @Override
     public @Nullable PersistentRememberMeToken getTokenForSeries(@NonNull String seriesId) {
         var response = dynamoDbClient.getItem(r -> r
                 .tableName(TABLE)
-                .key(Map.of("series", AttributeValue.fromS(seriesId))));
+                .key(Map.of("Series", AttributeValue.fromS(seriesId)))
+        );
 
-        if (!response.hasItem() || response.item().isEmpty()) {
+        if (!response.hasItem()) {
             return null;
         }
 
         var item = response.item();
-
         return new PersistentRememberMeToken(
-                item.get("email").s(),
-                item.get("series").s(),
-                item.get("tokenValue").s(),
-                Date.from(Instant.parse(item.get("lastUsed").s()))
+                item.get("Email").s(),
+                item.get("Series").s(),
+                item.get("TokenValue").s(),
+                Date.from(Instant.parse(item.get("LastUsed").s()))
         );
     }
 
@@ -79,23 +87,22 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     public void removeUserTokens(@NonNull String email) {
         var response = dynamoDbClient.query(r -> r
                 .tableName(TABLE)
-                .indexName("email-index")
-                .keyConditionExpression("email = :e")
+                .indexName("TokensByEmail")
+                .keyConditionExpression("Email = :e")
                 .expressionAttributeValues(Map.of(
                         ":e", AttributeValue.fromS(email)
                 ))
-                .projectionExpression("series"));
+                .projectionExpression("Series")
+        );
 
-        var items = response.items();
-
-        if (items == null || items.isEmpty()) {
+        if (!response.hasItems()) {
             return;
         }
 
-        for (Map<String, AttributeValue> item : items) {
+        for (Map<String, AttributeValue> item : response.items()) {
             dynamoDbClient.deleteItem(r -> r
                     .tableName(TABLE)
-                    .key(Map.of("series", AttributeValue.fromS(item.get("series").s())))
+                    .key(Map.of("Series", AttributeValue.fromS(item.get("Series").s())))
             );
         }
     }

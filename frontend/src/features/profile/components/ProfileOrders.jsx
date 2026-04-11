@@ -1,5 +1,5 @@
-import { OrderCard } from "src/components/OrderCard";
 import { SectionTitle } from "../../../components/SectionTitle";
+import { ProfileOrderCard } from "./ProfileOrderCard";
 
 export const ProfileOrders = ({ orders }) => (
   <section>
@@ -11,7 +11,7 @@ export const ProfileOrders = ({ orders }) => (
     ) : (
       <div className="flex flex-col">
         {orders.map((order) => (
-          <OrderCard key={order.id} {...order} />
+          <ProfileOrderCard key={order.id} {...order} />
         ))}
       </div>
     )}

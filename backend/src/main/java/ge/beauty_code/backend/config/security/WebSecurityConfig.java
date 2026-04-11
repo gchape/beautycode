@@ -1,7 +1,10 @@
-package ge.beauty_code.backend.config.web;
+package ge.beauty_code.backend.config.security;
 
+import ge.beauty_code.backend.authentication.PersistentTokenRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,14 +22,14 @@ import java.util.List;
 @Configuration
 public class WebSecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    private final List<UserDetailsService> userDetailsServices;
     private final PersistentTokenRepository persistentTokenRepository;
 
     public WebSecurityConfig(
-            UserDetailsService userDetailsService,
+            List<UserDetailsService> userDetailsServices,
             PersistentTokenRepository persistentTokenRepository
     ) {
-        this.userDetailsService = userDetailsService;
+        this.userDetailsServices = userDetailsServices;
         this.persistentTokenRepository = persistentTokenRepository;
     }
 
@@ -36,10 +39,11 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        var provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
+    public AuthenticationManager authenticationManager() {
+        return new ProviderManager(
+                new DaoAuthenticationProvider(userDetailsServices.getFirst()),
+                new DaoAuthenticationProvider(userDetailsServices.getLast())
+        );
     }
 
     @Bean
@@ -70,11 +74,11 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
                 .csrf(CsrfConfigurer::spa)
                 .cors(Customizer.withDefaults())
-                .authenticationProvider(authenticationProvider())
+                .authenticationManager(authenticationManager())
 
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/login")
@@ -92,7 +96,7 @@ public class WebSecurityConfig {
                 .rememberMe(rm -> rm
                         .tokenRepository(persistentTokenRepository)
                         .rememberMeParameter("remember-me")
-                        .tokenValiditySeconds(60 * 60 * 6)
+                        .tokenValiditySeconds(PersistentTokenRepositoryImpl.TOKEN_VALIDITY_SECONDS)
                 )
 
                 .authorizeHttpRequests(auth -> auth

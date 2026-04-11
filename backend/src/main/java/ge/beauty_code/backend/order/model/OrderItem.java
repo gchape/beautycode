@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.model.items;
+package ge.beauty_code.backend.order.model;
 
 import java.time.LocalDateTime;
 

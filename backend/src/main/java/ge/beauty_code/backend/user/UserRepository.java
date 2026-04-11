@@ -1,10 +1,10 @@
 package ge.beauty_code.backend.user;
 
-import ge.beauty_code.backend.model.items.UserItem;
+import ge.beauty_code.backend.authentication.model.DefaultUserDetails;
 import ge.beauty_code.backend.user.dto.UserDto;
+import ge.beauty_code.backend.user.model.UserItem;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -30,25 +30,27 @@ public class UserRepository {
     }
 
     public Optional<UserDto> findUserByEmail(@NonNull String email) {
-        var user = dynamoDbClient.getItem(r -> r
+        var response = dynamoDbClient.getItem(r -> r
                 .tableName("BeautyCode")
                 .key(Map.of(
                         "PK", AttributeValue.fromS("USER#" + email),
                         "SK", AttributeValue.fromS("USER#" + email)
-                )).projectionExpression(
-                        "#firstname, #lastname, #email, #phone"
-                ).expressionAttributeNames(Map.of(
+                ))
+                .projectionExpression("#firstname, #lastname, #email, #phone")
+                .expressionAttributeNames(Map.of(
                         "#firstname", "FirstName",
                         "#lastname", "LastName",
                         "#email", "Email",
                         "#phone", "Phone"
-                ))
-        ).item();
+                )));
 
-        if (user.isEmpty()) {
+        if (!response.hasItem()) {
             return Optional.empty();
         }
-        return Optional.of(UserDto.mapToDto(user));
+
+        var item = response.item();
+
+        return Optional.of(UserDto.mapToDto(item));
     }
 
     public boolean save(@NonNull UserItem user) {
@@ -58,14 +60,16 @@ public class UserRepository {
                     .item(Map.of(
                             "PK", AttributeValue.fromS("USER#" + user.email()),
                             "SK", AttributeValue.fromS("USER#" + user.email()),
+
+                            "Type", AttributeValue.fromS("User"),
+
                             "FirstName", AttributeValue.fromS(user.firstName()),
                             "LastName", AttributeValue.fromS(user.lastName()),
                             "Email", AttributeValue.fromS(user.email()),
                             "Password", AttributeValue.fromS(passwordEncoder.encode(user.password())),
                             "Phone", AttributeValue.fromS(user.phone())
-                    )).conditionExpression(
-                            "attribute_not_exists(PK)"
-                    )
+                    ))
+                    .conditionExpression("attribute_not_exists(PK)")
             );
             return true;
         } catch (ConditionalCheckFailedException e) {
@@ -74,25 +78,26 @@ public class UserRepository {
     }
 
     public Optional<UserDetails> findCredentialsByEmail(@NonNull String email) {
-        var item = dynamoDbClient.getItem(r -> r
+        var response = dynamoDbClient.getItem(r -> r
                 .tableName("BeautyCode")
                 .key(Map.of(
                         "PK", AttributeValue.fromS("USER#" + email),
                         "SK", AttributeValue.fromS("USER#" + email)
-                )).projectionExpression(
-                        "#email, #password"
-                ).expressionAttributeNames(Map.of(
+                ))
+                .projectionExpression("#email, #password")
+                .expressionAttributeNames(Map.of(
                         "#email", "Email",
                         "#password", "Password"
-                ))
-        ).item();
+                )));
 
-        if (item.isEmpty()) {
+        if (!response.hasItem()) {
             return Optional.empty();
         }
 
-        return Optional.of(User.withUsername(item.get("Email").s())
-                .password(item.get("Password").s())
-                .build());
+        var item = response.item();
+
+        var user = DefaultUserDetails.USER.with(item.get("Email").s(), item.get("Password").s());
+
+        return Optional.of(user);
     }
 }

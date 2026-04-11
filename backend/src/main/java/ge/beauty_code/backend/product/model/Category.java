@@ -1,6 +1,6 @@
-package ge.beauty_code.backend.model;
+package ge.beauty_code.backend.product.model;
 
-public enum ProductCategory {
+public enum Category {
     EPILATOR() {
         @Override
         public String toString() {

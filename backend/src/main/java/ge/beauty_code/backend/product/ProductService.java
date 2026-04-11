@@ -2,9 +2,9 @@ package ge.beauty_code.backend.product;
 
 import ge.beauty_code.backend.exception.ProductAlreadyExistsException;
 import ge.beauty_code.backend.exception.ProductNotFoundException;
-import ge.beauty_code.backend.model.ProductCategory;
-import ge.beauty_code.backend.model.items.ProductItem;
 import ge.beauty_code.backend.product.dto.ProductDto;
+import ge.beauty_code.backend.product.model.Category;
+import ge.beauty_code.backend.product.model.ProductItem;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<ProductDto> findByCategory(@NonNull ProductCategory category) {
+    public List<ProductDto> findByCategory(@NonNull Category category) {
         return productRepository.findByCategory(category);
     }
 }

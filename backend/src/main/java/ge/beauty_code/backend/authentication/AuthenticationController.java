@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.auth;
+package ge.beauty_code.backend.authentication;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class AuthController {
+public class AuthenticationController {
 
     @GetMapping(path = "/me", version = "1")
     public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails user) {

@@ -1,7 +1,7 @@
 package ge.beauty_code.backend.order;
 
-import ge.beauty_code.backend.model.items.OrderItem;
 import ge.beauty_code.backend.order.dto.OrderDto;
+import ge.beauty_code.backend.order.model.OrderItem;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -30,12 +30,14 @@ public class OrderRepository {
                     .item(Map.of(
                             "PK", AttributeValue.fromS("USER#" + userEmail),
                             "SK", AttributeValue.fromS("ORDER#" + orderItem.id()),
+
+                            "Type", AttributeValue.fromS("Order"),
+
                             "OrderId", AttributeValue.fromS(orderItem.id()),
                             "OrderSummary", AttributeValue.fromS(orderItem.summary()),
                             "OrderDate", AttributeValue.fromS(orderItem.date().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                    )).conditionExpression(
-                            "attribute_exists(PK) AND attribute_not_exists(SK)"
-                    )
+                    ))
+                    .conditionExpression("attribute_exists(PK) AND attribute_not_exists(SK)")
             );
             return true;
         } catch (ConditionalCheckFailedException e) {
@@ -50,8 +52,8 @@ public class OrderRepository {
                         .expressionAttributeValues(Map.of(
                                 ":pk", AttributeValue.fromS("USER#" + email),
                                 ":sk", AttributeValue.fromS("ORDER#")
-                        ))
-                ).items()
+                        )))
+                .items()
                 .stream()
                 .map(OrderDto::mapToDto)
                 .toList();

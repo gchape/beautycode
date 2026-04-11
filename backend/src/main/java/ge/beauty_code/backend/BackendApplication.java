@@ -14,10 +14,11 @@ import org.springframework.context.annotation.ComponentScan;
 })
 @ComponentScan(basePackages = {
         "ge.beauty_code.backend.user",
+        "ge.beauty_code.backend.admin",
         "ge.beauty_code.backend.product",
         "ge.beauty_code.backend.order",
         "ge.beauty_code.backend.config",
-        "ge.beauty_code.backend.auth",
+        "ge.beauty_code.backend.authentication",
 })
 public class BackendApplication {
     static void main(String[] args) {
