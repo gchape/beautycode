@@ -1,5 +1,6 @@
 package ge.beauty_code.backend;
 
+import ge.beauty_code.backend.exception.GlobalExceptionHandler;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 @SpringBootConfiguration(proxyBeanMethods = false)
 @EnableAutoConfiguration(exclude = {
@@ -24,8 +26,8 @@ import org.springframework.context.annotation.ComponentScan;
         "ge.beauty_code.backend.product",
         "ge.beauty_code.backend.order",
         "ge.beauty_code.backend.config",
-        "ge.beauty_code.backend.authentication",
 })
+@Import(GlobalExceptionHandler.class)
 public class BackendApplication {
     static void main(String[] args) {
         new SpringApplicationBuilder()

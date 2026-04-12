@@ -1,8 +1,10 @@
 package ge.beauty_code.backend.config.security;
 
-import ge.beauty_code.backend.authentication.PersistentTokenRepositoryImpl;
+import ge.beauty_code.backend.authentication.DelegatingUserDetailsService;
+import ge.beauty_code.backend.remember_me.PersistentTokenRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -20,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration(proxyBeanMethods = false)
+@Import({PersistentTokenRepositoryImpl.class, DelegatingUserDetailsService.class})
 public class WebSecurityConfig {
 
     private final PersistentTokenRepository persistentTokenRepository;
@@ -34,6 +37,7 @@ public class WebSecurityConfig {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost",
+                "http://localhost:5173",
                 "https://beauty-code.ge"
         ));
 
@@ -71,6 +75,14 @@ public class WebSecurityConfig {
 
                 .authenticationManager(authenticationManager)
 
+                .formLogin(form -> form
+                        .loginProcessingUrl("/api/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler((_, res, _) -> res.setStatus(200))
+                        .failureHandler((_, res, _) -> res.setStatus(401))
+                )
+
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
                         .deleteCookies("JSESSIONID", "remember-me")
@@ -90,6 +102,10 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/users/orders").authenticated()
                         .anyRequest().denyAll()
+                )
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((_, res, _) -> res.setStatus(401))
                 )
 
                 .build();

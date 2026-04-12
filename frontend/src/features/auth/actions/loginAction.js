@@ -6,9 +6,10 @@ export const loginAction = ({ request }) => {
     .formData()
     .then((formData) => Object.fromEntries(formData.entries()))
     .then((data) =>
-      api.post("/login", {
+      api.postForm("/login", {
         email: data.email,
         password: data.password,
+        ...(data["remember-me"] && { "remember-me": "on" }),
       }),
     )
     .then((response) => {

@@ -3,7 +3,7 @@ package ge.beauty_code.backend.authentication.model;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public enum DefaultUserDetails {
+public enum RoleUserDetails {
 
     USER {
         @Override

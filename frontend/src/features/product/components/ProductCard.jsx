@@ -9,9 +9,12 @@ export const ProductCard = ({
   offset = false,
   onAddToCart,
 }) => {
+  const titleId = `product-${title?.replace(/\s+/g, "-").toLowerCase()}`;
+
   if (variant === "featured") {
     return (
-      <div
+      <article
+        aria-labelledby={titleId}
         className="group bg-pink-50 text-taupe-600 p-5 sm:p-6 rounded-2xl 
                    transition-shadow duration-500 hover:shadow-xl 
                    hover:shadow-taupe-600/10 break-inside-avoid mb-8"
@@ -32,13 +35,17 @@ export const ProductCard = ({
             <span className="font-label text-xs uppercase tracking-wider text-taupe-500">
               {badge}
             </span>
-            <h4 className="font-headline text-lg md:text-xl mt-1">{title}</h4>
+
+            <p id={titleId} className="font-headline text-lg md:text-xl mt-1">
+              {title}
+            </p>
           </div>
 
           <div className="text-right shrink-0">
             <span className="font-headline text-lg whitespace-nowrap">
               {newPrice} GEL
             </span>
+
             {oldPrice != null && (
               <span className="font-label text-sm text-taupe-400 line-through block">
                 {oldPrice} GEL
@@ -46,12 +53,15 @@ export const ProductCard = ({
             )}
           </div>
         </div>
-      </div>
+      </article>
     );
   }
 
   return (
-    <article className={`relative ${offset ? "md:mt-24" : ""}`}>
+    <article
+      aria-labelledby={titleId}
+      className={`relative ${offset ? "md:mt-24" : ""}`}
+    >
       <div
         className="group aspect-3/4 w-full max-w-sm sm:max-w-md md:max-w-lg 
                    mx-auto overflow-hidden rounded-2xl bg-pink-50 mb-5"
@@ -72,9 +82,12 @@ export const ProductCard = ({
           {badge}
         </span>
 
-        <h3 className="font-headline text-lg leading-snug text-taupe-600">
+        <p
+          id={titleId}
+          className="font-headline text-lg leading-snug text-taupe-600"
+        >
           {title}
-        </h3>
+        </p>
 
         {description && (
           <p className="font-body text-sm text-taupe-500 line-clamp-2 mt-1">

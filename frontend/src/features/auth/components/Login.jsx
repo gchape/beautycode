@@ -11,7 +11,7 @@ const Login = () => {
   return (
     <AuthWrapper>
       <fetcher.Form method="post" className="flex flex-col gap-5">
-        <AuthError message={fetcher.error} />
+        <AuthError message={fetcher.data?.error} />
         <AuthField
           label="ელ-ფოსტა"
           name="email"
@@ -26,6 +26,20 @@ const Login = () => {
           placeholder="••••••••"
           disabled={isLoading}
         />
+
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            name="remember-me"
+            value="on"
+            disabled={isLoading}
+            className="w-4 h-4 rounded border-taupe-300 accent-taupe-600 cursor-pointer"
+          />
+          <span className="font-label text-xs uppercase tracking-[0.15em] text-taupe-500">
+            დამახსოვრება
+          </span>
+        </label>
+
         <AuthSubmit
           label="შესვლა"
           loadingLabel="შესვლა..."

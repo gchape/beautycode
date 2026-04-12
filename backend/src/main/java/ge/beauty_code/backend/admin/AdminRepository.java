@@ -1,6 +1,6 @@
 package ge.beauty_code.backend.admin;
 
-import ge.beauty_code.backend.authentication.model.DefaultUserDetails;
+import ge.beauty_code.backend.authentication.model.RoleUserDetails;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,7 +46,7 @@ public class AdminRepository {
 
         var item = response.item();
 
-        var admin = DefaultUserDetails.ADMIN.with(item.get("Email").s(), item.get("Password").s());
+        var admin = RoleUserDetails.ADMIN.with(item.get("Email").s(), item.get("Password").s());
 
         return Optional.of(admin);
     }

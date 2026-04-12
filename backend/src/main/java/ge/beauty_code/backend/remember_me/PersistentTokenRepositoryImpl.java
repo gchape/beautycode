@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.authentication;
+package ge.beauty_code.backend.remember_me;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;

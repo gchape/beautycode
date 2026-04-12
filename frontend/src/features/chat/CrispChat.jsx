@@ -2,20 +2,21 @@ import { useEffect } from "react";
 
 const CrispChat = () => {
   useEffect(() => {
-    window.$crisp = [];
-    window.CRISP_WEBSITE_ID = import.meta.env.VITE_CRISP_WEBSITE_ID;
+    const timer = setTimeout(() => {
+      window.$crisp = [];
+      window.CRISP_WEBSITE_ID = import.meta.env.VITE_CRISP_WEBSITE_ID;
 
-    const d = document;
-    const s = d.createElement("script");
-    s.src = "https://client.crisp.chat/l.js";
-    s.async = true;
-    d.getElementsByTagName("head")[0].appendChild(s);
+      const s = document.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = true;
+      document.head.appendChild(s);
+    }, 3000); // load after 3s
 
     return () => {
-      const scripts = d.querySelectorAll(
-        'script[src="https://client.crisp.chat/l.js"]',
-      );
-      scripts.forEach((script) => script.remove());
+      clearTimeout(timer);
+      document
+        .querySelectorAll('script[src="https://client.crisp.chat/l.js"]')
+        .forEach((s) => s.remove());
       delete window.$crisp;
       delete window.CRISP_WEBSITE_ID;
     };

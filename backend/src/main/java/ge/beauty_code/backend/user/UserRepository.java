@@ -1,6 +1,6 @@
 package ge.beauty_code.backend.user;
 
-import ge.beauty_code.backend.authentication.model.DefaultUserDetails;
+import ge.beauty_code.backend.authentication.model.RoleUserDetails;
 import ge.beauty_code.backend.user.dto.UserDto;
 import ge.beauty_code.backend.user.model.UserItem;
 import org.jspecify.annotations.NonNull;
@@ -101,7 +101,7 @@ public class UserRepository {
 
         var item = response.item();
 
-        var user = DefaultUserDetails.USER.with(item.get("Email").s(), item.get("Password").s());
+        var user = RoleUserDetails.USER.with(item.get("Email").s(), item.get("Password").s());
 
         return Optional.of(user);
     }

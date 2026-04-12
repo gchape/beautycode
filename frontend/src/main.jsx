@@ -19,7 +19,7 @@ import {
 } from "./features/product";
 import { Profile, profileLoader } from "./features/profile";
 import "./index.css";
-import { ProfileFallback } from "./components/ProfileFallback";
+import { ProfileFallback } from "./features/profile/components/ProfileFallback";
 
 const queryClient = new QueryClient();
 

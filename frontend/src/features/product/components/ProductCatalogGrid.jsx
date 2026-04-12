@@ -2,13 +2,14 @@ import { useCartDispatch } from "src/features/cart";
 import { useProducts } from "src/hooks/useProducts";
 import { useCategory } from "../categoryContext";
 import { ProductCard } from "./ProductCard";
+import { ProductCatalogSkeleton } from "./ProductCatalogSkeleton";
 
 export const ProductCatalogGrid = () => {
   const dispatch = useCartDispatch();
   const [activeCategory] = useCategory();
   const { data: products = [], isLoading } = useProducts(activeCategory);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <ProductCatalogSkeleton count={6} />;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12 mt-8">
