@@ -32,7 +32,6 @@ public enum DefaultUserDetails {
                     .accountExpired(false)
                     .roles("ADMIN")
                     .authorities(
-                            "ROLE_ADMIN",
                             "PRODUCT_READ",
                             "PRODUCT_WRITE",
                             "PRODUCT_UPDATE",

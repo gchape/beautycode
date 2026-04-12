@@ -14,10 +14,13 @@ import java.util.Optional;
 @Repository
 public class AdminRepository {
 
+    private final String tableName;
+
     private final DynamoDbClient dynamoDbClient;
 
     @Autowired
-    public AdminRepository(DynamoDbClient dynamoDbClient) {
+    public AdminRepository(DynamoDbClient dynamoDbClient, 
+                           @Value("${aws.dynamo_db.table-name}") String tableName) {
         this.dynamoDbClient = dynamoDbClient;
     }
 

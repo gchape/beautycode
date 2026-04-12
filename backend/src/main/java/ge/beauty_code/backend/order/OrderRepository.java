@@ -3,7 +3,6 @@ package ge.beauty_code.backend.order;
 import ge.beauty_code.backend.order.dto.OrderDto;
 import ge.beauty_code.backend.order.model.OrderItem;
 import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -21,7 +20,7 @@ public class OrderRepository {
 
     private final String tableName;
 
-    public OrderRepository(@Autowired DynamoDbClient dynamoDbClient,
+    public OrderRepository(DynamoDbClient dynamoDbClient,
                            @Value("${aws.dynamo_db.table-name}") String tableName) {
         this.dynamoDbClient = dynamoDbClient;
         this.tableName = tableName;
@@ -51,7 +50,7 @@ public class OrderRepository {
 
     public List<OrderDto> findOrdersByUserEmail(@NonNull String email) {
         return dynamoDbClient.query(r -> r
-                        .tableName("BeautyCode")
+                        .tableName(tableName)
                         .keyConditionExpression("PK = :pk AND begins_with(SK, :sk)")
                         .expressionAttributeValues(Map.of(
                                 ":pk", AttributeValue.fromS("USER#" + email),

@@ -4,7 +4,7 @@ export const useFormFetcher = () => {
   const fetcher = useFetcher();
 
   return {
-    fetcher: fetcher,
+    fetcher,
     isLoading: fetcher.state !== "idle",
     data: fetcher.data,
   };

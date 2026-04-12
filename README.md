@@ -75,18 +75,29 @@ src/
 │   ├── navbar/
 │   ├── footer/
 │   ├── home/
-│   └── middleware/    — auth middleware, user context
+│   └── chat/          — Crisp live chat integration
+├── hooks/
+│   ├── useProducts.js — react-query product fetching with category support
+│   ├── useOrders.js   — react-query order fetching
+│   └── useFormFetcher.js — react-router fetcher wrapper
 ├── services/
 │   └── api.js         — fetch wrapper with credentials
 └── components/
-    └── icons/         — shared SVG icon components
+    ├── icons/         — shared SVG icon components
+    └── ErrorPage.jsx  — global error boundary fallback
 ```
 
 Cart state is managed with `useReducer` and split across two contexts —
 one for state and one for dispatch — to avoid unnecessary re-renders.
 
+`CategoryProvider` is scoped to the `/products` route only, not global, so category
+state is created and destroyed with the route.
+
 Components that are tightly coupled to a single feature (e.g. `ProfileAccountField`, `ProfileOrderCard`)
 live inside that feature's `components/` folder rather than the global `components/` directory.
+
+Data fetching uses `@tanstack/react-query` with skeleton loading states for `Hero`,
+`FeaturedProducts`, and `ProfileOrders`. Products are cached for 5 minutes, orders for 2 minutes.
 
 ---
 
@@ -105,9 +116,9 @@ ge.beauty_code.backend/
 ├── authentication/    — login, remember-me, user details, DefaultUserDetails
 ├── admin/             — admin repository and credentials
 ├── user/              — user controller, service, repository, DTOs, model
-├── product/           — product controller, service, repository, DTOs, model
+├── product/           — product controller, service, repository, DTOs, model, converters
 ├── order/             — order controller, service, repository, DTOs, model
-└── config/            — web security, CORS, AWS
+└── config/            — web security, CORS, AWS, WebMvcConfigurer
 ```
 
 Each feature owns its models under a local `model/` subpackage rather than a shared global
@@ -119,28 +130,30 @@ Authentication is handled by Spring Security with session-based login and rememb
 
 **Session-based auth** — On successful login, Spring creates an HTTP session and returns a
 `JSESSIONID` cookie. Every subsequent request is authenticated via that cookie — no JWT involved.
+The session is explicitly saved to `HttpSession` in `AuthenticationController` to ensure it
+is persisted correctly before the response is sent.
 
-**CSRF** — SPA mode is enabled. Spring Security issues a `XSRF-TOKEN` cookie that the
-frontend reads and sends back as `X-XSRF-TOKEN` on mutating requests (`POST`, `PUT`, `DELETE`).
-This prevents cross-site request forgery while still working with a decoupled frontend.
+**CSRF** — Disabled. The frontend is served from the same origin via the Nginx reverse proxy,
+so all API requests are same-origin from the browser's perspective. Cross-site request forgery
+is not a realistic threat in this configuration.
 
-**CORS** — Configured explicitly to allow requests only from `localhost:5173` (dev) and
-`beauty-code.ge` (production). `allowCredentials(true)` is required so the browser includes
+**CORS** — Configured explicitly to allow requests only from `http://localhost` (dev) and
+`https://beauty-code.ge` (production). `allowCredentials(true)` is required so the browser includes
 the `JSESSIONID` cookie on cross-origin requests — without it, every request would arrive unauthenticated.
 
 **Remember-me** — When the user logs in with `remember-me=true`, Spring generates a persistent
 token stored in DynamoDB (`RememberMeTokens` table). On return visits, Spring validates the token
 and re-authenticates without a password. Token expires after 6 hours. TTL is handled natively
-by DynamoDB via the `ExpiresAt` attribute — explicit deletion on logout is a simple loop since
-a user realistically holds only a handful of tokens at any time.
+by DynamoDB via the `ExpiresAt` attribute — explicit deletion on logout is a simple sequential
+loop since a user realistically holds only a handful of tokens at any time.
 
 **Password storage** — BCrypt hashing happens inside `UserRepository` at write time, before
 the value is persisted to DynamoDB. The plain-text password is never stored.
 
-**Authorization** — Two separate `UserDetailsService` implementations handle users and admins.
-Both are registered with a `ProviderManager` which tries each provider in order — if either
-authenticates successfully the request proceeds. Order does not matter since Spring's chain-of-responsibility
-model moves to the next provider on failure rather than short-circuiting.
+**Authorization** — `DelegatingUserDetailsService` first checks if the email belongs to a
+regular user via `UserRepository.contains()`. If the user exists, credentials are loaded from
+`UserRepository`. Otherwise it falls through to `AdminRepository`. This avoids exception-based
+flow control and makes the lookup path explicit.
 
 Role and authority assignments are centralised in the `DefaultUserDetails` enum. Each variant
 builds a `UserDetails` object with the appropriate authorities:
@@ -159,16 +172,18 @@ builds a `UserDetails` object with the appropriate authorities:
 **Authorization rules** — Any endpoint not explicitly listed is denied by default via `.anyRequest().denyAll()`,
 meaning new endpoints are blocked unless access is explicitly granted.
 
-| Path                   | Access        |
-| ---------------------- | ------------- |
-| `POST /api/login`      | Public        |
-| `GET /api/products/**` | Public        |
-| `GET /api/me`          | Authenticated |
-| `GET /api/users/**`    | Authenticated |
-| `GET /api/orders/**`   | Authenticated |
-| anything else          | Denied        |
+| Path                  | Method | Access        |
+| --------------------- | ------ | ------------- |
+| `/api/login`          | POST   | Public        |
+| `/api/users/register` | POST   | Public        |
+| `/api/products/**`    | GET    | Public        |
+| `/api/users/**`       | GET    | Authenticated |
+| `/api/users/orders`   | POST   | Authenticated |
+| anything else         | any    | Denied        |
 
-**API versioning** — Endpoints are versioned via the `API-Version` request header.
+**Category conversion** — `CategoryConverter` is registered via `WebConfig` and converts
+`String` request parameters (e.g. `epilator`, `hair-dryer`) to the `Category` enum automatically,
+handling case normalization and hyphen-to-underscore replacement.
 
 ---
 
@@ -227,7 +242,7 @@ A separate table with `Series` as the sole partition key (no sort key needed —
 
 TTL is declared in Terraform via the `ttl` block pointing at `ExpiresAt`. DynamoDB automatically
 deletes expired tokens, so the only explicit deletion needed is on logout, which is a simple
-sequential delete loop (not batch) since a user holds at most a few tokens at any time.
+sequential delete loop since a user holds at most a few tokens at any time.
 
 ### Access Patterns
 
@@ -237,9 +252,9 @@ sequential delete loop (not batch) since a user holds at most a few tokens at an
 | Product | List all products    | GSI query on `Type = "Product"` via `ProductsByType`        |
 | Product | List by category     | GSI query on `Category` via `ProductsByCategory`            |
 | User    | Find by email        | Direct `GetItem` on `PK = USER#{email}`                     |
+| User    | Check existence      | Direct `GetItem` with `PK` projection only                  |
 | User    | Load credentials     | Direct `GetItem` with projection on `Email`, `Password`     |
 | Order   | Find orders by user  | `Query` on `PK = USER#{email}` with `SK begins_with ORDER#` |
-| Order   | Sorted by date       | `ORDER#` SK prefix contains a sortable date component       |
 | Admin   | Load credentials     | Direct `GetItem` on `PK = ADMIN#{email}`                    |
 | Token   | Find by series       | Direct `GetItem` on `PK = Series`                           |
 | Token   | Find tokens by email | GSI query on `Email` via `TokensByEmail`                    |
@@ -287,11 +302,13 @@ The application runs using Docker Compose with two services:
 - frontend (Nginx serving static build)
 - backend (Spring application)
 
-The frontend proxies API requests to the backend over an internal network.
+The frontend proxies API requests to the backend over an internal Docker network.
 
 ### Reverse Proxy
 
-Nginx serves the frontend and forwards `/api/` requests to the backend service.
+Nginx serves the React SPA and forwards all `/api/**` requests to the backend service.
+The `X-API-Version` header is forwarded via `proxy_set_header` so versioned endpoints
+receive it correctly.
 
 ### Nginx Performance
 

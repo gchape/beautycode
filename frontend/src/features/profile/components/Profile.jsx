@@ -5,19 +5,19 @@ import { ProfileHero } from "./ProfileHero";
 import { ProfileOrders } from "./ProfileOrders";
 
 const Profile = () => {
-  const user = useLoaderData();
+  const { user } = useLoaderData();
 
   if (!user) {
     return (
-      <div className="min-h-screen flex justify-center items-center text-taupe-400 text-sm">
+      <div className="min-h-screen flex justify-center items-center text-taupe-400 text-sm tracking-wide">
         მომხმარებლის მონაცემები ვერ ჩაიტვირთა
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex justify-center items-start pt-12 px-6">
-      <div className="w-full max-w-md flex flex-col gap-8 pb-16">
+    <div className="min-h-screen flex justify-center items-center pt-16 px-6">
+      <div className="w-full max-w-sm flex flex-col gap-10 pb-16">
         <ProfileHero name={user.firstName} />
         <ProfileOrders />
         <ProfileAccount user={user} />

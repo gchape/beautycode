@@ -1,10 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "src/features/product/fetchProducts";
+import { api } from "src/services/api";
 
 export const useProducts = (category = "all") => {
   return useQuery({
     queryKey: ["products", category],
-    queryFn: ({ queryKey }) => fetchProducts({ queryKey }),
-    staleTime: 1000 * 60 * 5, // cache for 5 minutes
+    queryFn: async ({ queryKey }) => {
+      const [, category] = queryKey;
+    
+      const url =
+        category && category !== "all"
+          ? `/products?category=${category}`
+          : "/products";
+    
+      const res = await api.get(url);
+    
+      if (!res.ok) {
+        throw new Error("Failed to fetch products");
+      }
+    
+      return res.json();
+    },
+    staleTime: 1000 * 60 * 5,
   });
 };

@@ -19,6 +19,7 @@ import {
 } from "./features/product";
 import { Profile, profileLoader } from "./features/profile";
 import "./index.css";
+import { ProfileFallback } from "./components/ProfileFallback";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
         path: "profile",
         element: <Profile />,
         loader: profileLoader,
+        HydrateFallback: ProfileFallback,
       },
       {
         path: "products",

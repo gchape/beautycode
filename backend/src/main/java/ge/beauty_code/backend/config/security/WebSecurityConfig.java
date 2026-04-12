@@ -87,13 +87,11 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-
                         .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/orders/**").authenticated()
-
+                        .requestMatchers(HttpMethod.POST, "/api/users/orders").authenticated()
                         .anyRequest().denyAll()
                 )
+
                 .build();
     }
 }

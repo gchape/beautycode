@@ -4,15 +4,15 @@ export const ProfileHero = ({ name }) => (
       <img
         src="/avatar/girl.png"
         alt={name}
-        className="w-16 h-16 rounded-full object-cover"
+        className="w-20 h-20 rounded-full object-cover"
       />
-      <span className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-500 ring-2 ring-pink-50" />
+      <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-green-400 ring-2 ring-pink-50" />
     </div>
-    <div>
-      <h1 className="text-3xl font-light italic text-taupe-600 leading-tight">
+    <div className="flex flex-col gap-1">
+      <h1 className="text-3xl font-semibold text-taupe-800 leading-none">
         {name}
       </h1>
-      <p className="mt-1 text-xs tracking-[0.16em] uppercase text-taupe-500">
+      <p className="text-xs tracking-[0.18em] uppercase text-taupe-400">
         თქვენი პროფილი და შეკვეთები
       </p>
     </div>

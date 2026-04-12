@@ -6,17 +6,16 @@ export const loginAction = ({ request }) => {
     .formData()
     .then((formData) => Object.fromEntries(formData.entries()))
     .then((data) =>
-      api.post("/auth/login", {
+      api.post("/login", {
         email: data.email,
         password: data.password,
       }),
     )
     .then((response) => {
-      if (response.ok) {
-        return redirect("/profile");
-      }
-
-      return { error: "Login failed" };
+      if (response.ok) return redirect("/");
+      if (response.status === 401)
+        return { error: "არასწორი მონაცემები, სცადეთ თავიდან" };
+      return { error: "დაფიქსირდა შეცდომა, სცადეთ მოგვიანებით" };
     })
-    .catch(() => ({ error: "Network error" }));
+    .catch(() => ({ error: "ქსელის შეცდომა, გთხოვთ სცადოთ მოგვიანებით" }));
 };

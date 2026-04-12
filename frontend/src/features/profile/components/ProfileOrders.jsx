@@ -6,19 +6,19 @@ export const ProfileOrders = () => {
   const { data: orders = [], isLoading, error } = useOrders();
 
   return (
-    <section>
+    <section className="flex flex-col gap-2">
       <SectionTitle>ჩემი შეკვეთები</SectionTitle>
 
       {isLoading && (
-        <div className="space-y-3 animate-pulse">
+        <div className="space-y-3 animate-pulse pt-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-16 bg-taupe-100 rounded-xl" />
+            <div key={i} className="h-14 bg-taupe-100 rounded-lg" />
           ))}
         </div>
       )}
 
       {error && (
-        <p className="text-sm text-red-400 tracking-wide py-4">
+        <p className="text-sm text-rose-400 tracking-wide py-4">
           შეცდომა შეკვეთების ჩატვირთვისას
         </p>
       )}

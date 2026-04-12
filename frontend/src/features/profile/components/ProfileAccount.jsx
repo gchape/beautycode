@@ -2,9 +2,9 @@ import { SectionTitle } from "../../../components/SectionTitle";
 import { ProfileAccountField } from "./ProfileAccountField";
 
 export const ProfileAccount = ({ user }) => (
-  <section className="flex flex-col gap-5">
+  <section className="flex flex-col gap-6">
     <SectionTitle>ანგარიში</SectionTitle>
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-6">
       <ProfileAccountField
         label="სახელი"
         name="firstName"

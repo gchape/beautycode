@@ -6,7 +6,6 @@ import ge.beauty_code.backend.product.dto.ProductDto;
 import ge.beauty_code.backend.product.model.Category;
 import ge.beauty_code.backend.product.model.ProductItem;
 import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +15,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    @Autowired
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }

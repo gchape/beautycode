@@ -4,11 +4,10 @@ export const ProfileFooter = () => {
   const { fetcher, isLoading } = useFormFetcher();
 
   return (
-    <footer className="flex justify-between pt-6 border-t border-taupe-200">
+    <footer className="flex justify-between items-center pt-6 border-t border-taupe-200">
       <a
         href="mailto:13beauty.code@gmail.com"
-        className="text-xs tracking-[0.16em] uppercase text-taupe-500
-                   hover:text-taupe-700 transition-colors duration-150"
+        className="text-xs tracking-[0.18em] uppercase text-taupe-400 hover:text-taupe-700 transition-colors duration-150"
       >
         დახმარება
       </a>
@@ -16,7 +15,7 @@ export const ProfileFooter = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="text-xs tracking-[0.16em] uppercase text-red-400 hover:text-red-600
+          className="text-xs tracking-[0.18em] uppercase text-rose-400 hover:text-rose-600
                      transition-colors duration-150 cursor-pointer
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >

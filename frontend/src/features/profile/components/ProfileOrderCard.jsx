@@ -7,11 +7,9 @@ const formatOrderDate = (dateStr) =>
 
 export const ProfileOrderCard = ({ id, summary, date }) => (
   <div className="flex justify-between items-center py-4 border-b border-taupe-200 last:border-0">
-    <div>
-      <p className="text-base font-medium tracking-wide text-taupe-800">
-        {summary}
-      </p>
-      <p className="mt-1 text-xs tracking-widest uppercase text-taupe-500">
+    <div className="flex flex-col gap-1">
+      <p className="text-base font-medium text-taupe-800">{summary}</p>
+      <p className="text-xs tracking-[0.14em] uppercase text-taupe-400">
         {id} &middot; {formatOrderDate(date)}
       </p>
     </div>

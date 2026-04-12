@@ -5,7 +5,6 @@ import ge.beauty_code.backend.exception.UserNotFoundException;
 import ge.beauty_code.backend.user.dto.UserDto;
 import ge.beauty_code.backend.user.model.UserItem;
 import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +12,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

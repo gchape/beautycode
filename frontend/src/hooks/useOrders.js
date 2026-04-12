@@ -5,7 +5,7 @@ export const useOrders = (isAuthenticated = true) => {
   return useQuery({
     queryKey: ["orders"],
     queryFn: async () => {
-      const res = await api.get("/orders");
+      const res = await api.get("/users/orders");
       if (!res.ok) throw new Error("Failed to fetch orders");
       return res.json();
     },
