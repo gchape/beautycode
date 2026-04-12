@@ -42,19 +42,42 @@
 
 | Performance | Accessibility | Best Practices | SEO |
 | ----------- | ------------- | -------------- | --- |
-| 92          | 94            | 100            | 100 |
+| 100         | 90            | 100            | 100 |
 
 ### Performance Optimizations
 
-Removed Google Fonts (Material Symbols) and replaced them with unicode characters (`+` `−` `›`) and inline SVG components.
+**Fonts hosted locally** — Google Fonts were removed as a render-blocking external dependency.
+Cormorant Garamond, DM Sans, and DM Mono are now served as `.woff2` files from `/font/`,
+with `font-display: swap` to prevent invisible text during load. Only the weights actually
+used in the UI are included (regular, semibold) — unused weights were dropped entirely.
+
+**Crisp chat deferred** — the Crisp live chat script is loaded with a 3-second delay after
+page interaction, keeping it off the critical path. The initial render is unaffected;
+the widget appears silently in the background once the user is engaged with the page.
+
+**Skeleton loading states** — `Hero`, `FeaturedProducts`, `ProductCatalogGrid`, and `Profile`
+all render layout-matched skeletons while data loads, eliminating layout shift and replacing
+the previous `null` / `"Loading..."` placeholders.
+
+**Icon components** — Material Symbols (Google Fonts) were removed. All icons are inline SVG
+components, contributing zero extra network requests.
 
 ### Asset Handling
 
-Fixed Nginx asset routing for `/assets/` and `/font/`.
+Static assets are split across two Nginx-served locations:
+
+- `/assets/` — Vite build output with content-hashed filenames, cached for 1 year
+- `/font/` — self-hosted woff2 font files, cached for 1 year
+
+Both locations use `Cache-Control: public, immutable` and have access logging disabled.
+
+Product images are proxied from S3 via the `/images/` Nginx location with a 1-year
+immutable cache header. The proxy forces `Content-Type: image/webp` and sets
+`Cross-Origin-Resource-Policy: cross-origin` to allow cross-origin image loads.
 
 ### SEO Improvements
 
-- Open Graph tags
+- Open Graph tags for social sharing previews
 - Canonical URL
 - `robots.txt`
 - `sitemap.xml`
@@ -71,11 +94,11 @@ src/
 │   ├── auth/          — login, register, actions
 │   ├── cart/          — cart state, reducer, components
 │   ├── product/       — catalog, categories, context
-│   ├── profile/       — profile page, loader
+│   ├── profile/       — profile page, loader, fallback skeleton
 │   ├── navbar/
 │   ├── footer/
 │   ├── home/
-│   └── chat/          — Crisp live chat integration
+│   └── chat/          — Crisp live chat (deferred 3s)
 ├── hooks/
 │   ├── useProducts.js — react-query product fetching with category support
 │   ├── useOrders.js   — react-query order fetching
@@ -83,8 +106,8 @@ src/
 ├── services/
 │   └── api.js         — fetch wrapper with credentials
 └── components/
-    ├── icons/         — shared SVG icon components
-    └── ErrorPage.jsx  — global error boundary fallback
+    ├── icons/         — shared inline SVG icon components
+    └── ErrorPage.jsx  — root error boundary fallback
 ```
 
 Cart state is managed with `useReducer` and split across two contexts —
@@ -93,11 +116,13 @@ one for state and one for dispatch — to avoid unnecessary re-renders.
 `CategoryProvider` is scoped to the `/products` route only, not global, so category
 state is created and destroyed with the route.
 
-Components that are tightly coupled to a single feature (e.g. `ProfileAccountField`, `ProfileOrderCard`)
-live inside that feature's `components/` folder rather than the global `components/` directory.
+Components that are tightly coupled to a single feature (e.g. `ProfileAccountField`,
+`ProfileOrderCard`) live inside that feature's `components/` folder rather than the
+global `components/` directory.
 
 Data fetching uses `@tanstack/react-query` with skeleton loading states for `Hero`,
-`FeaturedProducts`, and `ProfileOrders`. Products are cached for 5 minutes, orders for 2 minutes.
+`FeaturedProducts`, `ProductCatalogGrid`, and `ProfileOrders`.
+Products are cached for 5 minutes, orders for 2 minutes.
 
 ---
 
@@ -105,20 +130,18 @@ Data fetching uses `@tanstack/react-query` with skeleton loading states for `Her
 
 ### Backend Overview
 
-The backend is a Spring application built with Maven and packaged into a Docker image using a multi-stage build.
-The final container runs a compiled JAR on a minimal Java runtime.
+The backend is a Spring application built with Maven and packaged into a Docker image
+using a multi-stage build. The final container runs a compiled JAR on a minimal Java runtime.
 The application is configured via environment variables and communicates with DynamoDB.
-
-The backend is organized into feature packages mirroring the frontend structure:
 
 ```
 ge.beauty_code.backend/
-├── authentication/    — login, remember-me, user details, DefaultUserDetails
+├── authentication/    — form login, remember-me, user details, DefaultUserDetails
 ├── admin/             — admin repository and credentials
 ├── user/              — user controller, service, repository, DTOs, model
 ├── product/           — product controller, service, repository, DTOs, model, converters
 ├── order/             — order controller, service, repository, DTOs, model
-└── config/            — web security, CORS, AWS, WebMvcConfigurer
+└── config/            — web security, AWS, WebMvcConfigurer
 ```
 
 Each feature owns its models under a local `model/` subpackage rather than a shared global
@@ -126,37 +149,42 @@ Each feature owns its models under a local `model/` subpackage rather than a sha
 
 ### Security
 
-Authentication is handled by Spring Security with session-based login and remember-me support.
+Authentication is handled by Spring Security with form-based login, session persistence,
+and remember-me support backed by DynamoDB.
 
-**Session-based auth** — On successful login, Spring creates an HTTP session and returns a
-`JSESSIONID` cookie. Every subsequent request is authenticated via that cookie — no JWT involved.
-The session is explicitly saved to `HttpSession` in `AuthenticationController` to ensure it
-is persisted correctly before the response is sent.
+**Form login** — Spring's `UsernamePasswordAuthenticationFilter` processes `POST /api/login`
+with `email` and `password` form parameters. On success it automatically persists the security
+context to the HTTP session and returns 200. On failure it returns 401. No manual
+`AuthenticationController` is needed.
+
+**Session-based auth** — Spring creates an HTTP session and returns a `JSESSIONID` cookie on
+login. Every subsequent request is authenticated via that cookie. No JWT involved.
+
+**Remember-me** — When the user logs in with `remember-me=on`, Spring generates a persistent
+token stored in DynamoDB (`RememberMeTokens` table) and sets a `remember-me` cookie. On return
+visits after session expiry, `PersistentTokenBasedRememberMeServices` validates the token and
+re-authenticates without a password. Token expires after 6 hours via DynamoDB TTL on `ExpiresAt`.
 
 **CSRF** — Disabled. The frontend is served from the same origin via the Nginx reverse proxy,
-so all API requests are same-origin from the browser's perspective. Cross-site request forgery
-is not a realistic threat in this configuration.
+so all API requests are same-origin from the browser's perspective.
 
-**CORS** — Configured explicitly to allow requests only from `http://localhost` (dev) and
-`https://beauty-code.ge` (production). `allowCredentials(true)` is required so the browser includes
-the `JSESSIONID` cookie on cross-origin requests — without it, every request would arrive unauthenticated.
+**CORS** — Configured to allow `http://localhost:5173` (Vite dev server) and
+`https://beauty-code.ge` (production). In production, Nginx proxies all requests through the
+same origin so CORS is not needed — the config exists for local development only.
 
-**Remember-me** — When the user logs in with `remember-me=true`, Spring generates a persistent
-token stored in DynamoDB (`RememberMeTokens` table). On return visits, Spring validates the token
-and re-authenticates without a password. Token expires after 6 hours. TTL is handled natively
-by DynamoDB via the `ExpiresAt` attribute — explicit deletion on logout is a simple sequential
-loop since a user realistically holds only a handful of tokens at any time.
+**Unauthenticated requests** — Spring's default behaviour redirects 401s to its own `/login`
+page, which causes a CORS error in the browser as the redirect points directly to the backend.
+This is overridden with a custom `authenticationEntryPoint` that returns a plain 401 instead,
+letting the React router handle the redirect on the client side.
 
-**Password storage** — BCrypt hashing happens inside `UserRepository` at write time, before
-the value is persisted to DynamoDB. The plain-text password is never stored.
+**Password storage** — BCrypt hashing happens inside `UserRepository` at write time.
+The plain-text password is never stored.
 
-**Authorization** — `DelegatingUserDetailsService` first checks if the email belongs to a
-regular user via `UserRepository.contains()`. If the user exists, credentials are loaded from
-`UserRepository`. Otherwise it falls through to `AdminRepository`. This avoids exception-based
-flow control and makes the lookup path explicit.
+**Authorization** — `DelegatingUserDetailsService` checks `UserRepository` first; if the
+email is not found it falls through to `AdminRepository`. This avoids exception-based flow
+control and makes the lookup path explicit.
 
-Role and authority assignments are centralised in the `DefaultUserDetails` enum. Each variant
-builds a `UserDetails` object with the appropriate authorities:
+Role and authority assignments are centralised in the `DefaultUserDetails` enum:
 
 | Authority        | USER | ADMIN |
 | ---------------- | ---- | ----- |
@@ -169,8 +197,7 @@ builds a `UserDetails` object with the appropriate authorities:
 | `USER_READ`      | ✅   | ✅    |
 | `USER_DELETE`    | ❌   | ✅    |
 
-**Authorization rules** — Any endpoint not explicitly listed is denied by default via `.anyRequest().denyAll()`,
-meaning new endpoints are blocked unless access is explicitly granted.
+Any endpoint not explicitly listed is denied by default via `.anyRequest().denyAll()`.
 
 | Path                  | Method | Access        |
 | --------------------- | ------ | ------------- |
@@ -181,9 +208,10 @@ meaning new endpoints are blocked unless access is explicitly granted.
 | `/api/users/orders`   | POST   | Authenticated |
 | anything else         | any    | Denied        |
 
-**Category conversion** — `CategoryConverter` is registered via `WebConfig` and converts
-`String` request parameters (e.g. `epilator`, `hair-dryer`) to the `Category` enum automatically,
-handling case normalization and hyphen-to-underscore replacement.
+**Category conversion** — `CategoryConverter` is annotated with `@Component` and registered
+automatically by Spring Boot. It converts `String` request parameters (e.g. `epilator`,
+`hair-dryer`) to the `Category` enum, handling case normalization and hyphen-to-underscore
+replacement.
 
 ---
 
@@ -208,7 +236,7 @@ Two tables are used:
 
 #### BeautyCode (main table)
 
-All entities share a single table with `PK` (partition key) and `SK` (sort key), both of type `String`.
+All entities share a single table with `PK` (partition key) and `SK` (sort key), both `String`.
 Each entity type uses a prefixed key pattern to avoid collisions and enable prefix-based queries.
 
 | Entity  | PK              | SK              |
@@ -221,16 +249,14 @@ Each entity type uses a prefixed key pattern to avoid collisions and enable pref
 Orders use the user's email as their PK so all orders for a user live in the same partition,
 enabling efficient range queries with an `ORDER#` SK prefix — no index needed.
 
-Products and Users use the same value for PK and SK, which allows direct O(1) lookups by ID or email.
+Products and Users use the same value for PK and SK, allowing direct O(1) lookups by ID or email.
 
 A `Type` attribute (`"User"`, `"Product"`, `"Order"`) is written on each item to support
-GSI-based queries that need to filter by entity type.
-
-All attribute names follow **PascalCase** consistently across all tables and Java code.
+GSI-based queries that need to filter by entity type. All attribute names follow PascalCase.
 
 #### RememberMeTokens
 
-A separate table with `Series` as the sole partition key (no sort key needed — each series is globally unique).
+A separate table with `Series` as the sole partition key (no sort key — each series is globally unique).
 
 | Attribute    | Type        | Purpose                          |
 | ------------ | ----------- | -------------------------------- |
@@ -240,9 +266,8 @@ A separate table with `Series` as the sole partition key (no sort key needed —
 | `LastUsed`   | String      | ISO-8601 timestamp               |
 | `ExpiresAt`  | Number      | Unix epoch — drives DynamoDB TTL |
 
-TTL is declared in Terraform via the `ttl` block pointing at `ExpiresAt`. DynamoDB automatically
-deletes expired tokens, so the only explicit deletion needed is on logout, which is a simple
-sequential delete loop since a user holds at most a few tokens at any time.
+TTL is declared in Terraform via the `ttl` block pointing at `ExpiresAt`. The only explicit
+deletion needed is on logout — a simple sequential loop since a user holds at most a few tokens.
 
 ### Access Patterns
 
@@ -263,22 +288,10 @@ sequential delete loop since a user holds at most a few tokens at any time.
 
 **Why semantic GSI names over generic `GSI1`/`GSI2`?**
 
-The `GSI1PK`/`GSI2PK` overloading pattern from Alex DeBrie's book is designed for single-table
-designs where multiple entity types share the same index — a single GSI serves different entities
-by writing different values into the same generic attribute. This amortises write costs and
-reduces the total number of indexes.
-
-In this application, `ProductsByType` is only ever queried for products, and `ProductsByCategory`
-is only ever queried for products. There is no cross-entity sharing. Using generic names like
-`GSI1` would add indirection with no benefit. Semantic names make the intent immediately clear.
-
-**Why not the Starbucks/hierarchical pattern (write duplication)?**
-
-An alternative would be writing products into two items — one at `PRODUCT#{id}` for direct
-lookup, and one at `CATEGORY#{name} / PRODUCT#{id}` for category queries — eliminating the
-`ProductsByCategory` GSI entirely. This pattern trades write cost for read efficiency and is
-useful at very high query volume. At the current scale the GSI approach is simpler: one write,
-one index, no transaction required.
+The `GSI1PK`/`GSI2PK` overloading pattern is designed for single-table designs where multiple
+entity types share the same index. In this application, `ProductsByType` and `ProductsByCategory`
+are only ever queried for products — no cross-entity sharing. Semantic names make the intent
+immediately clear with no indirection.
 
 **GSI summary**
 
@@ -293,52 +306,51 @@ there is no need to project full token data into the index.
 
 ---
 
+## Diagrams
+
+### DynamoDB Schema Diagram
+
+### Security Flow Diagram
+
+### System Architecture Diagram
+
+---
+
 ## Infrastructure
 
 ### Docker Setup
 
 The application runs using Docker Compose with two services:
 
-- frontend (Nginx serving static build)
-- backend (Spring application)
+- `frontend` — Nginx serving the Vite static build
+- `backend` — Spring Boot application
 
 The frontend proxies API requests to the backend over an internal Docker network.
+`backend` resolves as a hostname within the Docker network — `localhost` inside the Nginx
+container refers to the Nginx container itself, not the Spring Boot service.
+
+For local development, the Vite dev server proxies `/api/` to `localhost:8080` directly —
+Nginx is not involved. This mirrors the production proxy setup so Spring Security behaves
+identically in both environments.
 
 ### Reverse Proxy
 
-Nginx serves the React SPA and forwards all `/api/**` requests to the backend service.
-The `X-API-Version` header is forwarded via `proxy_set_header` so versioned endpoints
-receive it correctly.
+Nginx serves the React SPA and forwards all `/api/` requests to the backend service.
+
+| Location   | Behaviour                                                |
+| ---------- | -------------------------------------------------------- |
+| `/`        | SPA fallback — serves `index.html` for unknown routes    |
+| `/api/`    | Proxy to `backend:8080`                                  |
+| `/images/` | Proxy to S3, forces `image/webp`, 1-year cache           |
+| `/assets/` | Static files, 1-year immutable cache, no access log      |
+| `/font/`   | Self-hosted fonts, 1-year immutable cache, no access log |
 
 ### Nginx Performance
 
-Nginx is configured to improve delivery and reduce unnecessary work:
-
-- `sendfile on` enables efficient file transfer for static assets
-- `tcp_nopush on` and `tcp_nodelay on` optimize packet delivery behavior
-- `gzip on` compresses supported text-based responses
-- `gzip_comp_level 5` keeps compression balanced between speed and size
-- `gzip_min_length 1024` avoids compressing very small responses
-- long cache headers are applied to `/assets/` and `/font/`
-- static assets use `Cache-Control: public, immutable`
-- asset access logs are disabled to reduce noise
-- `server_tokens off` hides Nginx version details
-
-For static frontend files, this improves load speed and caching efficiency. For API traffic,
-Nginx acts as a lightweight reverse proxy in front of the backend.
-
----
-
-## Diagrams
-
-### DynamoDB Schema Diagram
-
-![dynamodb_schema](https://github.com/user-attachments/assets/3d8a6e26-1746-446a-9bdf-06b332245d59)
-
-### Security Flow Diagram
-
-![security_flow](https://github.com/user-attachments/assets/78bbaaa1-1084-45fc-9bfd-0907cc9ad4b3)
-
-### System Architecture Diagram
-
-![system_architecture](https://github.com/user-attachments/assets/338b504c-d218-470d-b665-85f729b1c5d4)
+- `sendfile on` — efficient kernel-level file transfer for static assets
+- `tcp_nopush on` — batches response headers and first data chunk
+- `gzip on` at level 5 — compresses text, CSS, JSON, JS, SVG responses over 1 KB
+- `gzip_vary on` — correct `Vary: Accept-Encoding` header for CDN compatibility
+- `server_tokens off` — hides Nginx version from response headers
+- 1-year `Cache-Control: public, immutable` on `/assets/` and `/font/`
+- Access logging disabled on static asset locations to reduce noise
