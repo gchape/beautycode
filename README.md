@@ -310,9 +310,15 @@ there is no need to project full token data into the index.
 
 ### DynamoDB Schema Diagram
 
+![dynamodb_schema](https://github.com/user-attachments/assets/70a6d125-f6e6-4910-bf8c-83fd41fbb3af)
+
 ### Security Flow Diagram
 
+![security_flow](https://github.com/user-attachments/assets/b7cd444a-1b80-4d5d-91ad-8881b5e097ec)
+
 ### System Architecture Diagram
+
+![system_architecture](https://github.com/user-attachments/assets/39bf4398-c59d-42fe-aeed-87b0542d4467)
 
 ---
 
