@@ -1,7 +1,7 @@
 package ge.beauty_code.backend.admin;
 
 import ge.beauty_code.backend.authentication.model.RoleUserDetails;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
+@NullMarked
 public class AdminRepository {
 
     private final String tableName;
@@ -26,7 +27,7 @@ public class AdminRepository {
         this.dynamoDbClient = dynamoDbClient;
     }
 
-    public Optional<UserDetails> findCredentialsByEmail(@NonNull String email) {
+    public Optional<UserDetails> findCredentialsByEmail(String email) {
         var response = dynamoDbClient.getItem(r -> r
                 .tableName(tableName)
                 .key(Map.of(

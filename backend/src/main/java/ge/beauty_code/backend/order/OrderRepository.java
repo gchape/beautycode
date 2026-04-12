@@ -2,7 +2,7 @@ package ge.beauty_code.backend.order;
 
 import ge.beauty_code.backend.order.dto.OrderDto;
 import ge.beauty_code.backend.order.model.OrderItem;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
+@NullMarked
 public class OrderRepository {
 
     private final DynamoDbClient dynamoDbClient;
@@ -26,7 +27,7 @@ public class OrderRepository {
         this.tableName = tableName;
     }
 
-    public boolean save(@NonNull String userEmail, @NonNull OrderItem orderItem) {
+    public boolean save(String userEmail, OrderItem orderItem) {
         try {
             dynamoDbClient.putItem(r -> r
                     .tableName(tableName)
@@ -48,7 +49,7 @@ public class OrderRepository {
         }
     }
 
-    public List<OrderDto> findOrdersByUserEmail(@NonNull String email) {
+    public List<OrderDto> findOrdersByUserEmail(String email) {
         return dynamoDbClient.query(r -> r
                         .tableName(tableName)
                         .keyConditionExpression("PK = :pk AND begins_with(SK, :sk)")

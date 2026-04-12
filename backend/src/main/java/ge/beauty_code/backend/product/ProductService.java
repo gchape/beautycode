@@ -5,12 +5,13 @@ import ge.beauty_code.backend.exception.ProductNotFoundException;
 import ge.beauty_code.backend.product.dto.ProductDto;
 import ge.beauty_code.backend.product.model.Category;
 import ge.beauty_code.backend.product.model.ProductItem;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@NullMarked
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -19,13 +20,13 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public void save(@NonNull ProductItem product) {
+    public void save(ProductItem product) {
         if (!productRepository.save(product)) {
             throw new ProductAlreadyExistsException("პროდუქტი ID-ით " + product.id() + " უკვე არსებობს");
         }
     }
 
-    public ProductDto findById(@NonNull String id) {
+    public ProductDto findById(String id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("პროდუქტი ID-ით " + id + " ვერ მოიძებნა"));
     }
@@ -34,7 +35,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<ProductDto> findByCategory(@NonNull Category category) {
+    public List<ProductDto> findByCategory(Category category) {
         return productRepository.findByCategory(category);
     }
 }

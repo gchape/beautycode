@@ -3,7 +3,7 @@ package ge.beauty_code.backend.product;
 import ge.beauty_code.backend.product.dto.ProductDto;
 import ge.beauty_code.backend.product.model.Category;
 import ge.beauty_code.backend.product.model.ProductItem;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
+@NullMarked
 public class ProductRepository {
 
     private final String tableName;
@@ -27,7 +28,7 @@ public class ProductRepository {
         this.dynamoDbClient = dynamoDbClient;
     }
 
-    public boolean save(@NonNull ProductItem product) {
+    public boolean save(ProductItem product) {
         try {
             dynamoDbClient.putItem(r -> r
                     .tableName(tableName)
@@ -58,7 +59,7 @@ public class ProductRepository {
         }
     }
 
-    public Optional<ProductDto> findById(@NonNull String id) {
+    public Optional<ProductDto> findById(String id) {
         var response = dynamoDbClient.getItem(r -> r
                 .tableName(tableName)
                 .key(Map.of(
@@ -90,7 +91,7 @@ public class ProductRepository {
                 .toList();
     }
 
-    public List<ProductDto> findByCategory(@NonNull Category category) {
+    public List<ProductDto> findByCategory(Category category) {
         return dynamoDbClient.query(r -> r
                         .tableName(tableName)
                         .indexName("ProductsByCategory")

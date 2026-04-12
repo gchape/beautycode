@@ -3,7 +3,7 @@ package ge.beauty_code.backend.user;
 import ge.beauty_code.backend.authentication.model.RoleUserDetails;
 import ge.beauty_code.backend.user.dto.UserDto;
 import ge.beauty_code.backend.user.model.UserItem;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
+@NullMarked
 public class UserRepository {
 
     private final String tableName;
@@ -34,7 +35,7 @@ public class UserRepository {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<UserDto> findUserByEmail(@NonNull String email) {
+    public Optional<UserDto> findUserByEmail(String email) {
         var response = dynamoDbClient.getItem(r -> r
                 .tableName(tableName)
                 .key(Map.of(
@@ -58,7 +59,7 @@ public class UserRepository {
         return Optional.of(UserDto.mapToDto(item));
     }
 
-    public boolean save(@NonNull UserItem user) {
+    public boolean save(UserItem user) {
         try {
             dynamoDbClient.putItem(r -> r
                     .tableName(tableName)
@@ -82,7 +83,7 @@ public class UserRepository {
         }
     }
 
-    public Optional<UserDetails> findCredentialsByEmail(@NonNull String email) {
+    public Optional<UserDetails> findCredentialsByEmail(String email) {
         var response = dynamoDbClient.getItem(r -> r
                 .tableName(tableName)
                 .key(Map.of(
@@ -106,7 +107,7 @@ public class UserRepository {
         return Optional.of(user);
     }
 
-    public boolean contains(@NonNull String email) {
+    public boolean contains(String email) {
         return dynamoDbClient.getItem(r -> r
                 .tableName(tableName)
                 .key(Map.of(

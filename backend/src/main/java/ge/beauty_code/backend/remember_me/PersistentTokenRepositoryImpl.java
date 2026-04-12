@@ -1,6 +1,6 @@
 package ge.beauty_code.backend.remember_me;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Repository
+@NullMarked
 public class PersistentTokenRepositoryImpl implements PersistentTokenRepository {
 
     public static final int TOKEN_VALIDITY_SECONDS = 6 * 60 * 60;
@@ -26,7 +27,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     }
 
     @Override
-    public void createNewToken(@NonNull PersistentRememberMeToken token) {
+    public void createNewToken(PersistentRememberMeToken token) {
         Map<String, AttributeValue> item = Map.of(
                 "Series", AttributeValue.fromS(token.getSeries()),
                 "Email", AttributeValue.fromS(token.getUsername()),
@@ -45,7 +46,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     }
 
     @Override
-    public void updateToken(@NonNull String series, @NonNull String tokenValue, @NonNull Date lastUsed) {
+    public void updateToken(String series, String tokenValue, Date lastUsed) {
         dynamoDbClient.updateItem(r -> r
                 .tableName(TABLE)
                 .key(Map.of("Series", AttributeValue.fromS(series)))
@@ -64,7 +65,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     }
 
     @Override
-    public @Nullable PersistentRememberMeToken getTokenForSeries(@NonNull String seriesId) {
+    public @Nullable PersistentRememberMeToken getTokenForSeries(String seriesId) {
         var response = dynamoDbClient.getItem(r -> r
                 .tableName(TABLE)
                 .key(Map.of("Series", AttributeValue.fromS(seriesId)))
@@ -84,7 +85,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     }
 
     @Override
-    public void removeUserTokens(@NonNull String email) {
+    public void removeUserTokens(String email) {
         var response = dynamoDbClient.query(r -> r
                 .tableName(TABLE)
                 .indexName("TokensByEmail")

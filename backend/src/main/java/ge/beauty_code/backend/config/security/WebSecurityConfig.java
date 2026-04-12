@@ -1,6 +1,6 @@
 package ge.beauty_code.backend.config.security;
 
-import ge.beauty_code.backend.authentication.DelegatingUserDetailsService;
+import ge.beauty_code.backend.authentication.RoleUserDetailsService;
 import ge.beauty_code.backend.remember_me.PersistentTokenRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration(proxyBeanMethods = false)
-@Import({PersistentTokenRepositoryImpl.class, DelegatingUserDetailsService.class})
+@Import({PersistentTokenRepositoryImpl.class, RoleUserDetailsService.class})
 public class WebSecurityConfig {
 
     private final PersistentTokenRepository persistentTokenRepository;

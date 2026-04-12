@@ -3,12 +3,13 @@ package ge.beauty_code.backend.order;
 import ge.beauty_code.backend.exception.OrderAlreadyExistsException;
 import ge.beauty_code.backend.order.dto.OrderDto;
 import ge.beauty_code.backend.order.model.OrderItem;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@NullMarked
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -17,13 +18,13 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public void placeOrder(@NonNull String userEmail, @NonNull OrderItem orderItem) {
+    public void placeOrder(String userEmail, OrderItem orderItem) {
         if (!orderRepository.save(userEmail, orderItem)) {
             throw new OrderAlreadyExistsException("მომხმარებელი Email-ით " + userEmail + " არ არსებობს ან შეკვეთა ID-ით " + orderItem.id() + " უკვე არსებობს");
         }
     }
 
-    public List<OrderDto> findOrdersByUserEmail(@NonNull String email) {
+    public List<OrderDto> findOrdersByUserEmail(String email) {
         return orderRepository.findOrdersByUserEmail(email);
     }
 }
