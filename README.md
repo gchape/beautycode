@@ -333,12 +333,12 @@ Nginx acts as a lightweight reverse proxy in front of the backend.
 
 ### DynamoDB Schema Diagram
 
-![dynamodb_schema](https://github.com/user-attachments/assets/461e164e-aa14-44ea-8233-abd228694114)
+![dynamodb_schema](https://github.com/user-attachments/assets/3d8a6e26-1746-446a-9bdf-06b332245d59)
 
 ### Security Flow Diagram
 
-![security_sequence](https://github.com/user-attachments/assets/4177cbf7-0385-4982-802c-14d294d8b57c)
+![security_flow](https://github.com/user-attachments/assets/78bbaaa1-1084-45fc-9bfd-0907cc9ad4b3)
 
 ### System Architecture Diagram
 
-![system_architecture](https://github.com/user-attachments/assets/b81531a8-93af-4d60-9ab6-425ae5605397)
+![system_architecture](https://github.com/user-attachments/assets/338b504c-d218-470d-b665-85f729b1c5d4)
