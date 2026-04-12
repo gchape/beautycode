@@ -3,6 +3,7 @@ package ge.beauty_code.backend.admin;
 import ge.beauty_code.backend.authentication.model.DefaultUserDetails;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -19,14 +20,15 @@ public class AdminRepository {
     private final DynamoDbClient dynamoDbClient;
 
     @Autowired
-    public AdminRepository(DynamoDbClient dynamoDbClient, 
+    public AdminRepository(DynamoDbClient dynamoDbClient,
                            @Value("${aws.dynamo_db.table-name}") String tableName) {
+        this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
     }
 
     public Optional<UserDetails> findCredentialsByEmail(@NonNull String email) {
         var response = dynamoDbClient.getItem(r -> r
-                .tableName("BeautyCode")
+                .tableName(tableName)
                 .key(Map.of(
                         "PK", AttributeValue.fromS("ADMIN#" + email),
                         "SK", AttributeValue.fromS("ADMIN#" + email)
