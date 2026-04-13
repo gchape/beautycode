@@ -22,7 +22,7 @@ public class OrderRepository {
     private final String tableName;
 
     public OrderRepository(DynamoDbClient dynamoDbClient,
-                           @Value("${aws.dynamo_db.table-name}") String tableName) {
+                           @Value("${aws.dynamodb.table-name}") String tableName) {
         this.dynamoDbClient = dynamoDbClient;
         this.tableName = tableName;
     }

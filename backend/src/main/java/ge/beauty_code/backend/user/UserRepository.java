@@ -29,7 +29,7 @@ public class UserRepository {
     @Autowired
     public UserRepository(DynamoDbClient dynamoDbClient,
                           PasswordEncoder passwordEncoder,
-                          @Value("${aws.dynamo_db.table-name}") String tableName) {
+                          @Value("${aws.dynamodb.table-name}") String tableName) {
         this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
         this.passwordEncoder = passwordEncoder;

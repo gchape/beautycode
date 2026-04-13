@@ -18,9 +18,9 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
 
     public static final int TOKEN_VALIDITY_SECONDS = 6 * 60 * 60;
 
-    private static final String TABLE = "RememberMeTokens";
+    private static final String TABLE_NAME = "RememberMeTokens";
 
-    private final DynamoDbClient dynamoDbClient;
+    public final DynamoDbClient dynamoDbClient;
 
     public PersistentTokenRepositoryImpl(DynamoDbClient dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
@@ -40,7 +40,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
                 )
         );
         dynamoDbClient.putItem(r -> r
-                .tableName(TABLE)
+                .tableName(TABLE_NAME)
                 .item(item)
         );
     }
@@ -48,7 +48,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     @Override
     public void updateToken(String series, String tokenValue, Date lastUsed) {
         dynamoDbClient.updateItem(r -> r
-                .tableName(TABLE)
+                .tableName(TABLE_NAME)
                 .key(Map.of("Series", AttributeValue.fromS(series)))
                 .conditionExpression("attribute_exists(Series)")
                 .updateExpression("SET TokenValue = :tv, LastUsed = :lu, ExpiresAt = :ea")
@@ -67,7 +67,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     @Override
     public @Nullable PersistentRememberMeToken getTokenForSeries(String seriesId) {
         var response = dynamoDbClient.getItem(r -> r
-                .tableName(TABLE)
+                .tableName(TABLE_NAME)
                 .key(Map.of("Series", AttributeValue.fromS(seriesId)))
         );
 
@@ -87,7 +87,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
     @Override
     public void removeUserTokens(String email) {
         var response = dynamoDbClient.query(r -> r
-                .tableName(TABLE)
+                .tableName(TABLE_NAME)
                 .indexName("TokensByEmail")
                 .keyConditionExpression("Email = :e")
                 .expressionAttributeValues(Map.of(
@@ -102,7 +102,7 @@ public class PersistentTokenRepositoryImpl implements PersistentTokenRepository 
 
         for (Map<String, AttributeValue> item : response.items()) {
             dynamoDbClient.deleteItem(r -> r
-                    .tableName(TABLE)
+                    .tableName(TABLE_NAME)
                     .key(Map.of("Series", AttributeValue.fromS(item.get("Series").s())))
             );
         }

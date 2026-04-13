@@ -4,10 +4,6 @@ spring:
   profiles:
     default: dev
 
-aws:
-  dynamo_db:
-    table-name: BeautyCode
-
 ---
 spring:
   config:
@@ -16,6 +12,8 @@ spring:
 
 aws:
   region: eu-central-1
+  dynamodb:
+    table-name: BeautyCode
 
 logging:
   level:
@@ -29,6 +27,8 @@ spring:
 
 aws:
   region: ${AWS_REGION}
+  dynamodb:
+    table-name: ${AWS_DYNAMODB_TABLE_NAME}
 
 logging:
   level:

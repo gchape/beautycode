@@ -6,21 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration(proxyBeanMethods = false)
 public class AwsClientConfig {
-    @Bean
-    S3Client s3Client(
-            AwsCredentialsProvider credentialsProvider,
-            @Value("${aws.region}") String region
-    ) {
-        return S3Client.builder()
-                .region(Region.of(region))
-                .credentialsProvider(credentialsProvider)
-                .build();
-    }
-
+    
     @Bean
     DynamoDbClient dynamoDbClient(
             AwsCredentialsProvider credentialsProvider,
