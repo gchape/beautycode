@@ -4,9 +4,9 @@ import { FooterLegal } from "./FooterLegal";
 import { FooterNavigation } from "./FooterNavigation";
 
 const Footer = () => (
-  <footer className="pt-20 pb-32">
+  <footer className="pt-12 pb-16 md:pt-20 md:pb-32">
     <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-12 mb-10 md:mb-20">
         <FooterBrand />
         <FooterNavigation />
         <FooterContacts />

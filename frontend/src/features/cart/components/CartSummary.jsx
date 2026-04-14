@@ -3,7 +3,7 @@ import { CartSummaryRow } from "./CartSummaryRow";
 
 export const CartSummary = ({ total }) => (
   <div className="sticky top-32 bg-pink-100 p-8 rounded-xl shadow-sm">
-    <h3 className="text-xl md:text-2xl font-bold text-taupe-600 mb-8">
+    <h3 className="text-lg md:text-xl font-bold text-taupe-600 mb-8">
       შეკვეთის დეტალები
     </h3>
     <div className="space-y-6 text-taupe-500">
@@ -11,10 +11,10 @@ export const CartSummary = ({ total }) => (
       <CartSummaryRow label="მიწოდება" value="უფასო" />
       <div className="pt-6 mt-6 text-taupe-600">
         <div className="flex justify-between items-end mb-8">
-          <span className="font-headline text-lg md:text-xl font-bold">
+          <span className="font-headline text-base md:text-lg font-bold">
             სულ:
           </span>
-          <span className="text-xl md:text-2xl font-headline font-bold tracking-tight">
+          <span className="text-lg md:text-xl font-headline font-bold tracking-tight">
             {total} ₾
           </span>
         </div>

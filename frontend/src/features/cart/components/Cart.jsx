@@ -13,7 +13,7 @@ const Cart = () => {
   );
 
   return (
-    <main className="max-w-7xl mx-auto px-6 pt-10 pb-32">
+    <main className="max-w-7xl mx-auto px-6 pt-6 pb-16 md:pb-32">
       <CartHeader />
       {cart.length === 0 ? (
         <EmptyCart />

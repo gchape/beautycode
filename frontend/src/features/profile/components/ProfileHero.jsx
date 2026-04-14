@@ -9,7 +9,7 @@ export const ProfileHero = ({ name }) => (
       <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-green-400 ring-2 ring-pink-50" />
     </div>
     <div className="flex flex-col gap-1">
-      <h1 className="text-3xl font-semibold text-taupe-800 leading-none">
+      <h1 className="text-2xl md:text-3xl font-semibold text-taupe-800 leading-none">
         {name}
       </h1>
       <p className="text-xs tracking-[0.18em] uppercase text-taupe-400">

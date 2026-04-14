@@ -15,7 +15,7 @@ export const ProductCard = ({
     return (
       <article
         aria-labelledby={titleId}
-        className="group bg-pink-50 text-taupe-600 p-5 sm:p-6 rounded-2xl 
+        className="group bg-pink-50 text-taupe-600 p-3 sm:p-5 rounded-2xl 
                    transition-shadow duration-500 hover:shadow-xl 
                    hover:shadow-taupe-600/10 break-inside-avoid mb-8"
       >
@@ -63,7 +63,7 @@ export const ProductCard = ({
       className={`relative ${offset ? "md:mt-24" : ""}`}
     >
       <div
-        className="group aspect-3/4 w-full max-w-sm sm:max-w-md md:max-w-lg 
+        className="group aspect-3/4 w-full max-w-full p-4 sm:p-6 md:p-8 
                    mx-auto overflow-hidden rounded-2xl bg-pink-50 mb-5"
       >
         <img
@@ -84,7 +84,7 @@ export const ProductCard = ({
 
         <p
           id={titleId}
-          className="font-headline text-lg leading-snug text-taupe-600"
+          className="font-headline text-lg md:text-xl leading-snug text-taupe-600"
         >
           {title}
         </p>
@@ -97,7 +97,7 @@ export const ProductCard = ({
 
         <div className="mt-3 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="text-md font-bold text-taupe-500">
+            <span className="text-lg font-bold text-taupe-500">
               {newPrice} ₾
             </span>
 

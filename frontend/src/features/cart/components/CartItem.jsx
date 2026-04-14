@@ -8,7 +8,7 @@ export const CartItem = ({ item }) => {
 
   return (
     <div className="bg-pink-50 p-6 rounded-xl flex flex-col md:flex-row gap-8 items-center md:items-start">
-      <div className="w-full md:w-48 h-48 rounded-lg overflow-hidden shrink-0 border border-stone-200">
+      <div className="w-full md:w-36 h-36 md:h-36 rounded-lg overflow-hidden shrink-0 border border-stone-200">
         <img
           src={item.imgUrl}
           alt={item.title}
@@ -18,7 +18,7 @@ export const CartItem = ({ item }) => {
       <div className="grow flex flex-col justify-between h-full py-2">
         <div className="space-y-3">
           <div className="flex justify-between place-items-center">
-            <h3 className="text-lg md:text-xl font-headline font-bold text-taupe-800 leading-tight max-w-md">
+            <h3 className="text-base md:text-lg font-headline font-bold text-taupe-800 leading-tight max-w-md">
               {item.title}
             </h3>
             <button

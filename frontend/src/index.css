@@ -78,18 +78,18 @@
   --color-taupe-100: #f2ede8;
   --color-taupe-200: #e4dbd3;
   --color-taupe-300: #cec3b8;
-  --color-taupe-400: #b0a096;
-  --color-taupe-500: #8f7d73;
-  --color-taupe-600: #6e5d54;
+  --color-taupe-400: #9a8a80;
+  --color-taupe-500: #7a6860;
+  --color-taupe-600: #5c4d45;
   --color-taupe-700: #52443c;
   --color-taupe-800: #3a2e28;
   --color-taupe-900: #221a16;
 
   --color-on-surface-variant: var(--color-taupe-500);
 
-  --color-pink-50: #fdf6f3;
-  --color-pink-100: #f9ece7;
-  --color-pink-200: #f2d9d1;
+  --color-pink-50: #fbf0ec;
+  --color-pink-100: #f5e4dd;
+  --color-pink-200: #edcfc5;
 }
 
 @layer base {
@@ -107,7 +107,7 @@
 
   body {
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.875rem;
     line-height: 1.65;
     color: var(--color-taupe-700);
     background-color: #fdf9f7;

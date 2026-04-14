@@ -1,17 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.39.0"
-    }
-  }
-  required_version = ">= 1.14.0"
-}
-
-provider "aws" {
-  region = "eu-central-1"
-}
-
 resource "aws_dynamodb_table" "beauty_code" {
   name         = "BeautyCode"
   billing_mode = "PAY_PER_REQUEST"
