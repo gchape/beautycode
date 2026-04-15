@@ -6,17 +6,15 @@ export const ProductCatalogSkeleton = ({ count = 6 }) => (
   >
     {Array.from({ length: count }).map((_, i) => (
       <div key={i} className={`relative ${i % 3 === 1 ? "md:mt-24" : ""}`}>
-        <div className="skeleton aspect-3/4 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto rounded-2xl mb-5" />
-
+        <div className="skeleton aspect-3/4 w-full rounded-2xl mb-5" />
         <div className="px-1 space-y-2">
           <div className="skeleton h-2.5 w-14 rounded-full" />
-          <div className="skeleton h-5 w-3/4 rounded" />
-          <div className="skeleton h-4 w-full rounded opacity-70" />
-          <div className="skeleton h-4 w-4/5 rounded opacity-50" />
-
+          <div className="skeleton h-5 w-3/4 rounded-lg" />
+          <div className="skeleton h-4 w-full rounded-lg" />
+          <div className="skeleton h-4 w-4/5 rounded-lg" />
           <div className="flex justify-between items-center pt-2">
-            <div className="skeleton h-5 w-20 rounded" />
-            <div className="skeleton h-4 w-16 rounded" />
+            <div className="skeleton h-5 w-20 rounded-lg" />
+            <div className="skeleton h-4 w-16 rounded-lg" />
           </div>
         </div>
       </div>

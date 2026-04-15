@@ -10,9 +10,9 @@ export const ProfileOrders = () => {
       <SectionTitle>ჩემი შეკვეთები</SectionTitle>
 
       {isLoading && (
-        <div className="space-y-3 animate-pulse pt-2">
+        <div className="space-y-3 pt-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-14 bg-taupe-100 rounded-lg" />
+            <div key={i} className="skeleton h-14 w-full rounded-lg" />
           ))}
         </div>
       )}

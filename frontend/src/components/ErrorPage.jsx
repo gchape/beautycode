@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 export const ErrorPage = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center gap-8 px-6 bg-pink-50">
+  <div className="min-h-screen flex flex-col items-center justify-center gap-8 px-6 bg-base-200">
     <div className="flex flex-col items-center gap-1">
       <span className="font-script text-2xl italic text-taupe-700">
         BeautyCode
@@ -11,18 +11,14 @@ export const ErrorPage = () => (
       </span>
     </div>
 
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-px bg-taupe-300" />
-      <span className="font-label text-[10px] tracking-[0.22em] uppercase text-taupe-400">
-        500
-      </span>
-      <div className="w-10 h-px bg-taupe-300" />
+    <div className="badge badge-outline badge-lg font-label tracking-[0.22em] uppercase text-taupe-400">
+      500
     </div>
 
-    <div className="w-16 h-16 rounded-full border border-taupe-300 flex items-center justify-center text-taupe-400">
+    <div className="text-taupe-400">
       <svg
-        width="28"
-        height="28"
+        width="56"
+        height="56"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -50,20 +46,10 @@ export const ErrorPage = () => (
     <div className="flex flex-col items-center gap-3 mt-2">
       <Link
         to="/"
-        className="font-label text-xs uppercase tracking-[0.2em] px-8 py-3
-                   rounded-full border border-taupe-400 text-taupe-700
-                   hover:bg-pink-100 transition-colors duration-200"
+        className="btn btn-outline btn-sm rounded-full font-label uppercase tracking-[0.2em]"
       >
         მთავარი გვერდი
       </Link>
-      <button
-        onClick={() => window.location.reload()}
-        className="font-label text-[10px] uppercase tracking-[0.18em]
-                   text-taupe-400 hover:text-taupe-600 underline underline-offset-4
-                   transition-colors duration-150 cursor-pointer"
-      >
-        გვერდის განახლება
-      </button>
     </div>
   </div>
 );

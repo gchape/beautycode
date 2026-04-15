@@ -1,71 +1,69 @@
 @import "tailwindcss";
 
-/* cormorant-garamond-regular - latin */
+@plugin "daisyui" {
+  themes: false;
+}
+
+@utility btn {
+  @apply flex place-content-center place-items-center border-0;
+}
+
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "Cormorant Garamond";
   font-style: normal;
   font-weight: 400;
-  src: url("/fonts/cormorant-garamond-v21-latin-regular.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url("/fonts/cormorant-garamond-v21-latin-regular.woff2") format("woff2");
 }
-/* cormorant-garamond-italic - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "Cormorant Garamond";
   font-style: italic;
   font-weight: 400;
-  src: url("/fonts/cormorant-garamond-v21-latin-italic.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url("/fonts/cormorant-garamond-v21-latin-italic.woff2") format("woff2");
 }
-/* cormorant-garamond-600 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "Cormorant Garamond";
   font-style: normal;
   font-weight: 600;
-  src: url("/fonts/cormorant-garamond-v21-latin-600.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url("/fonts/cormorant-garamond-v21-latin-600.woff2") format("woff2");
 }
-/* cormorant-garamond-600italic - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "Cormorant Garamond";
   font-style: italic;
   font-weight: 600;
   src: url("/fonts/cormorant-garamond-v21-latin-600italic.woff2")
-    format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    format("woff2");
 }
-
-/* dm-sans-regular - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "DM Sans";
   font-style: normal;
   font-weight: 400;
-  src: url("/fonts/dm-sans-v17-latin-regular.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url("/fonts/dm-sans-v17-latin-regular.woff2") format("woff2");
 }
-/* dm-sans-italic - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "DM Sans";
   font-style: italic;
   font-weight: 400;
-  src: url("/fonts/dm-sans-v17-latin-italic.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url("/fonts/dm-sans-v17-latin-italic.woff2") format("woff2");
 }
-/* dm-sans-600 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "DM Sans";
   font-style: normal;
   font-weight: 600;
-  src: url("/fonts/dm-sans-v17-latin-600.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url("/fonts/dm-sans-v17-latin-600.woff2") format("woff2");
 }
-
-/* dm-mono-regular - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-display: swap;
   font-family: "DM Mono";
   font-style: normal;
   font-weight: 400;
-  src: url("/fonts/dm-mono-v16-latin-regular.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url("/fonts/dm-mono-v16-latin-regular.woff2") format("woff2");
 }
 
 @theme {
@@ -74,6 +72,7 @@
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-label: "DM Mono", "Courier New", monospace;
 
+  /* Taupe scale */
   --color-taupe-50: #faf8f6;
   --color-taupe-100: #f2ede8;
   --color-taupe-200: #e4dbd3;
@@ -85,11 +84,39 @@
   --color-taupe-800: #3a2e28;
   --color-taupe-900: #221a16;
 
+  /* Richer, more distinct pink scale */
+  --color-pink-50: #fdf6f2;
+  --color-pink-100: #faeae1;
+  --color-pink-200: #f4d0be;
+  --color-pink-300: #ecb49a;
+  --color-pink-400: #de9174;
+  --color-pink-500: #c97352;
+
   --color-on-surface-variant: var(--color-taupe-500);
 
-  --color-pink-50: #fbf0ec;
-  --color-pink-100: #f5e4dd;
-  --color-pink-200: #edcfc5;
+  /* DaisyUI semantic tokens — warm creamy palette */
+  --color-base-100: #fdf9f7;
+  --color-base-200: #faeae1;
+  --color-base-300: #f4d0be;
+  --color-base-content: #52443c;
+
+  --color-primary: #52443c;
+  --color-primary-content: #fdf9f7;
+
+  --color-secondary: #9a8a80;
+  --color-secondary-content: #fdf9f7;
+
+  --color-accent: #c97352;
+  --color-accent-content: #fdf6f2;
+
+  --color-neutral: #3a2e28;
+  --color-neutral-content: #fdf9f7;
+
+  --color-error: #c0392b;
+  --color-error-content: #fff;
+
+  --color-success: #2d7a4f;
+  --color-success-content: #fff;
 }
 
 @layer base {
@@ -110,7 +137,7 @@
     font-size: 0.875rem;
     line-height: 1.65;
     color: var(--color-taupe-700);
-    background-color: #fdf9f7;
+    background-color: var(--color-base-100);
   }
 
   h1,
@@ -146,82 +173,5 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
-
-  .text-display {
-    color: var(--color-taupe-800);
-  }
-  .text-body {
-    color: var(--color-taupe-700);
-  }
-  .text-secondary {
-    color: var(--color-taupe-500);
-  }
-  .text-muted {
-    color: var(--color-taupe-400);
-  }
-  .text-subtle {
-    color: var(--color-taupe-300);
-  }
-}
-
-@layer components {
-  .skeleton {
-    position: relative;
-    overflow: hidden;
-    background-color: var(--color-taupe-100);
-    border-radius: 0.375rem;
-  }
-
-  .skeleton::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.55) 50%,
-      transparent 100%
-    );
-    animation: skeleton-shimmer 1.6s ease-in-out infinite;
-  }
-
-  .skeleton-dark {
-    background-color: var(--color-taupe-200);
-  }
-
-  .skeleton-dark::after {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.4) 50%,
-      transparent 100%
-    );
-    animation: skeleton-shimmer 1.6s ease-in-out infinite;
-  }
-
-  @keyframes skeleton-shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
-
-  .skeleton-pulse {
-    background-color: var(--color-taupe-100);
-    animation: skeleton-pulse 1.8s ease-in-out infinite;
-    overflow: hidden;
-  }
-
-  @keyframes skeleton-pulse {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.45;
-    }
   }
 }

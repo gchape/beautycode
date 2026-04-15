@@ -1,13 +1,13 @@
 import { Link } from "react-router";
 
 export const AuthFooter = ({ label, linkText, to, isSubmitting }) => (
-  <p className="text-center text-sm tracking-tight text-taupe-500 mt-4">
+  <p className="mt-5 text-center text-sm text-taupe-400">
     {label}{" "}
     <Link
-      to={to}
+      to={isSubmitting ? "#" : to}
+      onClick={(e) => isSubmitting && e.preventDefault()}
       aria-disabled={isSubmitting}
-      className="text-taupe-700 font-semibold underline underline-offset-4 hover:text-taupe-900
-                 transition-colors duration-150"
+      className="font-semibold text-taupe-700 hover:text-pink-500 underline-offset-2 hover:underline"
     >
       {linkText}
     </Link>

@@ -2,13 +2,21 @@ import { Link } from "react-router";
 import { BagIcon } from "src/components/icons";
 
 export const EmptyCart = () => (
-  <div className="flex flex-col items-center justify-center py-32 gap-6 text-taupe-400">
-    <BagIcon />
-    <p className="text-lg tracking-wide">კალათა ცარიელია</p>
+  <div className="flex flex-col items-center justify-center py-32 gap-6">
+    <div className="w-20 h-20 rounded-full bg-pink-100 flex items-center justify-center text-pink-400">
+      <BagIcon size={36} />
+    </div>
+    <div className="text-center">
+      <p className="font-headline text-2xl text-taupe-700 mb-1">
+        კალათა ცარიელია
+      </p>
+      <p className="font-body text-sm text-taupe-400">
+        დაამატეთ სასურველი პროდუქტები
+      </p>
+    </div>
     <Link
       to="/products"
-      className="font-label text-xs uppercase tracking-widest text-taupe-600
-                 border-b border-taupe-400 hover:border-taupe-600 pb-0.5 transition-colors"
+      className="btn btn-accent btn-sm rounded-full font-label uppercase tracking-widest"
     >
       პროდუქტების ნახვა
     </Link>

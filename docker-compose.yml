@@ -7,6 +7,8 @@ services:
     container_name: beauty-code-frontend
     ports:
       - "80:80"
+    environment:
+      - BACKEND_URL=http://backend:8080
     depends_on:
       - backend
     restart: unless-stopped
@@ -20,5 +22,6 @@ services:
     environment:
       - AWS_REGION=eu-central-1
       - AWS_DYNAMODB_TABLE_NAME=BeautyCode
+
       - SPRING_PROFILES_ACTIVE=prod
     restart: unless-stopped

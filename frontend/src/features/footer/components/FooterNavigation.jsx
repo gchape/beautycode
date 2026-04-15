@@ -3,15 +3,15 @@ import { NAV_ITEMS } from "src/constants";
 
 export const FooterNavigation = () => (
   <div>
-    <h5 className="text-xs uppercase tracking-[0.2em] text-taupe-600 mb-6">
+    <h5 className="text-xs uppercase tracking-[0.2em] text-taupe-600 mb-4">
       ნავიგაცია
     </h5>
-    <ul className="space-y-4">
+    <ul className="menu p-0 gap-2.5">
       {NAV_ITEMS.map((item) => (
         <li key={item.label}>
           <Link
             to={item.to}
-            className="font-body text-taupe-500 no-underline transition-opacity duration-300 hover:opacity-80"
+            className="text-taupe-500 hover:text-taupe-700 hover:bg-transparent p-0"
           >
             {item.label}
           </Link>

@@ -1,8 +1,10 @@
+import UserPng from "../../../assets/images/user.png";
+
 export const ProfileHero = ({ name }) => (
   <div className="flex items-center gap-5">
     <div className="relative shrink-0">
       <img
-        src="/avatar/girl.png"
+        src={UserPng}
         alt={name}
         className="w-20 h-20 rounded-full object-cover"
       />

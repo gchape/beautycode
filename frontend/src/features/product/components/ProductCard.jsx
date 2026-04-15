@@ -15,42 +15,41 @@ export const ProductCard = ({
     return (
       <article
         aria-labelledby={titleId}
-        className="group bg-pink-50 text-taupe-600 p-3 sm:p-5 rounded-2xl 
-                   transition-shadow duration-500 hover:shadow-xl 
-                   hover:shadow-taupe-600/10 break-inside-avoid mb-8"
+        className="card bg-base-200 shadow-sm hover:shadow-md transition-all duration-500
+                   hover:-translate-y-1 break-inside-avoid mb-8 group"
       >
-        <div className="w-full overflow-hidden rounded-xl mb-4">
+        <figure className="overflow-hidden rounded-t-2xl bg-pink-50">
           <img
             src={imgUrl}
             alt={title}
             loading="lazy"
-            className="w-full h-auto object-contain 
-                       transition-transform duration-500 
+            className="w-full h-auto object-contain transition-transform duration-500
                        group-hover:scale-105"
           />
-        </div>
-
-        <div className="flex justify-between items-start gap-3">
-          <div>
-            <span className="font-label text-xs uppercase tracking-wider text-taupe-500">
-              {badge}
-            </span>
-
-            <p id={titleId} className="font-headline text-lg md:text-xl mt-1">
-              {title}
-            </p>
-          </div>
-
-          <div className="text-right shrink-0">
-            <span className="font-headline text-lg whitespace-nowrap">
-              {newPrice} GEL
-            </span>
-
-            {oldPrice != null && (
-              <span className="font-label text-sm text-taupe-400 line-through block">
-                {oldPrice} GEL
+        </figure>
+        <div className="card-body p-5">
+          <div className="flex justify-between items-start gap-3">
+            <div>
+              <span className="font-label text-[10px] uppercase tracking-widest text-pink-400">
+                {badge}
               </span>
-            )}
+              <p
+                id={titleId}
+                className="font-headline text-xl mt-1 text-taupe-700 leading-snug"
+              >
+                {title}
+              </p>
+            </div>
+            <div className="text-right shrink-0">
+              <span className="font-headline text-lg whitespace-nowrap text-taupe-700">
+                {newPrice} ₾
+              </span>
+              {oldPrice != null && (
+                <span className="font-label text-sm text-taupe-400 line-through block">
+                  {oldPrice} ₾
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </article>
@@ -60,60 +59,55 @@ export const ProductCard = ({
   return (
     <article
       aria-labelledby={titleId}
-      className={`relative ${offset ? "md:mt-24" : ""}`}
+      className={`relative group ${offset ? "md:mt-24" : ""}`}
     >
       <div
-        className="group aspect-3/4 w-full max-w-full p-4 sm:p-6 md:p-8 
-                   mx-auto overflow-hidden rounded-2xl bg-pink-50 mb-5"
+        className="card bg-base-200 hover:bg-pink-50 hover:shadow-md
+                      transition-all duration-300 mb-5 overflow-hidden"
       >
-        <img
-          src={imgUrl}
-          alt={title}
-          loading="lazy"
-          className="w-full h-full object-contain 
-                     p-4 sm:p-6 md:p-8
-                     transition-transform duration-700 ease-in-out 
-                     group-hover:scale-105"
-        />
+        <figure className="aspect-3/4 p-6 md:p-8">
+          <img
+            src={imgUrl}
+            alt={title}
+            loading="lazy"
+            className="w-full h-full object-contain transition-transform duration-500
+                       ease-out group-hover:scale-105"
+          />
+        </figure>
       </div>
 
       <div className="flex flex-col gap-1 px-1">
-        <span className="font-label text-[10px] uppercase tracking-[0.2em] text-taupe-400 font-semibold">
+        <span className="font-label text-[10px] uppercase tracking-[0.2em] text-pink-400 font-semibold">
           {badge}
         </span>
-
         <p
           id={titleId}
-          className="font-headline text-lg md:text-xl leading-snug text-taupe-600"
+          className="font-headline text-xl leading-snug text-taupe-700"
         >
           {title}
         </p>
-
         {description && (
-          <p className="font-body text-sm text-taupe-500 line-clamp-2 mt-1">
+          <p className="font-body text-sm text-taupe-500 line-clamp-2 mt-1 leading-relaxed">
             {description}
           </p>
         )}
-
-        <div className="mt-3 flex items-center justify-between">
+        <div className="mt-4 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-taupe-500">
+            <span className="text-lg font-bold text-taupe-600">
               {newPrice} ₾
             </span>
-
             {oldPrice != null && (
-              <span className="text-sm text-taupe-400 line-through">
+              <span className="text-sm text-taupe-400 line-through font-label">
                 {oldPrice} ₾
               </span>
             )}
           </div>
-
           <button
             onClick={onAddToCart}
-            className="text-xs font-bold cursor-pointer tracking-widest 
-                       text-taupe-600 border-b border-taupe-400 
-                       hover:border-taupe-600 pb-0.5 
-                       transition-colors duration-300"
+            className="btn btn-ghost btn-xs font-label tracking-widest uppercase
+                       text-taupe-500 border-b border-pink-300 rounded-none pb-0.5
+                       hover:border-pink-400 hover:text-taupe-700 hover:bg-transparent
+                       transition-colors duration-200"
           >
             დამატება
           </button>

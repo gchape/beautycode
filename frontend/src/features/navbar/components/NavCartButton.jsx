@@ -9,18 +9,15 @@ export const NavCartButton = () => {
     <Link
       to="/cart"
       aria-label={`კალათა — ${count} პროდუქტი`}
-      className="relative flex p-2.5 rounded-full hover:bg-pink-100 transition-all duration-300 text-taupe-600"
+      className="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-taupe-600 transition-colors duration-200 hover:bg-pink-100 hover:text-taupe-800"
     >
-      <CartIcon size={26} />
       {count > 0 && (
-        <span
-          className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full
-                         bg-taupe-600 text-white text-xs font-bold flex items-center
-                         justify-center leading-none animate-bounce"
-        >
+        <span className="absolute right-0 top-0 inline-flex h-5 min-w-[20px] translate-x-1/4 -translate-y-1/4 items-center justify-center rounded-full bg-pink-400 text-[10px] font-semibold leading-none text-pink-50 shadow-sm md:h-5.5 md:min-w-[22px] md:text-xs">
           {count > 99 ? "99+" : count}
         </span>
       )}
+
+      <CartIcon size={24} />
     </Link>
   );
 };

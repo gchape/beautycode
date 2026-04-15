@@ -2,11 +2,17 @@ export const AuthSubmit = ({ label, loadingLabel, isSubmitting }) => (
   <button
     type="submit"
     disabled={isSubmitting}
-    className="w-full py-3 text-sm tracking-widest font-bold uppercase text-taupe-700
-               border border-taupe-500 rounded-full hover:bg-pink-100
-               transition-colors duration-200 cursor-pointer mt-3
+    className="w-full h-11 rounded-lg bg-[#c97352] text-sm font-medium tracking-wide text-white
+               hover:bg-[#b8633f]
                disabled:opacity-50 disabled:cursor-not-allowed"
   >
-    {isSubmitting ? loadingLabel : label}
+    {isSubmitting ? (
+      <span className="flex items-center justify-center gap-2">
+        <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+        {loadingLabel}
+      </span>
+    ) : (
+      label
+    )}
   </button>
 );

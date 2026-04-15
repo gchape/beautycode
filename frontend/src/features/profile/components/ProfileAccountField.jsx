@@ -1,17 +1,16 @@
 export const ProfileAccountField = ({ label, name, type, value }) => (
-  <div>
-    <label className="block text-[10px] tracking-[0.2em] uppercase text-taupe-400 mb-1">
+  <fieldset className="fieldset">
+    <legend className="fieldset-legend text-[10px] tracking-[0.2em] uppercase text-taupe-400">
       {label}
-    </label>
+    </legend>
     <input
       name={name}
       type={type}
       value={value}
-      readOnly={true}
+      readOnly
       onChange={() => {}}
-      className="w-full bg-transparent py-2 text-sm tracking-wide text-taupe-800
-                 border-b border-taupe-200 outline-none focus:border-taupe-600
-                 transition-colors duration-200 read-only:cursor-default"
+      className="input input-bordered w-full bg-transparent text-sm text-taupe-800
+                 border-taupe-200 focus:border-taupe-600 read-only:cursor-default"
     />
-  </div>
+  </fieldset>
 );

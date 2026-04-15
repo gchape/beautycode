@@ -7,7 +7,7 @@ export const ProfileFooter = () => {
     <footer className="flex justify-between items-center pt-6 border-t border-taupe-200">
       <a
         href="mailto:13beauty.code@gmail.com"
-        className="text-xs tracking-[0.18em] uppercase text-taupe-400 hover:text-taupe-700 transition-colors duration-150"
+        className="link link-hover text-xs tracking-[0.18em] uppercase text-taupe-400"
       >
         დახმარება
       </a>
@@ -15,8 +15,7 @@ export const ProfileFooter = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="text-xs tracking-[0.18em] uppercase text-rose-400 hover:text-rose-600
-                     transition-colors duration-150 cursor-pointer
+          className="btn btn-ghost btn-xs text-error tracking-[0.18em] uppercase
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >
           გამოსვლა
