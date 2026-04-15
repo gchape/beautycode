@@ -106,15 +106,4 @@ public class UserRepository {
 
         return Optional.of(user);
     }
-
-    public boolean contains(String email) {
-        return dynamoDbClient.getItem(r -> r
-                .tableName(tableName)
-                .key(Map.of(
-                        "PK", AttributeValue.fromS("USER#" + email),
-                        "SK", AttributeValue.fromS("USER#" + email)
-                ))
-                .projectionExpression("PK")
-        ).hasItem();
-    }
 }
