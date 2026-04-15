@@ -15,16 +15,15 @@ export const ProductCard = ({
     return (
       <article
         aria-labelledby={titleId}
-        className="card bg-base-200 shadow-sm hover:shadow-md transition-all duration-500
-                   hover:-translate-y-1 break-inside-avoid mb-8 group"
+        className="card bg-base-200 shadow-sm hover:shadow-md transition-shadow ease-out duration-250
+                    break-inside-avoid mb-8 rounded-t-2xl"
       >
         <figure className="overflow-hidden rounded-t-2xl bg-pink-50">
           <img
             src={imgUrl}
             alt={title}
             loading="lazy"
-            className="w-full h-auto object-contain transition-transform duration-500
-                       group-hover:scale-105"
+            className="w-full h-auto object-contain rounded-xl"
           />
         </figure>
         <div className="card-body p-5">
@@ -59,19 +58,15 @@ export const ProductCard = ({
   return (
     <article
       aria-labelledby={titleId}
-      className={`relative group ${offset ? "md:mt-24" : ""}`}
+      className={`relative ${offset ? "md:mt-24" : ""}`}
     >
-      <div
-        className="card bg-base-200 hover:bg-pink-50 hover:shadow-md
-                      transition-all duration-300 mb-5 overflow-hidden"
-      >
+      <div className="card bg-base-200 mb-5 overflow-hidden">
         <figure className="aspect-3/4 p-6 md:p-8">
           <img
             src={imgUrl}
             alt={title}
             loading="lazy"
-            className="w-full h-full object-contain transition-transform duration-500
-                       ease-out group-hover:scale-105"
+            className="w-full h-full object-contain"
           />
         </figure>
       </div>
