@@ -40,7 +40,6 @@ const Navbar = () => {
         </div>
       </header>
 
-      {/* Backdrop */}
       <div
         onClick={close}
         className={`fixed inset-0 z-40 bg-taupe-900/20 backdrop-blur-sm
@@ -48,13 +47,12 @@ const Navbar = () => {
                     ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       />
 
-      {/* Slide-down menu panel */}
       <nav
         aria-label="მთავარი ნავიგაცია"
-        aria-hidden={!isOpen}
+        inert={!isOpen ? true : undefined}
         className={`fixed top-16 left-0 right-0 z-40 bg-base-100 border-b border-pink-200
-                    transition-all duration-300 ease-out overflow-hidden
-                    ${isOpen ? "max-h-96 opacity-100 shadow-lg" : "max-h-0 opacity-0"}`}
+              transition-all duration-300 ease-out overflow-hidden
+              ${isOpen ? "max-h-96 opacity-100 shadow-lg" : "max-h-0 opacity-0"}`}
       >
         <NavMenu onClose={close} />
       </nav>

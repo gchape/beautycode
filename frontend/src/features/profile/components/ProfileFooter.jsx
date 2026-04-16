@@ -15,8 +15,8 @@ export const ProfileFooter = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="btn btn-ghost btn-xs text-error tracking-[0.18em] uppercase
-                     disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-taupe-400 hover:text-error tracking-[0.18em] text-xs uppercase transition-colors duration-200
+             disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           გამოსვლა
         </button>
