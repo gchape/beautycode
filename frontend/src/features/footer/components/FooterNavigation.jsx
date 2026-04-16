@@ -6,12 +6,12 @@ export const FooterNavigation = () => (
     <h5 className="text-xs uppercase tracking-[0.2em] text-taupe-600 mb-4">
       ნავიგაცია
     </h5>
-    <ul className="menu p-0 gap-2.5">
+    <ul className="flex flex-col p-0 gap-2.5 list-none">
       {NAV_ITEMS.map((item) => (
         <li key={item.label}>
           <Link
             to={item.to}
-            className="text-taupe-500 hover:text-taupe-700 hover:bg-transparent p-0"
+            className="text-taupe-500 hover:text-taupe-700 transition-colors duration-200"
           >
             {item.label}
           </Link>

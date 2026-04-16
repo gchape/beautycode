@@ -8,11 +8,12 @@ export const CartItem = ({ item }) => {
 
   return (
     <div
-      className="card card-side rounded-xl bg-base-200 transition-colors duration-200
-                    shadow-sm p-4 md:p-6 gap-4 md:gap-6 cursor-pointer"
+      className="rounded-xl bg-base-200 transition-colors duration-200
+                    shadow-sm p-4 md:p-6 cursor-pointer
+                    flex flex-col sm:flex-row gap-4 md:gap-6"
     >
       <figure
-        className="w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-xl overflow-hidden
+        className="w-full xs:w-24 xs:h-24 md:w-28 md:h-28 h-32 shrink-0 rounded-xl overflow-hidden
                          bg-pink-50 border border-pink-200"
       >
         <img
@@ -22,9 +23,9 @@ export const CartItem = ({ item }) => {
         />
       </figure>
 
-      <div className="card-body p-0 gap-2">
+      <div className="flex flex-col gap-2 flex-1 min-w-0">
         <div className="flex justify-between items-start gap-2">
-          <div>
+          <div className="min-w-0">
             <span className="font-label text-[10px] uppercase tracking-widest text-pink-400 block mb-1">
               {item.badge}
             </span>
@@ -42,8 +43,9 @@ export const CartItem = ({ item }) => {
           </button>
         </div>
 
-        <div className="flex flex-wrap justify-between items-end gap-3 mt-auto">
+        <div className="flex flex-col xs:flex-row xs:flex-wrap xs:justify-between xs:items-end gap-3 mt-auto">
           <CartQuantityControl item={item} />
+
           <CartItemPrice
             newPrice={item.newPrice}
             oldPrice={item.oldPrice}

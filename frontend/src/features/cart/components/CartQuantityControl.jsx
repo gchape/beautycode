@@ -4,7 +4,7 @@ export const CartQuantityControl = ({ item }) => {
   const dispatch = useCartDispatch();
 
   return (
-    <div className="join rounded-full bg-pink-100 border border-pink-200">
+    <div className="join justify-center rounded-full max-w-30 bg-pink-100 border border-pink-200">
       <button
         onClick={() => dispatch({ item, action: "DECREASE" })}
         disabled={item.quantity === 1}
