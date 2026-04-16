@@ -4,13 +4,13 @@ import { AuthField } from "./AuthField";
 import { AuthFooter } from "./AuthFooter";
 import { AuthSubmit } from "./AuthSubmit";
 import { AuthWrapper } from "./AuthWrapper";
-import LoginJpg from "../../../assets/images/auth/login.jpg";
+import LoginWebp from "../../../assets/images/auth/login.webp";
 
 const Login = () => {
   const { fetcher, isLoading } = useFormFetcher();
 
   return (
-    <AuthWrapper imageSrc={LoginJpg}>
+    <AuthWrapper imageSrc={LoginWebp}>
       <div className="mb-8">
         <h2 className="font-headline text-3xl italic leading-tight text-taupe-800">
           მოგესალმებით

@@ -5,13 +5,13 @@ import { AuthFooter } from "./AuthFooter";
 import { AuthSubmit } from "./AuthSubmit";
 import { AuthWrapper } from "./AuthWrapper";
 import { AuthTerms } from "./AuthTerms";
-import RegisterJpg from "../../../assets/images/auth/register.jpg";
+import RegisterWebp from "../../../assets/images/auth/register.webp";
 
 const Register = () => {
   const { fetcher, isLoading } = useFormFetcher();
 
   return (
-    <AuthWrapper imageSrc={RegisterJpg}>
+    <AuthWrapper imageSrc={RegisterWebp}>
       <div className="mb-8">
         <h2 className="font-headline text-3xl italic text-taupe-800 leading-tight">
           ანგარიშის შექმნა
