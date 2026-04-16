@@ -9,8 +9,7 @@ export const CartItem = ({ item }) => {
   return (
     <div
       className="rounded-xl bg-base-200 transition-colors duration-200
-                    shadow-sm p-4 md:p-6 cursor-pointer
-                    flex flex-col sm:flex-row gap-4 md:gap-6"
+                    shadow-sm p-4 md:p-6 flex flex-col sm:flex-row gap-4 md:gap-6"
     >
       <figure
         className="w-full xs:w-24 xs:h-24 md:w-28 md:h-28 h-32 shrink-0 rounded-xl overflow-hidden
