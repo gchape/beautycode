@@ -39,9 +39,9 @@ public class OrderRepository {
 
                             "OrderId", AttributeValue.fromS(orderItem.id()),
                             "OrderSummary", AttributeValue.fromS(orderItem.summary()),
-                            "OrderDate", AttributeValue.fromS(orderItem.date().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                            "OrderedAt", AttributeValue.fromS(orderItem.orderedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                     ))
-                    .conditionExpression("attribute_exists(PK) AND attribute_not_exists(SK)")
+                    .conditionExpression("attribute_not_exists(SK)")
             );
             return true;
         } catch (ConditionalCheckFailedException e) {

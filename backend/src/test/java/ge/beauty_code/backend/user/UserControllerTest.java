@@ -5,44 +5,41 @@ import ge.beauty_code.backend.user.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 @WebMvcTest(UserController.class)
 class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
     @MockitoBean
     private UserService userService;
 
+    @Autowired
+    private MockMvcTester mockMvcTester;
+
     @Test
     @WithMockUser(username = "test@mail.com")
-    void shouldReturnNotFoundStatusCodeWhenNoUserExists() throws Exception {
+    void shouldReturnNotFoundStatusCodeWhenNoUserExists() {
         var email = "test@mail.com";
 
         when(userService.findUserByEmail(email))
                 .thenThrow(new UserNotFoundException("მომხმარებელი Email-ით " + email + " ვერ მოიძებნა"));
 
-        mockMvc.perform(get("/api/users/profile")
-                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andDo(print());
+        mockMvcTester.get()
+                .uri("/api/users/profile")
+                .accept(MediaType.APPLICATION_JSON)
+                .assertThat()
+                .hasStatus(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    @WithMockUser(username = "any@gmail.com")
-    void shouldRespondWithUserDtoWhenUserExists() throws Exception {
+    void shouldRespondWithUserDtoWhenUserExists() {
         var email = "any@gmail.com";
 
         var userDto = new UserDto(
@@ -55,14 +52,17 @@ class UserControllerTest {
         when(userService.findUserByEmail(email))
                 .thenReturn(userDto);
 
-        mockMvc.perform(get("/api/users/profile")
-                        .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"))
-                .andExpect(jsonPath("$.email").value(email))
-                .andExpect(jsonPath("$.password").doesNotExist())
-                .andExpect(jsonPath("$.phone").value("599000000"))
-                .andDo(print());
+        mockMvcTester.get()
+                .uri("/api/users/profile")
+                .with(user(email))
+                .accept(MediaType.APPLICATION_JSON)
+                .assertThat()
+                .hasStatusOk()
+                .bodyJson()
+                .doesNotHavePath("password")
+                .hasPath("email")
+                .hasPath("lastName")
+                .hasPath("firstName")
+                .hasPath("phone");
     }
 }

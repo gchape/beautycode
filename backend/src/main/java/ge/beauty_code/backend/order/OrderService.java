@@ -20,7 +20,7 @@ public class OrderService {
 
     public void placeOrder(String userEmail, OrderItem orderItem) {
         if (!orderRepository.save(userEmail, orderItem)) {
-            throw new OrderAlreadyExistsException("მომხმარებელი Email-ით " + userEmail + " არ არსებობს ან შეკვეთა ID-ით " + orderItem.id() + " უკვე არსებობს");
+            throw new OrderAlreadyExistsException("შეკვეთა ID-ით " + orderItem.id() + " უკვე არსებობს");
         }
     }
 

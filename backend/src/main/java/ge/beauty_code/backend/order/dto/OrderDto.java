@@ -9,13 +9,13 @@ import java.util.Map;
 public record OrderDto(
         String id,
         String summary,
-        LocalDateTime date
+        LocalDateTime orderedAt
 ) {
     public static OrderDto mapToDto(Map<String, AttributeValue> item) {
         return new OrderDto(
                 item.get("OrderId").s(),
                 item.get("OrderSummary").s(),
-                LocalDateTime.parse(item.get("OrderDate").s(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                LocalDateTime.parse(item.get("OrderedAt").s(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         );
     }
 }

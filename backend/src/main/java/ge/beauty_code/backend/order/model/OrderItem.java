@@ -5,6 +5,6 @@ import java.time.LocalDateTime;
 public record OrderItem(
         String id,
         String summary,
-        LocalDateTime date
+        LocalDateTime orderedAt
 ) {
 }

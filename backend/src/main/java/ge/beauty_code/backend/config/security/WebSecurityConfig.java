@@ -13,6 +13,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -21,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @Import({PersistentTokenRepositoryImpl.class, RoleUserDetailsService.class})
 public class WebSecurityConfig {
 
@@ -35,11 +36,7 @@ public class WebSecurityConfig {
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost",
-                "http://localhost:5173",
-                "https://beauty-code.ge"
-        ));
+        config.setAllowedOrigins(List.of("http://localhost", "http://localhost:5173", "https://beauty-code.ge"));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
 
@@ -54,12 +51,16 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     AuthenticationManager authenticationManager(
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder
+            UserDetailsService userDetailsService
     ) {
         var provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
+        provider.setPasswordEncoder(passwordEncoder());
 
         return new ProviderManager(provider);
     }
@@ -70,8 +71,9 @@ public class WebSecurityConfig {
             AuthenticationManager authenticationManager
     ) {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
+
+                .csrf(AbstractHttpConfigurer::disable)
 
                 .authenticationManager(authenticationManager)
 
