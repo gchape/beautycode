@@ -22,7 +22,8 @@ public class OrderRepository {
     private final String tableName;
 
     public OrderRepository(DynamoDbClient dynamoDbClient,
-                           @Value("${aws.dynamodb.table-name}") String tableName) {
+                           @Value("${spring.cloud.aws.dynamodb.table-name}") String tableName
+    ) {
         this.dynamoDbClient = dynamoDbClient;
         this.tableName = tableName;
     }

@@ -3,33 +3,33 @@ spring:
     name: backend
   profiles:
     default: dev
-
 ---
 spring:
   config:
     activate:
       on-profile: dev
-
-aws:
-  region: eu-central-1
-  dynamodb:
-    table-name: BeautyCode
-
+  cloud:
+    aws:
+      region:
+        static: eu-central-1
+      credentials:
+        instance-profile: false
+      dynamodb:
+        table-name: BeautyCode
 logging:
   level:
     root: info
-
 ---
 spring:
   config:
     activate:
       on-profile: prod
-
-aws:
-  region: ${AWS_REGION}
-  dynamodb:
-    table-name: ${AWS_DYNAMODB_TABLE_NAME}
-
+  cloud:
+    aws:
+      region:
+        static: ${AWS_REGION}
+      dynamodb:
+        table-name: ${AWS_DYNAMODB_TABLE_NAME}
 logging:
   level:
     root: error

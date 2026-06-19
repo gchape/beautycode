@@ -7,9 +7,9 @@ export const FooterBrand = () => {
   return (
     <div className="md:col-span-2">
       <header>
-        <h4 className="text-2xl md:text-3xl font-script italic text-taupe-600 mb-4">
+        <p className="text-2xl md:text-3xl font-script italic text-taupe-600 mb-4">
           BeautyCode
-        </h4>
+        </p>
         <p className="max-w-sm text-taupe-500 mb-6 leading-relaxed">
           გამოიწერეთ ჩვენი სიახლეები და მიიღეთ ექსკლუზიური შეთავაზებები პირდაპირ
           თქვენს ფოსტაზე.

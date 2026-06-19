@@ -23,7 +23,8 @@ public class ProductRepository {
     private final DynamoDbClient dynamoDbClient;
 
     public ProductRepository(DynamoDbClient dynamoDbClient,
-                             @Value("${aws.dynamodb.table-name}") String tableName) {
+                             @Value("${spring.cloud.aws.dynamodb.table-name}") String tableName
+    ) {
         this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
     }

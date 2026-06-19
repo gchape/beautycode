@@ -29,7 +29,8 @@ public class UserRepository {
     @Autowired
     public UserRepository(DynamoDbClient dynamoDbClient,
                           PasswordEncoder passwordEncoder,
-                          @Value("${aws.dynamodb.table-name}") String tableName) {
+                          @Value("${spring.cloud.aws.dynamodb.table-name}") String tableName
+    ) {
         this.tableName = tableName;
         this.dynamoDbClient = dynamoDbClient;
         this.passwordEncoder = passwordEncoder;
