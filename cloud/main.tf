@@ -333,7 +333,7 @@ resource "aws_instance" "frontend" {
   user_data = <<-EOF
     #!/bin/bash
     apt-get update -y
-    apt-get install -y docker.io
+    apt-get install -y docker.io certbot
     systemctl enable docker && systemctl start docker
     docker pull ghcr.io/gchape/beauty-code-frontend:latest
     docker run -d \
