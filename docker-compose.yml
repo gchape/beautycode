@@ -5,6 +5,8 @@ services:
       args:
         VITE_CRISP_WEBSITE_ID: ${CRISP_WEBSITE_ID}
     container_name: beauty-code-frontend
+    volumes:
+      - ./frontend/nginx.dev.conf.template:/etc/nginx/nginx.conf.template:ro
     ports:
       - "80:80"
     environment:
@@ -12,6 +14,12 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/index.html"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
 
   backend:
     build:
@@ -22,6 +30,5 @@ services:
     environment:
       - AWS_REGION=eu-central-1
       - AWS_DYNAMODB_TABLE_NAME=BeautyCode
-
       - SPRING_PROFILES_ACTIVE=prod
     restart: unless-stopped

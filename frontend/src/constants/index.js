@@ -13,8 +13,3 @@ export const CATEGORIES = [
   { label: "სახის მოვლა", value: "facial-cleanser" },
   { label: "თმის მოვლა", value: "hair-dryer" },
 ];
-
-export const LEGAL_LINKS = [
-  { to: "/terms-of-service", label: "Terms of Service" },
-  { to: "/privacy-policy", label: "Privacy Policy" },
-];

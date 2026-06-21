@@ -11,7 +11,7 @@ import {
 } from "./features/auth";
 import { Cart, CartProvider } from "./features/cart";
 import { BrandEthos, Hero, Home } from "./features/home";
-import { PrivacyPolicy, TermsOfService } from "./features/legal";
+import { TermsAndConditions } from "./features/legal";
 import {
   CategoryProvider,
   FeaturedProducts,
@@ -57,6 +57,10 @@ const router = createBrowserRouter([
           </CategoryProvider>
         ),
       },
+      {
+        path: "terms-and-conditions",
+        element: <TermsAndConditions />,
+      },
     ],
   },
   {
@@ -72,14 +76,6 @@ const router = createBrowserRouter([
     path: "/register",
     element: <Register />,
     action: registerAction,
-  },
-  {
-    path: "privacy-policy",
-    element: <PrivacyPolicy />,
-  },
-  {
-    path: "terms-of-service",
-    element: <TermsOfService />,
   },
 ]);
 

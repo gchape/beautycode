@@ -1,3 +1,1 @@
-export { default as PrivacyPolicy } from "./components/PrivacyPolicy";
-
-export { default as TermsOfService } from "./components/TermsOfService";
+export { default as TermsAndConditions } from "./components/TermsAndConditions";
