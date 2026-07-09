@@ -61,7 +61,7 @@ public class Product {
     @Getter(onMethod_ = @DynamoDbAttribute("Features"))
     private List<String> features;
 
-    public static Product fromDomain(ProductItem product) {
+    public static Product fromDomain(ProductDto product) {
         Product entity = new Product();
         entity.setPk("PRODUCT#" + product.id());
         entity.setSk("PRODUCT#" + product.id());

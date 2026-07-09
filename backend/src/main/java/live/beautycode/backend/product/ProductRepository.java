@@ -3,8 +3,6 @@ package live.beautycode.backend.product;
 import live.beautycode.backend.product.dto.ProductDto;
 import live.beautycode.backend.product.model.Category;
 import live.beautycode.backend.product.model.Product;
-import live.beautycode.backend.product.model.ProductItem;
-import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.*;
@@ -15,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@NullMarked
 public class ProductRepository {
 
     private final DynamoDbTable<Product> productTable;
@@ -29,7 +26,7 @@ public class ProductRepository {
         this.productsByCategory = productTable.index("ProductsByCategory");
     }
 
-    public boolean save(ProductItem product) {
+    public boolean save(ProductDto product) {
         Product entity = Product.fromDomain(product);
         try {
             productTable.putItem(r -> r
