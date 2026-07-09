@@ -1,6 +1,6 @@
-package ge.beauty_code.backend.product.converters;
+package live.beautycode.backend.product.converters;
 
-import ge.beauty_code.backend.product.model.Category;
+import live.beautycode.backend.product.model.Category;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

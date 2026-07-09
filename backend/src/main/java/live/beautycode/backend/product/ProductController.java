@@ -1,7 +1,7 @@
-package ge.beauty_code.backend.product;
+package live.beautycode.backend.product;
 
-import ge.beauty_code.backend.product.dto.ProductDto;
-import ge.beauty_code.backend.product.model.Category;
+import live.beautycode.backend.product.dto.ProductDto;
+import live.beautycode.backend.product.model.Category;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 

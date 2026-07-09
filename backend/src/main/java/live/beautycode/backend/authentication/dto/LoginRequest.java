@@ -1,4 +1,4 @@
 package live.beautycode.backend.authentication.dto;
 
-public record LoginRequest() {
+public record LoginRequest(String email, String password) {
 }

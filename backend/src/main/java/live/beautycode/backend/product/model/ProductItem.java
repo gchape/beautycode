@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.product.model;
+package live.beautycode.backend.product.model;
 
 import java.util.List;
 

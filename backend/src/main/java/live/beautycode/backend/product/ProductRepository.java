@@ -1,59 +1,42 @@
-package ge.beauty_code.backend.product;
+package live.beautycode.backend.product;
 
-import ge.beauty_code.backend.product.dto.ProductDto;
-import ge.beauty_code.backend.product.model.Category;
-import ge.beauty_code.backend.product.model.ProductItem;
+import live.beautycode.backend.product.dto.ProductDto;
+import live.beautycode.backend.product.model.Category;
+import live.beautycode.backend.product.model.Product;
+import live.beautycode.backend.product.model.ProductItem;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.enhanced.dynamodb.*;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
 @NullMarked
 public class ProductRepository {
 
-    private final String tableName;
+    private final DynamoDbTable<Product> productTable;
+    private final DynamoDbIndex<Product> productsByType;
+    private final DynamoDbIndex<Product> productsByCategory;
 
-    private final DynamoDbClient dynamoDbClient;
-
-    public ProductRepository(DynamoDbClient dynamoDbClient,
-                             @Value("${spring.cloud.aws.dynamodb.table-name}") String tableName
-    ) {
-        this.tableName = tableName;
-        this.dynamoDbClient = dynamoDbClient;
+    public ProductRepository(DynamoDbEnhancedClient enhancedClient,
+                             @Value("${spring.cloud.aws.dynamodb.table-name}") String tableName) {
+        this.productTable = enhancedClient.table(tableName, TableSchema.fromBean(Product.class));
+        this.productsByType = productTable.index("ProductsByType");
+        this.productsByCategory = productTable.index("ProductsByCategory");
     }
 
     public boolean save(ProductItem product) {
+        Product entity = Product.fromDomain(product);
         try {
-            dynamoDbClient.putItem(r -> r
-                    .tableName(tableName)
-                    .item(Map.ofEntries(
-                            Map.entry("PK", AttributeValue.fromS("PRODUCT#" + product.id())),
-                            Map.entry("SK", AttributeValue.fromS("PRODUCT#" + product.id())),
-
-                            Map.entry("Type", AttributeValue.fromS("Product")),
-
-                            Map.entry("Id", AttributeValue.fromS(product.id())),
-                            Map.entry("ImgUrl", AttributeValue.fromS(product.imgUrl())),
-                            Map.entry("Badge", AttributeValue.fromS(product.badge())),
-                            Map.entry("Category", AttributeValue.fromS(product.category().toString())),
-                            Map.entry("Discount", AttributeValue.fromN(String.valueOf(product.discount()))),
-                            Map.entry("Title", AttributeValue.fromS(product.title())),
-                            Map.entry("OldPrice", AttributeValue.fromN(String.valueOf(product.oldPrice()))),
-                            Map.entry("NewPrice", AttributeValue.fromN(String.valueOf(product.newPrice()))),
-                            Map.entry("Features", AttributeValue.fromL(
-                                    product.features().stream()
-                                            .map(AttributeValue::fromS)
-                                            .toList()
-                            ))))
-                    .conditionExpression("attribute_not_exists(PK)")
-            );
+            productTable.putItem(r -> r
+                    .item(entity)
+                    .conditionExpression(Expression.builder()
+                            .expression("attribute_not_exists(PK)")
+                            .build()));
             return true;
         } catch (ConditionalCheckFailedException e) {
             return false;
@@ -61,48 +44,31 @@ public class ProductRepository {
     }
 
     public Optional<ProductDto> findById(String id) {
-        var response = dynamoDbClient.getItem(r -> r
-                .tableName(tableName)
-                .key(Map.of(
-                        "PK", AttributeValue.fromS("PRODUCT#" + id),
-                        "SK", AttributeValue.fromS("PRODUCT#" + id)
-                ))
-        );
+        Product entity = productTable.getItem(Key.builder()
+                .partitionValue("PRODUCT#" + id)
+                .sortValue("PRODUCT#" + id)
+                .build());
 
-        if (!response.hasItem()) {
-            return Optional.empty();
-        }
-
-        var item = response.item();
-        return Optional.of(ProductDto.mapToDto(item));
+        return Optional.ofNullable(entity).map(Product::toDto);
     }
 
     public List<ProductDto> findAll() {
-        return dynamoDbClient.query(r -> r
-                        .tableName(tableName)
-                        .indexName("ProductsByType")
-                        .keyConditionExpression("#t = :type")
-                        .expressionAttributeNames(Map.of("#t", "Type"))
-                        .expressionAttributeValues(Map.of(
-                                ":type", AttributeValue.fromS("Product")
-                        )))
-                .items()
+        return productsByType.query(QueryConditional.keyEqualTo(Key.builder()
+                        .partitionValue("Product")
+                        .build()))
                 .stream()
-                .map(ProductDto::mapToDto)
+                .flatMap(page -> page.items().stream())
+                .map(Product::toDto)
                 .toList();
     }
 
     public List<ProductDto> findByCategory(Category category) {
-        return dynamoDbClient.query(r -> r
-                        .tableName(tableName)
-                        .indexName("ProductsByCategory")
-                        .keyConditionExpression("Category = :category")
-                        .expressionAttributeValues(Map.of(
-                                ":category", AttributeValue.fromS(category.toString())
-                        )))
-                .items()
+        return productsByCategory.query(QueryConditional.keyEqualTo(Key.builder()
+                        .partitionValue(category.toString())
+                        .build()))
                 .stream()
-                .map(ProductDto::mapToDto)
+                .flatMap(page -> page.items().stream())
+                .map(Product::toDto)
                 .toList();
     }
 }

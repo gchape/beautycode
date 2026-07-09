@@ -1,10 +1,10 @@
-package ge.beauty_code.backend.product;
+package live.beautycode.backend.product;
 
-import ge.beauty_code.backend.exception.ProductAlreadyExistsException;
-import ge.beauty_code.backend.exception.ProductNotFoundException;
-import ge.beauty_code.backend.product.dto.ProductDto;
-import ge.beauty_code.backend.product.model.Category;
-import ge.beauty_code.backend.product.model.ProductItem;
+import live.beautycode.backend.exception.ProductAlreadyExistsException;
+import live.beautycode.backend.exception.ProductNotFoundException;
+import live.beautycode.backend.product.dto.ProductDto;
+import live.beautycode.backend.product.model.Category;
+import live.beautycode.backend.product.model.ProductItem;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Service;
 
