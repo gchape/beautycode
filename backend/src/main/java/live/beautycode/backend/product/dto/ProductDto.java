@@ -1,0 +1,35 @@
+package live.beautycode.backend.product.dto;
+
+import live.beautycode.backend.product.model.Category;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
+import java.util.List;
+import java.util.Map;
+
+public record ProductDto(
+        String id,
+        String imgUrl,
+        String badge,
+        Category category,
+        int discount,
+        String title,
+        double oldPrice,
+        double newPrice,
+        List<String> features
+) {
+    public static ProductDto mapToDto(Map<String, AttributeValue> item) {
+        return new ProductDto(
+                item.get("Id").s(),
+                item.get("ImgUrl").s(),
+                item.get("Badge").s(),
+                Category.valueOf(item.get("Category").s().toUpperCase().replace("-", "_")),
+                Integer.parseInt(item.get("Discount").n()),
+                item.get("Title").s(),
+                Double.parseDouble(item.get("OldPrice").n()),
+                Double.parseDouble(item.get("NewPrice").n()),
+                item.get("Features").l().stream()
+                        .map(AttributeValue::s)
+                        .toList()
+        );
+    }
+}
