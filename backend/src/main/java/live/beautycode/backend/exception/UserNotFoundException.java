@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.exception;
+package live.beautycode.backend.exception;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {

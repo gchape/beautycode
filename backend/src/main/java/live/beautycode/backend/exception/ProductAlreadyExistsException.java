@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.exception;
+package live.beautycode.backend.exception;
 
 public class ProductAlreadyExistsException extends RuntimeException {
     public ProductAlreadyExistsException(String message) {

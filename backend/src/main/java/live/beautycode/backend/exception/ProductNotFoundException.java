@@ -1,4 +1,4 @@
-package ge.beauty_code.backend.exception;
+package live.beautycode.backend.exception;
 
 public class ProductNotFoundException extends RuntimeException {
     public ProductNotFoundException(String message) {
