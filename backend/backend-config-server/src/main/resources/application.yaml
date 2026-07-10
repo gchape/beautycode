@@ -1,3 +1,42 @@
+server:
+  port: 8888
+
 spring:
   application:
     name: backend-config-server
+  profiles:
+    active: dev
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/gchape/beauty-code.git
+          search-paths: config
+          default-label: main
+          refresh-rate: 0
+          timeout: 4
+          clone-on-start: true
+          force-pull: true
+
+logging:
+  level:
+    root: info
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+logging:
+  level:
+    org.springframework.cloud.config: debug
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  level:
+    root: warn
+    org.springframework.cloud.config: info

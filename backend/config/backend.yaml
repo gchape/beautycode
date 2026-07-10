@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    compatibility-verifier:
+      enabled: false
+  ldap:
+    base: dc=beautycode,dc=live

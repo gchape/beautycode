@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    aws:
+      region:
+        static: eu-central-1
+      credentials:
+        instance-profile: false
+      dynamodb:
+        table-name: BeautyCode
+  ldap:
+    urls: ldap://localhost:8389
+    embedded:
+      port: 8389
+      base-dn: dc=beautycode,dc=live
+      ldif: classpath:ldap/schema.ldif
+      validation:
+        enabled: false
+  security:
+    jwt:
+      secret: dev-only-secret-change-me-please-1234567890
+      expiration-seconds: 21600
+
+logging:
+  level:
+    root: debug
