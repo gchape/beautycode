@@ -1,9 +1,10 @@
 package live.beautycode.backend.user.dto;
 
-public record UserDto(
+public record RegisterRequest(
         String firstName,
         String lastName,
         String email,
-        String phone
+        String phone,
+        String password
 ) {
 }

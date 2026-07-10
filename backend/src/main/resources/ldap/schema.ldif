@@ -1,5 +1,4 @@
 version: 1
-
 dn: dc=beautycode,dc=live
 objectClass: top
 objectClass: domain
@@ -20,7 +19,9 @@ objectClass: inetOrgPerson
 uid: jdoe
 cn: John Doe
 sn: Doe
+givenName: John
 mail: jdoe@beautycode.live
+telephoneNumber: +995599000000
 userPassword: password123
 
 dn: uid=admin,ou=admins,dc=beautycode,dc=live
@@ -28,5 +29,7 @@ objectClass: inetOrgPerson
 uid: admin
 cn: Admin
 sn: Admin
+givenName: Admin
 mail: admin@beautycode.live
+telephoneNumber: +995599000001
 userPassword: admin123

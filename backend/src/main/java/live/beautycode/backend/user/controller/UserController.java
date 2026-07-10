@@ -1,6 +1,6 @@
 package live.beautycode.backend.user.controller;
 
-import live.beautycode.backend.user.dto.UserDto;
+import live.beautycode.backend.user.dto.UserProfile;
 import live.beautycode.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping(value = "/profile")
-    public UserDto getUserProfile(@AuthenticationPrincipal UserDetails userDetails) {
+    public UserProfile getUserProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return userService.findUserByEmail(userDetails.getUsername());
     }
 }
