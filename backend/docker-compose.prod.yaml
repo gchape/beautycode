@@ -1,0 +1,10 @@
+services:
+  backend-config-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod,vault
+
+  backend:
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - LDAP_URLS=${LDAP_URLS}
+    restart: always

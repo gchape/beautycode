@@ -1,0 +1,24 @@
+services:
+  backend-config-server:
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev,vault
+
+  backend:
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  vault-seed:
+    image: hashicorp/vault
+    container_name: beauty-code-vault-seed
+    depends_on:
+      vault:
+        condition: service_healthy
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN: ${VAULT_TOKEN}
+    command:
+      - vault
+      - kv
+      - put
+      - secret/backend
+      - spring.security.jwt.secret=dev-only-secret-key-must-be-at-least-32-bytes-long

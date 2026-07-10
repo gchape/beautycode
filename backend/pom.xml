@@ -78,7 +78,7 @@
         <!-- Cloud / AWS -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-server</artifactId>
+            <artifactId>spring-cloud-config-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.awspring.cloud</groupId>
@@ -113,6 +113,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.dynamodb</groupId>
+            <artifactId>DynamoDBLocal</artifactId>
+            <version>3.3.0</version>
         </dependency>
 
         <!-- Test -->

@@ -1,10 +1,6 @@
 spring:
   cloud:
     aws:
-      region:
-        static: eu-central-1
-      credentials:
-        instance-profile: false
       dynamodb:
         table-name: BeautyCode
   ldap:
