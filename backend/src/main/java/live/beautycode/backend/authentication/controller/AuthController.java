@@ -1,4 +1,4 @@
-package live.beautycode.backend.authentication;
+package live.beautycode.backend.authentication.controller;
 
 import live.beautycode.backend.authentication.dto.LoginRequest;
 import live.beautycode.backend.authentication.jwt.JwtService;
@@ -15,15 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/login", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+        path = "/api/login",
+        produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthController {
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> login(@RequestBody LoginRequest request) {
+    @PostMapping
+    public Map<String, String> login(
+            @RequestBody LoginRequest request
+    ) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );

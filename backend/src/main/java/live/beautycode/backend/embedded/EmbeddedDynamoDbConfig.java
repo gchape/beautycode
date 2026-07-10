@@ -1,4 +1,4 @@
-package live.beautycode.backend.dynamodb;
+package live.beautycode.backend.embedded;
 
 import jakarta.annotation.PreDestroy;
 import org.springframework.context.annotation.Bean;

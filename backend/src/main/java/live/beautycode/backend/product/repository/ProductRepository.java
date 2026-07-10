@@ -19,8 +19,10 @@ public class ProductRepository {
     private final DynamoDbIndex<Product> productsByType;
     private final DynamoDbIndex<Product> productsByCategory;
 
-    public ProductRepository(DynamoDbEnhancedClient enhancedClient,
-                             @Value("${spring.cloud.aws.dynamodb.table-name}") String tableName) {
+    public ProductRepository(
+            DynamoDbEnhancedClient enhancedClient,
+            @Value("${spring.cloud.aws.dynamodb.table-name}") String tableName
+    ) {
         this.productTable = enhancedClient.table(tableName, TableSchema.fromBean(Product.class));
         this.productsByType = productTable.index("ProductsByType");
         this.productsByCategory = productTable.index("ProductsByCategory");

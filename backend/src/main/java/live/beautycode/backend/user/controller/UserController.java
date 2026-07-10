@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/api/users")
+@RequestMapping(
+        path = "/api/users",
+        produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/profile")
     public UserDto getUserProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return userService.findUserByEmail(userDetails.getUsername());
     }

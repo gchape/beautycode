@@ -40,7 +40,7 @@ public class WebSecurityConfig {
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost", "http://localhost:5173", "https://beautycode.live"));
+        config.setAllowedOrigins(List.of("http://localhost", "http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         var source = new UrlBasedCorsConfigurationSource();

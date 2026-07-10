@@ -10,14 +10,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/products", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+        path = "/api/products",
+        produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
     @GetMapping
-    public List<ProductDto> getProducts(@RequestParam(required = false) Category category) {
+    public List<ProductDto> getProducts(
+            @RequestParam(required = false) Category category
+    ) {
         if (category != null) {
             return productService.findByCategory(category);
         }
@@ -25,7 +29,9 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}")
-    public ProductDto getProduct(@PathVariable String id) {
+    public ProductDto getProduct(
+            @PathVariable String id
+    ) {
         return productService.findById(id);
     }
 }
