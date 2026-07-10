@@ -7,6 +7,59 @@ backend) via Docker Compose, and nginx as a reverse proxy in front of it.
 DNS is managed externally at **name.com** — nothing here is automated with
 Route 53, so a few manual steps are required after `apply`.
 
+## Architecture
+
+One CloudFront distribution is the single HTTPS entry point for all three
+domains (`beautycode.live`, `www.beautycode.live`, `api.beautycode.live`).
+Nothing behind it needs to know about TLS at all.
+
+**Frontend** (`beautycode.live`, `www`)
+
+```
+Browser → CloudFront (HTTPS) → S3 bucket (frontend build)
+```
+
+CloudFront reads the static site out of the private `frontend` bucket via
+Origin Access Control (OAC) — the bucket is fully locked down, only
+CloudFront's service principal can read it. Unknown routes (client-side
+router paths) return 403/404 from S3, which CloudFront rewrites to serve
+`index.html`, so deep-links and refreshes work with the SPA router.
+
+**Images** (`/images/*`)
+
+```
+Browser → CloudFront (HTTPS) → S3 bucket (beauty-code-images, public)
+```
+
+Public via bucket policy (no OAC needed), cached at the edge for a year
+since images rarely change.
+
+**API** (`/api/*`, on `api.beautycode.live`)
+
+```
+Browser → CloudFront (HTTPS) → EC2 instance, port 80 (HTTP) → nginx → Spring Boot :8080
+```
+
+CloudFront terminates TLS for the API domain using the _same_ certificate as
+the frontend. The browser always talks HTTPS to CloudFront; the hop onward
+to the EC2 box is plain HTTP over AWS's internal network, which is why the
+security group only needs port 80 open and why there's no certbot anywhere
+— ACM/CloudFront issues and renews the cert automatically, for free.
+
+**Data & compute, underneath all of that:**
+
+- DynamoDB (`BeautyCode` table, single-table design, GSIs by `Type` and
+  `Category`) for app data
+- One EC2 instance that `git clone`s the backend repo and runs
+  `docker compose build && up`, bringing up Vault, a Spring Cloud config
+  server, and the Spring Boot backend — all built from source, no images
+  pulled from a registry
+- An Elastic IP so the instance's address is stable (used internally as the
+  CloudFront origin address, not exposed in DNS)
+- An IAM role scoped to exactly what the backend needs (DynamoDB CRUD on the
+  one table, S3 read/write on the images bucket) plus SSM so you can shell
+  in without SSH keys or an open port 22
+
 ## Prerequisites
 
 - Terraform >= 1.15.8
@@ -19,15 +72,15 @@ Route 53, so a few manual steps are required after `apply`.
 
 ## What gets created
 
-| Resource | Purpose |
-|---|---|
-| `aws_dynamodb_table.beauty_code` | Single-table store, GSIs by `Type` and `Category` |
-| `aws_s3_bucket.beauty_code_images` | Public product images, served via CloudFront `/images/*` |
-| `aws_s3_bucket.frontend` | Private bucket for the built SPA, read only by CloudFront (OAC) |
-| `aws_cloudfront_distribution.frontend` | One distribution serving the frontend, images, **and** the API under `beautycode.live` / `www.beautycode.live` / `api.beautycode.live` |
-| `aws_acm_certificate.frontend` + `aws_acm_certificate_validation.frontend` | Single TLS cert covering all three domains (must be `us-east-1`) |
-| `aws_instance.backend` | t3.small running Vault + backend-config-server + backend (built from source via `docker compose build`) behind nginx |
-| `aws_eip.backend` | Static IP for the backend instance, used internally as the CloudFront origin |
+| Resource                                                                   | Purpose                                                                                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `aws_dynamodb_table.beauty_code`                                           | Single-table store, GSIs by `Type` and `Category`                                                                                      |
+| `aws_s3_bucket.beauty_code_images`                                         | Public product images, served via CloudFront `/images/*`                                                                               |
+| `aws_s3_bucket.frontend`                                                   | Private bucket for the built SPA, read only by CloudFront (OAC)                                                                        |
+| `aws_cloudfront_distribution.frontend`                                     | One distribution serving the frontend, images, **and** the API under `beautycode.live` / `www.beautycode.live` / `api.beautycode.live` |
+| `aws_acm_certificate.frontend` + `aws_acm_certificate_validation.frontend` | Single TLS cert covering all three domains (must be `us-east-1`)                                                                       |
+| `aws_instance.backend`                                                     | t3.small running Vault + backend-config-server + backend (built from source via `docker compose build`) behind nginx                   |
+| `aws_eip.backend`                                                          | Static IP for the backend instance, used internally as the CloudFront origin                                                           |
 
 The frontend app itself is **not** built or run on the EC2 instance — it's a
 static build uploaded to S3 and served through CloudFront. The EC2
@@ -35,7 +88,7 @@ static build uploaded to S3 and served through CloudFront. The EC2
 only `backend/` is cloned; the `frontend` service in that compose file is
 never touched.
 
-**No ALB, no certbot.** The API is *not* exposed directly on the internet —
+**No ALB, no certbot.** The API is _not_ exposed directly on the internet —
 it only accepts plain HTTP from CloudFront (security group only opens port
 80). CloudFront terminates TLS for `api.beautycode.live` using the same ACM
 certificate as the frontend, so there's nothing to renew manually and no
@@ -50,14 +103,13 @@ Set these via `terraform.tfvars`, `-var`, or `TF_VAR_*` env vars:
 
 ```hcl
 crisp_website_id = "..."          # sensitive
-certbot_email    = "you@example.com"
 vault_token      = "..."          # sensitive, shared with backend containers
 ```
 
 ## Deploy
 
 Because DNS/ACM validation is manual (no Route 53), the cert has to be
-created and validated *before* CloudFront can use it. Do this in two passes:
+created and validated _before_ CloudFront can use it. Do this in two passes:
 
 **1. Create the ACM certificate only**
 
@@ -93,6 +145,7 @@ terraform output cloudfront_domain_name
 ```
 
 At name.com, add:
+
 - `beautycode.live` → ALIAS/ANAME record → CloudFront domain
 - `www.beautycode.live` → CNAME → CloudFront domain
 - `api.beautycode.live` → CNAME → CloudFront domain
@@ -103,10 +156,10 @@ for all three domains with the one ACM cert.
 
 ## Outputs
 
-| Output | Use |
-|---|---|
-| `backend_eip` | Static IP of the backend instance, for debugging/SSM only — not a DNS target |
-| `cloudfront_domain_name` | ALIAS/CNAME target for `beautycode.live`, `www`, **and** `api` |
+| Output                   | Use                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------- |
+| `backend_eip`            | Static IP of the backend instance, for debugging/SSM only — not a DNS target    |
+| `cloudfront_domain_name` | ALIAS/CNAME target for `beautycode.live`, `www`, **and** `api`                  |
 | `acm_validation_records` | CNAME records needed to validate the shared TLS cert (covers all three domains) |
 
 ## Notes / gotchas

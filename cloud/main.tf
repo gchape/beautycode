@@ -33,11 +33,6 @@ variable "crisp_website_id" {
   sensitive   = true
 }
 
-variable "certbot_email" {
-  description = "Email used for Let's Encrypt certificate registration/renewal notices"
-  type        = string
-}
-
 variable "vault_token" {
   description = "Vault dev root token, shared between vault and backend containers"
   type        = string
@@ -117,7 +112,11 @@ resource "aws_s3_bucket_policy" "beauty_code_images" {
   })
 }
 
-# --- S3: Frontend static site (private, only CloudFront can read) ---
+# --- S3: Frontend static site (private, only CloudFront can read via OAC) ---
+# NOTE: no S3 static-website-hosting config here on purpose -- CloudFront
+# talks to the bucket's REST endpoint via OAC, and SPA fallback (unknown
+# routes -> index.html) is handled below via custom_error_response, so
+# aws_s3_bucket_website_configuration would just be dead config.
 
 resource "aws_s3_bucket" "frontend" {
   bucket = "beauty-code-frontend"
@@ -131,26 +130,34 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_website_configuration" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
-  index_document {
-    suffix = "index.html"
-  }
-  error_document {
-    key = "index.html" # SPA fallback for client-side routing
-  }
-}
-
 # --- ACM certificate for CloudFront (must be us-east-1) ---
 
 resource "aws_acm_certificate" "frontend" {
   provider                  = aws.us_east_1
-  domain_name                = local.site_domain
-  subject_alternative_names  = [local.site_domain_www]
+  domain_name               = local.site_domain
+  subject_alternative_names = [local.site_domain_www, local.api_domain]
   validation_method          = "DNS"
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+# DNS lives at name.com, not Route 53, so the CNAME records from
+# acm_validation_records must be added there by hand. This resource just
+# polls ACM until the cert flips to ISSUED, so `terraform apply` waits
+# instead of failing outright when CloudFront tries to attach the cert.
+#
+# First run:  terraform apply -target=aws_acm_certificate.frontend
+#             -> add the CNAMEs at name.com from the acm_validation_records output
+# Then:       terraform apply
+#             -> waits (up to 45m) for validation, then creates CloudFront
+resource "aws_acm_certificate_validation" "frontend" {
+  provider        = aws.us_east_1
+  certificate_arn = aws_acm_certificate.frontend.arn
+
+  timeouts {
+    create = "45m"
   }
 }
 
@@ -166,7 +173,7 @@ resource "aws_cloudfront_origin_access_control" "frontend" {
 resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   default_root_object = "index.html"
-  aliases             = [local.site_domain, local.site_domain_www]
+  aliases             = [local.site_domain, local.site_domain_www, local.api_domain]
 
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
@@ -180,6 +187,22 @@ resource "aws_cloudfront_distribution" "frontend" {
 
     s3_origin_config {
       origin_access_identity = "" # bucket is already public via its own policy, no OAC/OAI needed
+    }
+  }
+
+  # Backend API, reached over plain HTTP -- CloudFront<->origin traffic stays
+  # on AWS's internal network. Public-facing TLS for api.beautycode.live is
+  # handled entirely by CloudFront/ACM below, so nginx on the instance only
+  # needs to reverse-proxy on port 80, no certbot required.
+  origin {
+    domain_name = aws_eip.backend.public_dns
+    origin_id    = "backend-api"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port              = 443
+      origin_protocol_policy  = "http-only"
+      origin_ssl_protocols    = ["TLSv1.2"]
     }
   }
 
@@ -218,6 +241,29 @@ resource "aws_cloudfront_distribution" "frontend" {
     max_ttl     = 31536000
   }
 
+  # API traffic: forward everything through to the backend, uncached.
+  # Auth header + query string + cookies all need to reach Spring Boot as-is.
+  ordered_cache_behavior {
+    path_pattern            = "/api/*"
+    allowed_methods         = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = "backend-api"
+    viewer_protocol_policy   = "redirect-to-https"
+    compress                 = true
+
+    forwarded_values {
+      query_string = true
+      headers      = ["Authorization", "Content-Type", "Origin"]
+      cookies {
+        forward = "all"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 0
+    max_ttl     = 0
+  }
+
   # SPA fallback: unknown paths (client-side routes) serve index.html
   custom_error_response {
     error_code         = 403
@@ -237,7 +283,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.frontend.arn
+    acm_certificate_arn      = aws_acm_certificate_validation.frontend.certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
@@ -307,14 +353,7 @@ resource "aws_security_group" "backend" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # certbot HTTP-01 challenge + HTTP->HTTPS redirect
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # frontend (CloudFront) and browsers call this directly
+    cidr_blocks = ["0.0.0.0/0"] # CloudFront -> nginx -> Spring Boot; TLS is terminated at CloudFront, not here
   }
 
   egress {
@@ -403,7 +442,7 @@ resource "aws_instance" "backend" {
     #!/bin/bash
     set -e
     apt-get update -y
-    apt-get install -y docker.io docker-compose-v2 git nginx certbot python3-certbot-nginx
+    apt-get install -y docker.io docker-compose-v2 git nginx
 
     systemctl enable docker && systemctl start docker
 
@@ -443,11 +482,9 @@ resource "aws_instance" "backend" {
     rm -f /etc/nginx/sites-enabled/default
     systemctl restart nginx
 
-    # NOTE: certbot is intentionally NOT run here.
-    # DNS for ${api_domain} must point at this instance's Elastic IP first
-    # (see terraform output backend_eip). Once DNS has propagated, connect
-    # via SSM and run:
-    #   certbot --nginx -d ${api_domain} --non-interactive --agree-tos -m ${certbot_email}
+    # No certbot/TLS setup here on purpose: this instance only ever receives
+    # plain HTTP from CloudFront, which terminates TLS for
+    # api.beautycode.live using the shared ACM cert (see aws_acm_certificate.frontend).
   EOF
 
   tags = { Name = "bc-backend" }
@@ -462,12 +499,12 @@ resource "aws_eip" "backend" {
 
 output "backend_eip" {
   value       = aws_eip.backend.public_ip
-  description = "Point api.beautycode.live A record at this IP at name.com, then run certbot via SSM."
+  description = "Static IP of the backend instance. Not a DNS target anymore -- CloudFront reaches it internally via public_dns. Useful for debugging/SSM only."
 }
 
 output "cloudfront_domain_name" {
   value       = aws_cloudfront_distribution.frontend.domain_name
-  description = "Target for the ALIAS (apex) and CNAME (www) records at name.com."
+  description = "Target for ALL THREE records at name.com: apex (beautycode.live, ALIAS/ANAME), www (CNAME), and api (CNAME). One distribution now serves the frontend, images, and API."
 }
 
 output "acm_validation_records" {
@@ -478,5 +515,5 @@ output "acm_validation_records" {
       value = dvo.resource_record_value
     }
   ]
-  description = "Add these CNAME records at name.com to validate the ACM certificate before CloudFront can use it."
+  description = "Add these CNAME records at name.com to validate the ACM certificate (covers apex, www, and api) before CloudFront can use it."
 }
