@@ -1,4 +1,4 @@
-package live.beautycode.backend.user;
+package live.beautycode.backend.user.service;
 
 import live.beautycode.backend.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;

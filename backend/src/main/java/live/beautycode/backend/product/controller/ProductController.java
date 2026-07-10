@@ -1,7 +1,8 @@
-package live.beautycode.backend.product;
+package live.beautycode.backend.product.controller;
 
 import live.beautycode.backend.product.dto.ProductDto;
 import live.beautycode.backend.product.model.Category;
+import live.beautycode.backend.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

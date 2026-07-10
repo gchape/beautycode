@@ -1,6 +1,7 @@
-package live.beautycode.backend.user;
+package live.beautycode.backend.user.controller;
 
 import live.beautycode.backend.user.dto.UserDto;
+import live.beautycode.backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

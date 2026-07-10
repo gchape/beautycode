@@ -1,9 +1,10 @@
-package live.beautycode.backend.product;
+package live.beautycode.backend.product.service;
 
 import live.beautycode.backend.exception.ProductAlreadyExistsException;
 import live.beautycode.backend.exception.ProductNotFoundException;
 import live.beautycode.backend.product.dto.ProductDto;
 import live.beautycode.backend.product.model.Category;
+import live.beautycode.backend.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
