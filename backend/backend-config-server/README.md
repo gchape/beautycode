@@ -1,118 +1,87 @@
-# backend-config-server
+# BeautyCode Backend Config Server
 
-Centralized configuration server for the `beauty-code` backend microservices, built on **Spring Cloud Config Server**.
-Serves externalized configuration to client services (`backend`, `checkout`, etc.) from a Git repository, with
-sensitive values layered in from **HashiCorp Vault**.
+Spring Cloud Config Server. Its only job is to serve the main backend
+application's YAML configuration over HTTP, keyed by profile, so secrets and
+environment-specific settings live in one place instead of being baked into
+the backend's jar.
 
-## Overview
+## What it is
 
-- **Git backend** — structural/non-sensitive config (LDAP base DN, AWS region, table names, log levels) lives in [
-  `beauty-code/config`](../config) on the `main` branch.
-- **Vault backend** — secrets (JWT signing key, LDAP admin credentials, etc.) are resolved from Vault's KV v2 secret
-  engine and merged into the response alongside the git-sourced properties.
-- Clients fetch their config via `spring.config.import: configserver:...` and never talk to Git or Vault directly.
+```java
 
-## Requirements
-
-- Java 25
-- A running Vault instance (dev mode is fine locally)
-- Network access to `https://github.com/gchape/beauty-code.git` (public repo, no auth needed)
-
-## Running locally
-
-**1. Start Vault (dev mode):**
-
-```bash
-docker run --cap-add=IPC_LOCK -d --name=dev-vault \
-  -p 8200:8200 \
-  -e 'VAULT_DEV_ROOT_TOKEN_ID=dev-root-token' \
-  hashicorp/vault
+@SpringBootConfiguration(proxyBeanMethods = false)
+@EnableAutoConfiguration
+@ComponentScan(basePackages = "tech.provokedynamic.backendconfigserver.config")
+@EnableConfigServer
+public class BackendConfigServerApplication { ...
+}
 ```
 
-**2. Seed dev secrets:**
+A minimal Spring Boot app with `@EnableConfigServer` — no controllers, no
+business logic. `ComponentScan` is deliberately narrowed to the `config`
+package only, since this app has nothing else to scan.
 
-```bash
-export VAULT_ADDR=http://localhost:8200
-export VAULT_TOKEN=dev-root-token
+## Config files served
 
-vault kv put secret/backend-dev \
-  security.jwt.secret=dev-only-secret-change-me-please-1234567890
+```
+src/main/resources/
+├── application.yaml        # config-server's own settings (port, backend, etc.)
+└── config/
+    ├── backend.yaml         # shared config, all profiles
+    ├── backend-dev.yaml      # dev-profile overrides (e.g. embedded DynamoDB, local LDAP)
+    └── backend-prod.yaml     # prod-profile overrides (real DynamoDB table, real LDAP, secrets)
 ```
 
-**3. Start the config server:**
+Spring Cloud Config resolves these by convention: a client app named
+`backend` requesting the `dev` profile gets `backend.yaml` merged with
+`backend-dev.yaml`; requesting `prod` gets `backend.yaml` merged with
+`backend-prod.yaml`.
+
+## How the main backend consumes it
+
+The backend app points at this server (typically via
+`spring.config.import=configserver:http://backend-config-server:PORT` or
+equivalent bootstrap config) and requests config for its active profile at
+startup. This is why `docker-compose.yml` brings the config server up
+alongside `vault` and `backend` — the backend won't have a complete config
+(JWT secret, LDAP connection details, DynamoDB table name) until it's
+fetched it from here.
+
+```
+docker compose up
+     │
+     ├── vault                  (secrets)
+     ├── backend-config-server  (serves backend.yaml / backend-{profile}.yaml)
+     └── backend                (fetches config from config-server, then starts)
+```
+
+## Running standalone
 
 ```bash
+# from backend/backend-config-server/
 ./mvnw spring-boot:run
 ```
 
-The server starts on **port `8888`** with the `dev` profile active by default.
+Once up, config for a given app/profile is fetched at:
 
-**4. Verify it's serving config:**
-
-```bash
-curl http://localhost:8888/backend/dev
 ```
-
-You should see a merged JSON response combining `config/backend.yaml`, `config/backend-dev.yaml`, and the Vault-sourced
-`secret/backend-dev` values.
-
-## Configuration resolution order
-
-For a client with `spring.application.name=backend` and active profile `dev`, properties are resolved and merged in this
-order (later entries win on conflicts):
-
-1. `config/application.yaml` — shared defaults across all services (if present)
-2. `config/backend.yaml` — profile-agnostic backend config
-3. `config/backend-dev.yaml` — dev-specific backend config
-4. `secret/backend` — Vault, profile-agnostic secrets
-5. `secret/backend-dev` — Vault, dev-specific secrets
-
-## Profiles
-
-| Profile | Purpose                                           | Logging                                                |
-|---------|---------------------------------------------------|--------------------------------------------------------|
-| `dev`   | Local development, embedded LDAP, verbose logging | `org.springframework.cloud.config: debug`              |
-| `prod`  | Production, external LDAP/AWS, minimal logging    | `root: warn`, `org.springframework.cloud.config: info` |
-
-Set via `SPRING_PROFILES_ACTIVE` env var; defaults to `dev` if unset.
-
-## Environment variables
-
-| Variable     | Default     | Description           |
-|--------------|-------------|-----------------------|
-| `VAULT_HOST` | `localhost` | Vault server hostname |
-| `VAULT_PORT` | `8200`      | Vault server port     |
-
-## Client integration
-
-Client services import config like this:
-
-```yaml
-spring:
-  config:
-    import: "configserver:${CONFIG_SERVER_URI:http://localhost:8888}"
-  cloud:
-    config:
-      token: ${VAULT_TOKEN}
-```
-
-The `token` is forwarded to Vault by the config server when resolving that client's Vault-backed secrets.
-
-## Docker Compose
-
-When run alongside other services via Compose, reference this service by its Compose service name (e.g.
-`backend-config-server`) rather than `localhost`:
-
-```yaml
-environment:
-  CONFIG_SERVER_URI: http://backend-config-server:8888
+GET /{application}/{profile}
+# e.g.
+GET /backend/dev
+GET /backend/prod
 ```
 
 ## Notes
 
-- `spring.cloud.compatibility-verifier.enabled=false` is required — the verifier's compatibility table lags behind
-  Spring Boot 4.1.0 support in Spring Cloud 2025.1.2, even though the two are officially compatible.
-- Git repo is cloned on startup (`clone-on-start: true`) and force-pulled on refresh (`force-pull: true`) to avoid stale
-  local clone drift.
-- `refresh-rate: 0` means the server checks git for updates on every request — fine for dev, but should be increased (
-  e.g. `30`) before any real load.
+- This module has its own `pom.xml`, `.mvn`, and `Dockerfile` — it's built
+  and deployed as an independent Spring Boot app, not a library the backend
+  depends on.
+- Actual secret values (LDAP bind password, JWT signing secret, DynamoDB
+  credentials) shouldn't live directly in `backend-prod.yaml` in plaintext —
+  given Vault is already part of the compose stack, prefer referencing Vault
+  paths from the served config rather than committing raw secrets here.
+- There's no Spring Cloud Config `git`-backed repository configured here —
+  config is served straight from this app's own bundled `resources/config`
+  files, so updating config means rebuilding/redeploying this module rather
+  than pushing to a separate config repo. Worth knowing since it's a
+  different model from the more common git-backed Config Server setup.

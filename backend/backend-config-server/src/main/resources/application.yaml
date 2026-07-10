@@ -1,29 +1,22 @@
 server:
   port: 8888
-
 spring:
   application:
     name: backend-config-server
   profiles:
-    active: dev,vault
+    active: native,vault
   cloud:
     config:
       server:
-        git:
-          uri: https://github.com/gchape/beauty-code.git
-          search-paths: config
-          default-label: feature/cloud
-          refresh-rate: 0
-          timeout: 8
-          clone-on-start: true
-          force-pull: true
+        native:
+          search-locations: classpath:/config
         vault:
-          host: ${VAULT_HOST:localhost}
-          port: ${VAULT_PORT:8200}
-          scheme: http
-          backend: secret
           kv-version: 2
-
+          profile-separator: /
+          authentication: token
+          host: ${VAULT_HOST:127.0.0.1}
+          port: ${VAULT_PORT:8200}
+          token: ${VAULT_TOKEN:dev-only-vault-token}
 management:
   endpoints:
     web:
@@ -32,7 +25,6 @@ management:
   endpoint:
     health:
       show-details: never
-
 logging:
   level:
     root: info
@@ -41,7 +33,6 @@ spring:
   config:
     activate:
       on-profile: dev
-
 logging:
   level:
     org.springframework.cloud.config: debug
@@ -50,7 +41,6 @@ spring:
   config:
     activate:
       on-profile: prod
-
 logging:
   level:
     root: warn
