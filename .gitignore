@@ -7,7 +7,7 @@ dist/
 !.env.example
 .terraform/
 terraform.tfvars
-*.tfstate
+*.tfstate.*
 *.tfstate.backup
 .vscode/
 !.vscode/extensions.json
