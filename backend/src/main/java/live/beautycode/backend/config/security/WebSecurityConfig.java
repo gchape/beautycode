@@ -1,7 +1,6 @@
 package live.beautycode.backend.config.security;
 
 import live.beautycode.backend.authentication.jwt.JwtAuthenticationFilter;
-import live.beautycode.backend.authentication.properties.LdapSearchProperties;
 import live.beautycode.backend.authentication.properties.SpringLdapProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -11,15 +10,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.ldap.authentication.BindAuthenticator;
-import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
-import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
+import org.springframework.security.config.ldap.LdapBindAuthenticationManagerFactory;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,21 +26,23 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties({SpringLdapProperties.class, LdapSearchProperties.class})
+@EnableConfigurationProperties({SpringLdapProperties.class})
 public class WebSecurityConfig {
 
-    private final SpringLdapProperties ldapProperties;
-    private final LdapSearchProperties ldapSearchProperties;
+    private static final String USER_SEARCH_BASE = "";
+    private static final String USER_SEARCH_FILTER = "(mail={0})";
+    private static final String GROUP_SEARCH_BASE = "ou=groups";
+    private static final String GROUP_SEARCH_FILTER = "(member={0})";
 
+    private final SpringLdapProperties ldapProperties;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost", "http://localhost:5173", "https://beauty-code.ge"));
+        config.setAllowedOrigins(List.of("http://localhost", "http://localhost:5173", "https://beautycode.live"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
-
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
@@ -66,26 +65,34 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    AuthenticationManager authenticationManager(LdapContextSource ldapContextSource) {
-        var userSearch = new FilterBasedLdapUserSearch(
-                "",
-                ldapSearchProperties.users().searchFilter(),
-                ldapContextSource
-        );
-        userSearch.setSearchSubtree(true);
-
-        var bindAuthenticator = new BindAuthenticator(ldapContextSource);
-        bindAuthenticator.setUserSearch(userSearch);
-
-        var authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(
+    LdapAuthoritiesPopulator ldapAuthoritiesPopulator(LdapContextSource ldapContextSource) {
+        var populator = new DefaultLdapAuthoritiesPopulator(
                 ldapContextSource,
-                ldapSearchProperties.groupSearchBase()
+                GROUP_SEARCH_BASE
         );
-        authoritiesPopulator.setGroupSearchFilter(ldapSearchProperties.groupSearchFilter());
+        populator.setGroupSearchFilter(GROUP_SEARCH_FILTER);
+        return populator;
+    }
 
-        var provider = new LdapAuthenticationProvider(bindAuthenticator, authoritiesPopulator);
+//    @Bean
+//    UserDetailsService userDetailsService() {
+//        LdapContextSource ldapContextSource = ldapContextSource();
+//        return new LdapUserDetailsService(
+//                new FilterBasedLdapUserSearch(USER_SEARCH_BASE, USER_SEARCH_FILTER, ldapContextSource),
+//                ldapAuthoritiesPopulator(ldapContextSource)
+//        );
+//    }
 
-        return new ProviderManager(provider);
+    @Bean
+    AuthenticationManager authenticationManager(
+            LdapContextSource ldapContextSource,
+            LdapAuthoritiesPopulator ldapAuthoritiesPopulator
+    ) {
+        var factory = new LdapBindAuthenticationManagerFactory(ldapContextSource);
+        factory.setUserSearchBase(USER_SEARCH_BASE);
+        factory.setUserSearchFilter(USER_SEARCH_FILTER);
+        factory.setLdapAuthoritiesPopulator(ldapAuthoritiesPopulator);
+        return factory.createAuthenticationManager();
     }
 
     @Bean

@@ -4,8 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import live.beautycode.backend.authentication.properties.JwtSecretProperties;
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -26,15 +28,13 @@ public class JwtService {
         this.expirationSeconds = jwtSecretConfigurationProperties.expirationSeconds();
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
-
-        List<String> authorities = userDetails.getAuthorities().stream()
-                .map(Object::toString)
+        List<@Nullable String> authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(authentication.getName())
                 .claim("authorities", authorities)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(expirationSeconds)))
@@ -51,11 +51,10 @@ public class JwtService {
         return (List<String>) parseClaims(token).get("authorities", List.class);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token) {
         try {
             Claims claims = parseClaims(token);
-            return claims.getSubject().equals(userDetails.getUsername())
-                    && claims.getExpiration().after(new Date());
+            return claims.getExpiration().after(new Date());
         } catch (Exception e) {
             return false;
         }

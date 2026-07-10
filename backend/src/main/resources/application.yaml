@@ -3,15 +3,11 @@ spring:
     name: backend
   profiles:
     default: dev
-ldap:
-  users:
-    search-base: ou=users
-    search-filter: (mail={0})
-  admins:
-    search-base: ou=admins
-    search-filter: (mail={0})
-  group-search-base: ou=groups
-  group-search-filter: (member={0})
+  cloud:
+    compatibility-verifier:
+      enabled: false
+  ldap:
+    base: dc=beautycode,dc=live
 ---
 spring:
   config:
@@ -26,18 +22,20 @@ spring:
       dynamodb:
         table-name: BeautyCode
   ldap:
-    urls: ldap://localhost:389
-    base: dc=beautycode,dc=live
-    username: cn=admin,dc=beautycode,dc=live
-    password: admin
+    urls: ldap://localhost:8389
+    embedded:
+      port: 8389
+      base-dn: dc=beautycode,dc=live
+      ldif: classpath:ldap/schema.ldif
+      validation:
+        enabled: false
   security:
     jwt:
-      secret: ${JWT_SECRET:dev-only-secret-change-me-please-1234567890}
+      secret: dev-only-secret-change-me-please-1234567890
       expiration-seconds: 21600
-
 logging:
   level:
-    root: info
+    root: debug
 ---
 spring:
   config:
@@ -51,14 +49,12 @@ spring:
         table-name: ${AWS_DYNAMODB_TABLE_NAME}
   ldap:
     urls: ${LDAP_URLS}
-    base: ${LDAP_BASE}
     username: ${LDAP_ADMIN_DN}
     password: ${LDAP_ADMIN_PASSWORD}
   security:
     jwt:
       secret: ${JWT_SECRET}
       expiration-seconds: ${JWT_EXPIRATION_SECONDS:21600}
-
 logging:
   level:
     root: error

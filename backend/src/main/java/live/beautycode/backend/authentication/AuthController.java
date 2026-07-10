@@ -2,10 +2,11 @@ package live.beautycode.backend.authentication;
 
 import live.beautycode.backend.authentication.dto.LoginRequest;
 import live.beautycode.backend.authentication.jwt.JwtService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,25 +16,18 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/login", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-    }
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, String> login(@RequestBody LoginRequest request) {
-        var authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtService.generateToken(userDetails);
-
+        String token = jwtService.generateToken(authentication);
         return Map.of("token", token);
     }
 }

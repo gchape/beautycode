@@ -1,3 +1,5 @@
+version: 1
+
 dn: dc=beautycode,dc=live
 objectClass: top
 objectClass: domain
@@ -13,43 +15,18 @@ objectClass: top
 objectClass: organizationalUnit
 ou: admins
 
-dn: ou=groups,dc=beautycode,dc=live
-objectClass: top
-objectClass: organizationalUnit
-ou: groups
-
 dn: uid=jdoe,ou=users,dc=beautycode,dc=live
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
 objectClass: inetOrgPerson
 uid: jdoe
 cn: John Doe
 sn: Doe
-givenName: John
 mail: jdoe@beautycode.live
 userPassword: password123
 
 dn: uid=admin,ou=admins,dc=beautycode,dc=live
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
 objectClass: inetOrgPerson
 uid: admin
-cn: Admin User
+cn: Admin
 sn: Admin
-givenName: Admin
 mail: admin@beautycode.live
 userPassword: admin123
-
-dn: cn=users,ou=groups,dc=beautycode,dc=live
-objectClass: top
-objectClass: groupOfNames
-cn: users
-member: uid=jdoe,ou=users,dc=beautycode,dc=live
-
-dn: cn=admins,ou=groups,dc=beautycode,dc=live
-objectClass: top
-objectClass: groupOfNames
-cn: admins
-member: uid=admin,ou=admins,dc=beautycode,dc=live
