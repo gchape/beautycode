@@ -2,59 +2,6 @@ spring:
   application:
     name: backend
   profiles:
-    default: dev
-  cloud:
-    compatibility-verifier:
-      enabled: false
-  ldap:
-    base: dc=beautycode,dc=live
----
-spring:
+    active: dev
   config:
-    activate:
-      on-profile: dev
-  cloud:
-    aws:
-      region:
-        static: eu-central-1
-      credentials:
-        instance-profile: false
-      dynamodb:
-        table-name: BeautyCode
-  ldap:
-    urls: ldap://localhost:8389
-    embedded:
-      port: 8389
-      base-dn: dc=beautycode,dc=live
-      ldif: classpath:ldap/schema.ldif
-      validation:
-        enabled: false
-  security:
-    jwt:
-      secret: dev-only-secret-change-me-please-1234567890
-      expiration-seconds: 21600
-logging:
-  level:
-    root: debug
----
-spring:
-  config:
-    activate:
-      on-profile: prod
-  cloud:
-    aws:
-      region:
-        static: ${AWS_REGION}
-      dynamodb:
-        table-name: ${AWS_DYNAMODB_TABLE_NAME}
-  ldap:
-    urls: ${LDAP_URLS}
-    username: ${LDAP_ADMIN_DN}
-    password: ${LDAP_ADMIN_PASSWORD}
-  security:
-    jwt:
-      secret: ${JWT_SECRET}
-      expiration-seconds: ${JWT_EXPIRATION_SECONDS:21600}
-logging:
-  level:
-    root: error
+    import: "configserver:${CONFIG_SERVER_URI:http://localhost:8888}"
