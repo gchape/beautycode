@@ -7,11 +7,8 @@ spring:
         table-name: ${AWS_DYNAMODB_TABLE_NAME}
   ldap:
     urls: ${LDAP_URLS}
-    username: ${LDAP_ADMIN_DN}
-    password: ${LDAP_ADMIN_PASSWORD}
   security:
     jwt:
-      secret: ${JWT_SECRET}
       expiration-seconds: ${JWT_EXPIRATION_SECONDS:21600}
 
 logging:

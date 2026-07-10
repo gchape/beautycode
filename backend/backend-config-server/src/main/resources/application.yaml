@@ -17,6 +17,12 @@ spring:
           timeout: 4
           clone-on-start: true
           force-pull: true
+        vault:
+          host: ${VAULT_HOST:localhost}
+          port: ${VAULT_PORT:8200}
+          scheme: http
+          backend: secret
+          kv-version: 2
 
 logging:
   level:

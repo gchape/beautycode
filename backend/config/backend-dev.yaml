@@ -17,7 +17,6 @@ spring:
         enabled: false
   security:
     jwt:
-      secret: dev-only-secret-change-me-please-1234567890
       expiration-seconds: 21600
 
 logging:
