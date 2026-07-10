@@ -1,11 +1,7 @@
 import { redirect } from "react-router";
-import { api } from "src/services/api";
+import { tokenStorage } from "src/services/api";
 
 export const logoutAction = async () => {
-  try {
-    await api.post("/logout", undefined);
-    return redirect("/login");
-  } catch {
-    return redirect("/login");
-  }
+  tokenStorage.clear();
+  return redirect("/login");
 };

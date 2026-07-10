@@ -1,5 +1,5 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
-import { api } from "src/services/api";
+import { api, tokenStorage } from "src/services/api";
 
 export const loginAction = ({ request }: ActionFunctionArgs) => {
   return request
@@ -9,14 +9,17 @@ export const loginAction = ({ request }: ActionFunctionArgs) => {
         Object.fromEntries(formData.entries()) as Record<string, string>,
     )
     .then((data) =>
-      api.postForm("/login", {
+      api.post("/login", {
         email: data.email,
         password: data.password,
-        ...(data["remember-me"] && { "remember-me": "on" }),
       }),
     )
-    .then((response) => {
-      if (response.ok) return redirect("/");
+    .then(async (response) => {
+      if (response.ok) {
+        const { token } = (await response.json()) as { token: string };
+        tokenStorage.set(token);
+        return redirect("/");
+      }
       if (response.status === 401)
         return { error: "არასწორი მონაცემები, სცადეთ თავიდან" };
       return { error: "დაფიქსირდა შეცდომა, სცადეთ მოგვიანებით" };

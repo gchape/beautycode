@@ -1,4 +1,11 @@
 const API_BASE = import.meta.env.VITE_API_URL;
+const TOKEN_KEY = "auth_token";
+
+export const tokenStorage = {
+  get: () => localStorage.getItem(TOKEN_KEY),
+  set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
+  clear: () => localStorage.removeItem(TOKEN_KEY),
+};
 
 interface RequestOptions extends Omit<RequestInit, "headers"> {
   headers?: Record<string, string>;
@@ -8,12 +15,14 @@ const request = async (
   url: string,
   { headers = {}, ...options }: RequestOptions = {},
 ): Promise<Response> => {
-  const response = await fetch(`${API_BASE}${url}`, {
-    credentials: "include",
+  const token = tokenStorage.get();
+  return fetch(`${API_BASE}${url}`, {
     ...options,
-    headers,
+    headers: {
+      ...headers,
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
   });
-  return response;
 };
 
 export const api = {
@@ -25,19 +34,5 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json", ...headers },
       body: JSON.stringify(body),
-    }),
-
-  postForm: (
-    url: string,
-    params: Record<string, string>,
-    headers: Record<string, string> = {},
-  ) =>
-    request(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        ...headers,
-      },
-      body: new URLSearchParams(params),
     }),
 };

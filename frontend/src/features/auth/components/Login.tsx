@@ -45,18 +45,6 @@ const Login = () => {
           disabled={isLoading}
         />
 
-        <div className="flex items-center justify-between pt-1 pl-0.5">
-          <label className="flex items-center gap-2 text-xs uppercase tracking-widest text-taupe-500">
-            <input
-              type="checkbox"
-              name="remember-me"
-              value="on"
-              disabled={isLoading}
-            />
-            დამახსოვრება
-          </label>
-        </div>
-
         <AuthSubmit
           label="შესვლა"
           loadingLabel="შესვლა..."
