@@ -1,8 +1,7 @@
 services:
   backend-config-server:
     environment:
-      - SPRING_PROFILES_ACTIVE=prod,vault
-
+      - SPRING_PROFILES_ACTIVE=prod,native,vault
   backend:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
