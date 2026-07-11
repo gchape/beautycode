@@ -4,7 +4,7 @@ import live.beautycode.backend.product.model.Category;
 
 import java.util.List;
 
-public record ProductDto(
+public record ProductDetail(
         String id,
         String imgUrl,
         String badge,

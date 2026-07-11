@@ -1,37 +1,50 @@
 package live.beautycode.backend.product.service;
 
-import live.beautycode.backend.exception.ProductAlreadyExistsException;
 import live.beautycode.backend.exception.ProductNotFoundException;
-import live.beautycode.backend.product.dto.ProductDto;
+import live.beautycode.backend.product.dto.ProductCard;
+import live.beautycode.backend.product.dto.ProductDetail;
+import live.beautycode.backend.product.dto.ProductSummary;
 import live.beautycode.backend.product.model.Category;
+import live.beautycode.backend.product.model.Product;
 import live.beautycode.backend.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public void save(ProductDto product) {
-        if (!productRepository.save(product)) {
-            throw new ProductAlreadyExistsException("პროდუქტი ID-ით " + product.id() + " უკვე არსებობს");
-        }
-    }
-
-    public ProductDto findById(String id) {
+    public ProductDetail findById(String id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("პროდუქტი ID-ით " + id + " ვერ მოიძებნა"));
+                .map(Product::toDetail)
+                .orElseThrow(() -> new ProductNotFoundException("Product with ID " + id + " not found"));
     }
 
-    public List<ProductDto> findAll() {
-        return productRepository.findAll();
+    /**
+     * Minimal payload — id, price, badge, image, discount. No description or features.
+     */
+    public List<ProductCard> findAllCards() {
+        return productRepository.findAllCards().stream().map(Product::toCard).toList();
     }
 
-    public List<ProductDto> findByCategory(Category category) {
-        return productRepository.findByCategory(category);
+    public List<ProductCard> findByCategoryCards(Category category) {
+        return productRepository.findByCategoryCards(category).stream().map(Product::toCard).toList();
+    }
+
+    /**
+     * Adds a one-line description on top of the card fields. No full feature list.
+     */
+    public List<ProductSummary> findAllSummaries() {
+        return productRepository.findAllSummaries().stream().map(Product::toSummary).toList();
+    }
+
+    public List<ProductSummary> findByCategorySummaries(Category category) {
+        return productRepository.findByCategorySummaries(category).stream().map(Product::toSummary).toList();
     }
 }

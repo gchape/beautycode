@@ -1,6 +1,8 @@
 package live.beautycode.backend.product.model;
 
-import live.beautycode.backend.product.dto.ProductDto;
+import live.beautycode.backend.product.dto.ProductCard;
+import live.beautycode.backend.product.dto.ProductDetail;
+import live.beautycode.backend.product.dto.ProductSummary;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -61,34 +63,33 @@ public class Product {
     @Getter(onMethod_ = @DynamoDbAttribute("Features"))
     private List<String> features;
 
-    public static Product fromDomain(ProductDto product) {
-        Product entity = new Product();
-        entity.setPk("PRODUCT#" + product.id());
-        entity.setSk("PRODUCT#" + product.id());
-        entity.setType("Product");
-        entity.setId(product.id());
-        entity.setImgUrl(product.imgUrl());
-        entity.setBadge(product.badge());
-        entity.setCategory(product.category().toString());
-        entity.setDiscount(product.discount());
-        entity.setTitle(product.title());
-        entity.setOldPrice(product.oldPrice());
-        entity.setNewPrice(product.newPrice());
-        entity.setFeatures(product.features());
-        return entity;
+    @Getter(onMethod_ = @DynamoDbAttribute("Description"))
+    private String description;
+
+    @DynamoDbIgnore
+    public ProductDetail toDetail() {
+        return new ProductDetail(
+                id, imgUrl, badge,
+                Category.valueOf(category.toUpperCase().replace("-", "_")),
+                discount, title, oldPrice, newPrice, features
+        );
     }
 
-    public ProductDto toDto() {
-        return new ProductDto(
-                id,
-                imgUrl,
-                badge,
+    @DynamoDbIgnore
+    public ProductSummary toSummary() {
+        return new ProductSummary(
+                id, imgUrl, badge,
                 Category.valueOf(category.toUpperCase().replace("-", "_")),
-                discount,
-                title,
-                oldPrice,
-                newPrice,
-                features
+                discount, title, oldPrice, newPrice, description
+        );
+    }
+
+    @DynamoDbIgnore
+    public ProductCard toCard() {
+        return new ProductCard(
+                id, imgUrl, badge,
+                Category.valueOf(category.toUpperCase().replace("-", "_")),
+                discount, title, oldPrice, newPrice
         );
     }
 }
