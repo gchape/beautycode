@@ -1,13 +1,13 @@
 import { useCartDispatch } from "src/features/cart";
-import { useProducts } from "src/hooks/useProducts";
 import { useCategory } from "../categoryContext";
 import { ProductCard } from "./ProductCard";
 import { ProductCatalogSkeleton } from "./ProductCatalogSkeleton";
+import { useProductsSummary } from "src/hooks/useProductsSummary";
 
 export const ProductCatalogGrid = () => {
   const dispatch = useCartDispatch();
   const [activeCategory] = useCategory();
-  const { data: products = [], isLoading } = useProducts(activeCategory);
+  const { data: products = [], isLoading } = useProductsSummary(activeCategory);
 
   if (isLoading) return <ProductCatalogSkeleton count={6} />;
 
@@ -18,7 +18,7 @@ export const ProductCatalogGrid = () => {
           key={product.id}
           variant="catalog"
           offset={index % 3 === 1}
-          description={product.features?.[0]}
+          description={product.description}
           onAddToCart={() => dispatch({ action: "ADD", item: product })}
           {...product}
         />

@@ -35,4 +35,7 @@ export const api = {
       headers: { "Content-Type": "application/json", ...headers },
       body: JSON.stringify(body),
     }),
+
+  upload: (url: string, formData: FormData) =>
+    request(url, { method: "POST", body: formData }),
 };

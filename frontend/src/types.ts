@@ -1,4 +1,4 @@
-export interface Product {
+export interface ProductCard {
   id: string;
   title: string;
   badge: string;
@@ -6,15 +6,23 @@ export interface Product {
   imgUrl: string;
   newPrice: number;
   oldPrice?: number | null;
+  discount: number;
+}
+
+export interface Product extends ProductCard {
+  description?: string;
+}
+
+export interface ProductDetail extends ProductCard {
   features?: string[];
 }
 
-export interface CartItem extends Product {
+export interface CartItem extends ProductCard {
   quantity: number;
 }
 
 export type CartAction =
-  | { action: "ADD"; item: Product }
+  | { action: "ADD"; item: ProductCard }
   | { action: "INCREASE"; item: CartItem }
   | { action: "DECREASE"; item: CartItem }
   | { action: "REMOVE"; item: CartItem };

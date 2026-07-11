@@ -1,9 +1,9 @@
 import { useProducts } from "src/hooks/useProducts";
 import { FeaturedProductsSkeleton } from "./FeaturedProductsSkeleton";
-import { ProductCard } from "./ProductCard";
-import type { Product } from "../types";
+import { ProductCard as ProductCardComponent } from "./ProductCard";
+import { ProductCard } from "src/types";
 
-const getUniqueProductsByCategory = (products: Product[]): Product[] =>
+const getUniqueProductsByCategory = (products: ProductCard[]): ProductCard[] =>
   Array.from(
     new Map(
       products
@@ -39,7 +39,11 @@ const FeaturedProducts = () => {
 
         <div className="columns-2 md:columns-3 gap-4 md:gap-6">
           {uniqueProducts.map((product) => (
-            <ProductCard key={product.id} variant="featured" {...product} />
+            <ProductCardComponent
+              key={product.id}
+              variant="featured"
+              {...product}
+            />
           ))}
         </div>
       </div>

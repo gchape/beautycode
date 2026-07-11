@@ -29,6 +29,7 @@ interface ProductCardProps extends VariantProps<typeof card> {
   title: string;
   newPrice: number;
   oldPrice?: number | null;
+  discount?: number;
   description?: string;
   offset?: boolean;
   onAddToCart?: () => void;
@@ -40,6 +41,7 @@ export const ProductCard = ({
   title,
   newPrice,
   oldPrice,
+  discount,
   variant = "catalog",
   description,
   offset = false,
@@ -55,7 +57,12 @@ export const ProductCard = ({
         offset && variant === "catalog" && "md:mt-16",
       )}
     >
-      <div className={figure({ variant })}>
+      <div className={cn(figure({ variant }), "relative")}>
+        {discount != null && discount > 0 && (
+          <span className="absolute top-2 left-2 z-10 badge badge-accent font-label text-[10px] tracking-widest px-2">
+            -{discount}%
+          </span>
+        )}
         <img
           src={imgUrl}
           alt={title}
