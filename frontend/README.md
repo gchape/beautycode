@@ -1,141 +1,345 @@
 # BeautyCode Frontend
 
-React + TypeScript SPA for BeautyCode — product catalog, cart, auth (login/
-register), and a profile page, talking to the Spring Boot backend over a
-thin `fetch` wrapper. Built with Vite, styled with Tailwind + daisyUI, data
-fetching via TanStack Query, routing via React Router's data APIs
-(loaders/actions/fetchers).
+Modern React + TypeScript single-page application for **BeautyCode**, an
+e-commerce storefront for beauty devices. The application communicates with
+the Spring Boot backend through a centralized HTTP client, provides
+authentication, product browsing, shopping cart management, customer
+profiles, newsletter subscriptions, and live chat.
 
-## Tech stack
+## Tech Stack
 
-- **React** + **TypeScript**, built with **Vite**
-- **React Router** (`createBrowserRouter`) — routes, loaders, actions, and
-  `fetcher.Form` for non-navigating form submissions
-- **TanStack Query** — server-state fetching/caching for products and orders
-- **Tailwind CSS** + **daisyUI** classes (`btn`, `badge`, `skeleton`,
-  `fieldset`, etc.) for styling
-- **class-variance-authority (cva)** + **clsx** / **tailwind-merge** (`cn`
-  helper) — variant-driven component styling
-- **lucide-react** — icons
-- **Crisp** — live chat widget, lazy-loaded 3s after mount
+- **React 19**
+- **TypeScript**
+- **Vite**
+- **React Router v8** (route modules, middleware, loaders/actions)
+- **Tailwind CSS v4**
+- **ky** (HTTP client)
+- **Lucide React** (icons)
+- **Crisp** (lazy-loaded live chat)
+- **ESLint + TypeScript ESLint**
 
-## Project structure
+---
+
+# Project Structure
 
 ```
 src/
-├── components/          # Small shared UI: ErrorPage, SectionTitle
-├── constants/            # Nav links, category list
-├── features/
-│   ├── auth/              # Login, Register, actions, shared form pieces
-│   ├── cart/               # Cart context/reducer + UI
-│   ├── chat/                # CrispChat widget
-│   ├── footer/               # Footer + newsletter signup
-│   ├── home/                   # Home shell, Hero, BrandEthos
-│   ├── legal/                    # Terms and conditions page
-│   ├── navbar/                     # Navbar, burger menu, cart button
-│   ├── product/                     # Catalog grid, categories, ProductCard
-│   └── profile/                      # Profile page, orders, account fields
-├── hooks/                # useProducts, useOrders, useFormFetcher
-├── lib/                   # cn() (clsx + tailwind-merge)
-├── services/               # api.ts — fetch wrapper + token storage
-├── types.ts                 # Shared domain types
-└── main.tsx                   # Router + providers root
+├── app/
+│   ├── Root.tsx
+│   ├── router.tsx
+│   └── CrispChat.tsx
+│
+├── entities/
+│   ├── auth/
+│   ├── cart/
+│   ├── order/
+│   ├── product/
+│   └── user/
+│
+├── lib/
+│   ├── http.ts
+│   ├── cn.ts
+│   └── navigation.ts
+│
+├── routes/
+│   ├── home.tsx
+│   ├── products.tsx
+│   ├── cart.tsx
+│   ├── profile.tsx
+│   ├── login.tsx
+│   ├── register.tsx
+│   ├── logout.ts
+│   ├── subscribe.ts
+│   └── terms.tsx
+│
+├── ui/
+│   ├── auth/
+│   ├── cart/
+│   ├── footer/
+│   ├── home/
+│   ├── legal/
+│   ├── navbar/
+│   ├── product/
+│   ├── profile/
+│   └── shared/
+│
+├── assets/
+├── index.css
+└── main.tsx
 ```
 
-Each feature folder exports its public surface through an `index.ts`
-barrel — `src/features/auth`, `src/features/cart`, etc. — so the rest of
-the app imports from the feature root rather than reaching into internals.
+The project follows a lightweight **feature/entity architecture**:
 
-## Routing
+- **entities** contain business logic and API communication.
+- **routes** define React Router route modules.
+- **ui** contains presentational components.
+- **app** wires together providers, routing and application shell.
 
-Defined in `main.tsx` via `createBrowserRouter`:
+---
 
-| Path                    | Element                                       | Loader/Action                                               |
-| ----------------------- | --------------------------------------------- | ----------------------------------------------------------- |
-| `/`                     | Home layout (Navbar + Outlet + Footer)        | —                                                           |
-| `/` (index)             | Hero + FeaturedProducts + BrandEthos          | —                                                           |
-| `/products`             | ProductsCatalog (wrapped in CategoryProvider) | —                                                           |
-| `/cart`                 | Cart                                          | —                                                           |
-| `/profile`              | Profile                                       | `profileLoader`, with `ProfileFallback` as hydrate fallback |
-| `/terms-and-conditions` | TermsAndConditions                            | —                                                           |
-| `/login`                | Login                                         | `loginAction`                                               |
-| `/register`             | Register                                      | `registerAction`                                            |
-| `/logout`               | — (action only)                               | `logoutAction`                                              |
+# Routing
 
-`ErrorPage` is set as the top-level `errorElement`, so any thrown error or
-loader rejection under `/` renders it instead of crashing the tree.
+Routing is configured in `src/app/router.tsx` using
+`createBrowserRouter`.
 
-## Auth flow
+| Path | Description |
+|-------|-------------|
+| `/` | Home page |
+| `/products` | Product catalog |
+| `/cart` | Shopping cart |
+| `/profile` | Customer profile (protected) |
+| `/terms-and-conditions` | Terms page |
+| `/login` | Login |
+| `/register` | Registration |
+| `/logout` | Logout action |
+| `/subscribe` | Newsletter subscription action |
 
-- **Login** (`loginAction`): submits `email`/`password` as form data to
-  `POST /login`. On success, stores the returned JWT via `tokenStorage.set`
-  (in `localStorage`, key `auth_token`) and redirects to `/`. On 401,
-  returns a Georgian-language error string that `AuthError` renders inline.
-- **Register** (`registerAction`): posts form entries to
-  `POST /users/register`; on 409 shows "email already in use", on success
-  redirects to `/login`.
-- **Logout** (`logoutAction`): clears the token and redirects to `/login`.
-- **Profile** (`profileLoader`): calls `GET /users/profile`; if the
-  response isn't `ok` (e.g. no/expired token), throws a `redirect("/login")`
-  from inside the loader — React Router treats that as a real redirect.
-- Every outgoing request goes through `src/services/api.ts`, which reads
-  the stored token and attaches `Authorization: Bearer <token>`
-  automatically when present — callers never set that header manually.
+The root layout renders:
 
-## Data fetching
+- Site header
+- Crisp chat widget
+- Route outlet
+- Site footer
 
-- `useProducts(category)` — TanStack Query hook, `GET /products` or
-  `GET /products?category=<value>`, 5-minute `staleTime`.
-- `useOrders(isAuthenticated)` — `GET /users/orders`, 2-minute `staleTime`,
-  toggleable via the `enabled` option.
-- `useFormFetcher<T>()` — thin wrapper around `useFetcher` exposing
-  `{ fetcher, isLoading, data }`, used by every form (`Login`, `Register`,
-  `FooterBrand`'s newsletter form, `ProfileFooter`'s logout button) so
-  in-flight/disabled state is handled consistently without full navigation.
+Unknown routes render a custom **NotFoundPage**, while unexpected errors are
+handled by the global **ErrorPage**.
 
-## Cart
+---
 
-Client-only state via `useReducer` + two contexts
-(`CartStateContext`/`CartActionsContext`, exposed as `useCart()` /
-`useCartDispatch()`). Actions: `ADD`, `INCREASE`, `DECREASE` (floors at 1),
-`REMOVE`. Not persisted — a refresh clears the cart, since there's no
-localStorage/sessionStorage wiring for it.
+# Authentication
 
-## Environment variables
+Authentication uses JWT tokens stored in `localStorage`.
+
+## Login
+
+```
+POST /login
+```
+
+On success:
+
+- stores JWT
+- redirects to the requested page (or `/`)
+- automatically authenticates all future API requests
+
+401 responses are displayed as inline form errors.
+
+## Registration
+
+```
+POST /users/register
+```
+
+Successful registration redirects users to the login page.
+
+409 responses display an email already exists message.
+
+## Logout
+
+Clears the stored token and redirects to `/login`.
+
+---
+
+# Protected Routes
+
+Authentication is enforced through **React Router middleware** rather than
+individual loaders.
+
+```ts
+middleware: [requireAuthMiddleware]
+```
+
+If no token exists the user is redirected to
+
+```
+/login?redirectTo=...
+```
+
+allowing them to continue where they left off after signing in.
+
+---
+
+# API Layer
+
+All HTTP communication goes through a single `ky` instance
+(`src/lib/http.ts`).
+
+Features include:
+
+- automatic base URL
+- automatic Bearer token attachment
+- request timeout
+- GET retries
+- centralized API error normalization
+
+No feature manually constructs Authorization headers.
+
+---
+
+# Product APIs
+
+## Product cards
+
+```
+GET /products
+```
+
+Returns product cards used on the homepage.
+
+## Product catalog
+
+```
+GET /products/summary
+```
+
+Returns lighter catalog data with descriptions.
+
+Both endpoints support
+
+```
+?category=...
+```
+
+filtering.
+
+---
+
+# User APIs
+
+## Profile
+
+```
+GET /users/profile
+```
+
+Returns customer information.
+
+## Orders
+
+```
+GET /users/orders
+```
+
+Returns the user's order history.
+
+---
+
+# Shopping Cart
+
+The cart is implemented with React Context + `useReducer`.
+
+Supported actions:
+
+- ADD
+- INCREASE
+- DECREASE
+- REMOVE
+
+Unlike the previous version, the cart is now **persisted in localStorage**,
+so refreshing the page preserves its contents.
+
+---
+
+# Newsletter
+
+Newsletter subscriptions are handled through a dedicated React Router action.
+
+```
+POST /newsletter/subscribe
+```
+
+The footer form submits without navigating away from the current page.
+
+---
+
+# Crisp Live Chat
+
+The Crisp widget is intentionally lazy-loaded:
+
+- waits 3 seconds after mount
+- injects the Crisp script dynamically
+- cleans itself up when the component unmounts
+
+This reduces the initial bundle's impact on page load.
+
+---
+
+# Styling
+
+The project uses **Tailwind CSS v4** with custom design tokens defined in
+`index.css`.
+
+Custom typography includes:
+
+- Cormorant Garamond
+- DM Sans
+- DM Mono
+
+Instead of external UI libraries, reusable utility classes and design tokens
+are used throughout the application.
+
+---
+
+# Environment Variables
 
 ```bash
-VITE_API_URL=https://api.beautycode.live   # or http://localhost:8080/api locally
-VITE_CRISP_WEBSITE_ID=<crisp-website-id>
+VITE_API_URL=http://localhost:8080/api
+VITE_CRISP_WEBSITE_ID=<your-crisp-id>
 ```
 
-`VITE_API_URL` is prepended to every path in `services/api.ts` — make sure
-it includes any `/api` prefix your backend expects (see the infra README
-for how this is routed in production via CloudFront).
+`VITE_API_URL` is used as the base URL for every API request.
 
-## Running locally
+---
+
+# Running Locally
 
 ```bash
 npm install
+
 npm run dev
 ```
 
-Requires the backend (and its config server) reachable at whatever
-`VITE_API_URL` points to — see the backend README for running that stack
-locally with the `dev` profile.
+Production build:
 
-## Known gaps / things to revisit
+```bash
+npm run build
+```
 
-- `registerAction` posts to `POST /users/register`, and `useOrders` calls
-  `GET /users/orders` — neither endpoint currently exists on the backend
-  (`UserController` only exposes `GET /users/profile`, and there's no
-  registration endpoint anywhere). Both features will silently error until
-  the backend adds them.
-- The cart doesn't persist across reloads — worth adding `localStorage`
-  sync to `CartProvider` if that's expected behavior.
-- `tokenStorage` uses `localStorage` directly, so the JWT isn't cleared on
-  tab close and is readable by any script on the page (XSS exposure) — fine
-  for now, but worth revisiting if this is going to production for real
-  payments.
-- No route currently exists for `/checkout` even though `CartSummary`'s
-  "გადახდა" (pay) button implies one — it's a plain `<button>` with no
-  handler yet.
+Preview production build:
+
+```bash
+npm run preview
+```
+
+Lint:
+
+```bash
+npm run lint
+```
+
+---
+
+# Known Limitations
+
+- Checkout flow has not yet been implemented.
+- Payment integration is currently unavailable.
+- Registration and orders require matching backend endpoints.
+- JWTs are stored in `localStorage`, making them vulnerable to XSS attacks if
+  malicious scripts are introduced.
+- The application currently does not implement refresh tokens or automatic
+  token renewal.
+
+---
+
+# Future Improvements
+
+- Checkout flow
+- Online payment integration
+- Refresh token support
+- Order creation
+- Wishlist functionality
+- Product search
+- Pagination
+- Image optimization
+- Offline caching / PWA support
+- Unit and integration tests

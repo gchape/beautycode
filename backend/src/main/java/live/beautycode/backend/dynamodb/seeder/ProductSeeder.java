@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-/**
- * Seeds the embedded DynamoDB instance with sample product data for the
- * {@code dev} profile. Not used against a real table.
- */
 @RequiredArgsConstructor
 public class ProductSeeder {
 
@@ -69,7 +65,7 @@ public class ProductSeeder {
                                 "🪐 სწრაფი და ეფექტური – ყველა ტიპის თმას ხედავს!"
                         },
                         "2", "/images/2_ewk11d.webp", "149", "570",
-                        "BeautiyCode-ის 🌸 ლაზერული ეპილატორი, რომელიც გაგანთავისუფლებთ არასასურველი თმისგან."
+                        "BeautyCode-ის 🌸 ლაზერული ეპილატორი, რომელიც გაგანთავისუფლებთ არასასურველი თმისგან."
                 ),
 
                 product("PRODUCT#A194YH2N8DA26D0", "Styling", "hair-dryer", "50",
@@ -80,7 +76,7 @@ public class ProductSeeder {
                                 "🚚 უფასო საკურერო მომსახურება მთელი საქართველოს მასშტაბით!"
                         },
                         "4", "/images/4_j0ylif.webp", "119", "240",
-                        "BeautiyCode-ის თმის ფენ-სავარცხელი 🎁 მიიღე სალონური შედეგი სახლის პირობებში!"
+                        "BeautyCode-ის თმის ფენ-სავარცხელი 🎁 მიიღე სალონური შედეგი სახლის პირობებში!"
                 ),
 
                 product("PRODUCT#A194YH2N8DA26C8", "New Arrival", "facial-cleanser", "50",
@@ -92,7 +88,7 @@ public class ProductSeeder {
                                 "📦 მოიპოვე საოცარი შედეგი სახლის პირობებში — სალონის გარეშე!"
                         },
                         "1", "/images/1_nlzxyl.webp", "149", "300",
-                        "BeautiyCode-ის 💎 ახალი თაობის ვაკუუმის აპარატი — თქვენი კანის სუფთა და ჯანსაღი იერსახისთვის!"
+                        "BeautyCode-ის 💎 ახალი თაობის ვაკუუმის აპარატი — თქვენი კანის სუფთა და ჯანსაღი იერსახისთვის!"
                 ),
 
                 product("PRODUCT#A194YH2N8DA26DR", "New Arrival", "facial-cleanser", "50",
@@ -103,7 +99,7 @@ public class ProductSeeder {
                                 "💎 პროფესიონალური შედეგი სალონის გარეშე."
                         },
                         "7", "/images/7_fj1dgf.webp", "109", "220",
-                        "BeautiyCode-ის სახის ვაკუუმ აპარატი ✨ დაივიწყეთ შავი წერტილები სამუდამოდ!"
+                        "BeautyCode-ის სახის ვაკუუმ აპარატი ✨ დაივიწყეთ შავი წერტილები სამუდამოდ!"
                 ),
 
                 product("PRODUCT#A194YH2N8DA26D8", "Styling", "hair-dryer", "50",
@@ -114,7 +110,7 @@ public class ProductSeeder {
                                 "🚚 უფასო საკურერო მომსახურება მთელი საქართველოს მასშტაბით!"
                         },
                         "5", "/images/5_l3arnw.webp", "119", "240",
-                        "BeautiyCode-ის თმის ფენ-სავარცხელი 🎁 მიიღე სალონური შედეგი სახლის პირობებში!"
+                        "BeautyCode-ის თმის ფენ-სავარცხელი 🎁 მიიღე სალონური შედეგი სახლის პირობებში!"
                 ),
 
                 product("PRODUCT#A194YH2N8DA26CR", "Styling", "hair-dryer", "50",
@@ -125,7 +121,7 @@ public class ProductSeeder {
                                 "🚚 უფასო საკურერო მომსახურება მთელი საქართველოს მასშტაბით!"
                         },
                         "3", "/images/3_zaqfcm.webp", "119", "240",
-                        "BeautiyCode-ის თმის ფენ-სავარცხელი 🎁 მიიღე სალონური შედეგი სახლის პირობებში!"
+                        "BeautyCode-ის თმის ფენ-სავარცხელი 🎁 მიიღე სალონური შედეგი სახლის პირობებში!"
                 ),
 
                 product("PRODUCT#A194YH2N8DA26DG", "Premium", "epilator", "60",
@@ -137,7 +133,7 @@ public class ProductSeeder {
                                 "• მუშაობის 𝟮 რეჟიმი - ავტომატური და ხელით მართვა"
                         },
                         "6", "/images/6_r92zyt.webp", "379", "700",
-                        "BeautiyCode-ის ✨ პრემიუმ კატეგორიის 𝗜𝗣𝗟 ლაზერული ეპილატორი💜"
+                        "BeautyCode-ის ✨ პრემიუმ კატეგორიის 𝗜𝗣𝗟 ლაზერული ეპილატორი💜"
                 )
         );
     }

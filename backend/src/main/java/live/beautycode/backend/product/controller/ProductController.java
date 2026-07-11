@@ -18,9 +18,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-    /**
-     * Minimal payload — id, price, badge, image, discount. No description or features.
-     */
     @GetMapping
     public List<ProductCard> getProducts(@RequestParam(required = false) Category category) {
         if (category != null) {
@@ -29,9 +26,6 @@ public class ProductController {
         return productService.findAllCards();
     }
 
-    /**
-     * Adds a one-line description on top of the card fields. No full feature list.
-     */
     @GetMapping("/summary")
     public List<ProductSummary> getProductSummaries(@RequestParam(required = false) Category category) {
         if (category != null) {
@@ -40,9 +34,6 @@ public class ProductController {
         return productService.findAllSummaries();
     }
 
-    /**
-     * Full payload for a single product, including the complete feature list.
-     */
     @GetMapping(value = "/{id}")
     public ProductDetail getProduct(@PathVariable String id) {
         return productService.findById(id);

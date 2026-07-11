@@ -1,7 +1,6 @@
 package live.beautycode.backend;
 
 import live.beautycode.backend.dynamodb.properties.DynamoDbProperties;
-import live.beautycode.backend.s3.properties.S3Properties;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
@@ -16,7 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
         basePackages = "live.beautycode.backend")
 @EnableAutoConfiguration
 @EnableConfigurationProperties(
-        value = {DynamoDbProperties.class, S3Properties.class})
+        value = {DynamoDbProperties.class})
 public class BackendApplication {
 
     static void main(String[] args) {

@@ -26,9 +26,6 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("Product with ID " + id + " not found"));
     }
 
-    /**
-     * Minimal payload — id, price, badge, image, discount. No description or features.
-     */
     public List<ProductCard> findAllCards() {
         return productRepository.findAllCards().stream().map(Product::toCard).toList();
     }
@@ -37,9 +34,6 @@ public class ProductService {
         return productRepository.findByCategoryCards(category).stream().map(Product::toCard).toList();
     }
 
-    /**
-     * Adds a one-line description on top of the card fields. No full feature list.
-     */
     public List<ProductSummary> findAllSummaries() {
         return productRepository.findAllSummaries().stream().map(Product::toSummary).toList();
     }

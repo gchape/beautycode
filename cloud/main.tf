@@ -39,6 +39,18 @@ variable "vault_token" {
   sensitive   = true
 }
 
+variable "jwt_secret" {
+  description = "HS256 signing secret for JWT (min 32 bytes), seeded into Vault at secret/backend/prod"
+  type        = string
+  sensitive   = true
+}
+
+variable "ldap_admin_password" {
+  description = "Password for the LDAP admin bind user, seeded into Vault and into OpenLDAP bootstrap"
+  type        = string
+  sensitive   = true
+}
+
 # --- DynamoDB ---
 
 resource "aws_dynamodb_table" "beauty_code" {
@@ -426,10 +438,11 @@ resource "aws_iam_instance_profile" "backend" {
 # --- EC2 ---
 # NOTE: backend, backend-config-server, and vault are all built FROM SOURCE on
 # the instance via `git clone` + `docker compose build`, using the repo's own
-# docker-compose.yml (https://github.com/gchape/beauty-code). No ghcr images
-# are used anywhere. The `frontend` service in that compose file is skipped
-# entirely -- the frontend is a static build served from S3 + CloudFront, not
-# run on this instance.
+# docker-compose.yml + docker-compose.prod.yaml
+# (https://github.com/gchape/beauty-code). No ghcr images are used anywhere.
+# The `frontend` service in that compose file is skipped entirely -- the
+# frontend is a static build served from S3 + CloudFront, not run on this
+# instance.
 
 resource "aws_instance" "backend" {
   ami                    = "ami-0a628e1e89aaedf80"
@@ -453,15 +466,18 @@ resource "aws_instance" "backend" {
 
     cat > /opt/beauty-code/backend/.env <<ENVFILE
     VAULT_TOKEN=${vault_token}
+    JWT_SECRET=${jwt_secret}
+    LDAP_ADMIN_PASSWORD=${ldap_admin_password}
     ENVFILE
 
     cd /opt/beauty-code/backend
 
-    # docker-compose.yml here only defines vault, backend-config-server,
-    # backend -- the frontend is served separately via S3/CloudFront and was
-    # never part of this clone at all (sparse-checkout skips it entirely).
-    docker compose build
-    docker compose up -d
+    # docker-compose.yml + docker-compose.prod.yaml together define vault,
+    # backend-config-server, ldap-seed, openldap, backend -- the frontend is
+    # served separately via S3/CloudFront and was never part of this clone
+    # at all (sparse-checkout skips it entirely).
+    docker compose -f docker-compose.yml -f docker-compose.prod.yaml build
+    docker compose -f docker-compose.yml -f docker-compose.prod.yaml up -d
 
     cat > /etc/nginx/sites-available/api <<'NGINX'
     server {
@@ -502,9 +518,24 @@ output "backend_eip" {
   description = "Static IP of the backend instance. Not a DNS target anymore -- CloudFront reaches it internally via public_dns. Useful for debugging/SSM only."
 }
 
+output "backend_instance_id" {
+  value       = aws_instance.backend.id
+  description = "EC2 instance ID, needed for `aws ssm send-command --instance-ids` to redeploy backend changes without recreating the instance."
+}
+
 output "cloudfront_domain_name" {
   value       = aws_cloudfront_distribution.frontend.domain_name
   description = "Target for ALL THREE records at name.com: apex (beautycode.live, ALIAS/ANAME), www (CNAME), and api (CNAME). One distribution now serves the frontend, images, and API."
+}
+
+output "cloudfront_distribution_id" {
+  value       = aws_cloudfront_distribution.frontend.id
+  description = "Needed for `aws cloudfront create-invalidation` after every frontend deploy."
+}
+
+output "frontend_bucket_name" {
+  value       = aws_s3_bucket.frontend.bucket
+  description = "Target for `aws s3 sync` when deploying the built frontend."
 }
 
 output "acm_validation_records" {

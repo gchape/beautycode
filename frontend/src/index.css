@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-@plugin "daisyui" {
-  themes: false;
-}
-
-@utility btn {
-  @apply flex place-content-center place-items-center border-0;
-}
-
 @font-face {
   font-display: swap;
   font-family: "Cormorant Garamond";
@@ -94,7 +86,7 @@
 
   --color-on-surface-variant: var(--color-taupe-500);
 
-  /* DaisyUI semantic tokens — warm creamy palette */
+  /* Semantic tokens — warm creamy palette (was DaisyUI's daisyui theme vars) */
   --color-base-100: #fdf9f7;
   --color-base-200: #faeae1;
   --color-base-300: #f4d0be;
@@ -164,6 +156,10 @@
     background: var(--color-taupe-300);
     border-radius: 99px;
   }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 @layer utilities {
@@ -173,5 +169,32 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Lightweight skeleton utility, replaces DaisyUI's .skeleton.
+     Kept only where a route still needs a loading placeholder
+     (most routes now block on their loader instead). */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-taupe-100);
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.5),
+      transparent
+    );
+    animation: skeleton-shimmer 1.6s infinite;
+  }
+  @keyframes skeleton-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
   }
 }
