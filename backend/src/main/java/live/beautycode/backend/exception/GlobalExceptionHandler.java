@@ -27,27 +27,22 @@ public class GlobalExceptionHandler {
         return problem(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    @ExceptionHandler(ProductAlreadyExistsException.class)
-    public ProblemDetail handleProductAlreadyExists(ProductAlreadyExistsException e) {
-        return problem(HttpStatus.CONFLICT, e.getMessage());
-    }
-
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthentication(AuthenticationException e) {
         log.warn("Authentication failed: {}", e.getMessage());
-        return problem(HttpStatus.UNAUTHORIZED, "ავტორიზაცია ვერ მოხერხდა");
+        return problem(HttpStatus.UNAUTHORIZED, "Authentication failed");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDenied(AccessDeniedException e) {
         log.warn("Access denied: {}", e.getMessage());
-        return problem(HttpStatus.FORBIDDEN, "წვდომა აკრძალულია");
+        return problem(HttpStatus.FORBIDDEN, "Access denied");
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneric(Exception e) {
         log.error("Unhandled exception", e);
-        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "სერვერის შეცდომა");
+        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
     private ProblemDetail problem(HttpStatus status, String message) {
