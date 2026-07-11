@@ -1,6 +1,7 @@
 package live.beautycode.backend.config.security;
 
 import live.beautycode.backend.authentication.jwt.JwtAuthenticationFilter;
+import live.beautycode.backend.authentication.ldap.OuBasedAuthoritiesPopulator;
 import live.beautycode.backend.authentication.properties.SpringLdapProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,9 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.ldap.LdapBindAuthenticationManagerFactory;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password4j.BcryptPassword4jPasswordEncoder;
-import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -33,8 +31,6 @@ public class WebSecurityConfig {
 
     private static final String USER_SEARCH_BASE = "";
     private static final String USER_SEARCH_FILTER = "(mail={0})";
-    private static final String GROUP_SEARCH_BASE = "ou=groups";
-    private static final String GROUP_SEARCH_FILTER = "(member={0})";
 
     private final SpringLdapProperties ldapProperties;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -48,11 +44,6 @@ public class WebSecurityConfig {
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BcryptPassword4jPasswordEncoder();
     }
 
     @Bean
@@ -72,23 +63,9 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    LdapAuthoritiesPopulator ldapAuthoritiesPopulator(LdapContextSource ldapContextSource) {
-        var populator = new DefaultLdapAuthoritiesPopulator(
-                ldapContextSource,
-                GROUP_SEARCH_BASE
-        );
-        populator.setGroupSearchFilter(GROUP_SEARCH_FILTER);
-        return populator;
+    LdapAuthoritiesPopulator ldapAuthoritiesPopulator() {
+        return new OuBasedAuthoritiesPopulator();
     }
-
-//    @Bean
-//    UserDetailsService userDetailsService() {
-//        LdapContextSource ldapContextSource = ldapContextSource();
-//        return new LdapUserDetailsService(
-//                new FilterBasedLdapUserSearch(USER_SEARCH_BASE, USER_SEARCH_FILTER, ldapContextSource),
-//                ldapAuthoritiesPopulator(ldapContextSource)
-//        );
-//    }
 
     @Bean
     AuthenticationManager authenticationManager(
@@ -117,6 +94,7 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
                         .anyRequest().denyAll()

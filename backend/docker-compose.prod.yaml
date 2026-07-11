@@ -5,5 +5,85 @@ services:
   backend:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - LDAP_URLS=${LDAP_URLS}
+      - LDAP_URLS=ldap://openldap:389
+    depends_on:
+      openldap:
+        condition: service_healthy
     restart: always
+  vault-seed:
+    image: hashicorp/vault
+    container_name: beauty-code-vault-seed-prod
+    depends_on:
+      vault:
+        condition: service_healthy
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN: ${VAULT_TOKEN}
+    command:
+      - vault
+      - kv
+      - put
+      - secret/backend/prod
+      - spring.security.jwt.secret=${JWT_SECRET}
+      - ldap.admin.password=${LDAP_ADMIN_PASSWORD}
+  ldap-seed:
+    image: alpine
+    container_name: beauty-code-ldap-seed
+    environment:
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}
+    entrypoint: [ "/bin/sh", "-c" ]
+    command:
+      - |
+        cat > /out/50-beautycode.ldif <<EOF
+        version: 1
+        dn: dc=beautycode,dc=live
+        objectClass: top
+        objectClass: domain
+        dc: beautycode
+        dn: ou=users,dc=beautycode,dc=live
+        objectClass: top
+        objectClass: organizationalUnit
+        ou: users
+        dn: ou=admins,dc=beautycode,dc=live
+        objectClass: top
+        objectClass: organizationalUnit
+        ou: admins
+        dn: uid=admin,ou=admins,dc=beautycode,dc=live
+        objectClass: inetOrgPerson
+        uid: admin
+        cn: Admin
+        sn: Admin
+        givenName: Admin
+        mail: admin@beautycode.live
+        telephoneNumber: +995599000001
+        userPassword: $LDAP_ADMIN_PASSWORD
+        EOF
+    volumes:
+      - ldap-seed-out:/out
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: beauty-code-openldap
+    depends_on:
+      ldap-seed:
+        condition: service_completed_successfully
+    environment:
+      - LDAP_ORGANISATION=BeautyCode
+      - LDAP_DOMAIN=beautycode.live
+      - LDAP_BASE_DN=dc=beautycode,dc=live
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD}
+      - LDAP_TLS=false
+    volumes:
+      - openldap-data:/var/lib/ldap
+      - openldap-config:/etc/ldap/slapd.d
+      - ldap-seed-out:/container/service/slapd/assets/config/bootstrap/ldif/custom:ro
+    healthcheck:
+      test: [ "CMD", "ldapsearch", "-x", "-H", "ldap://localhost:389", "-b", "dc=beautycode,dc=live" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+    restart: always
+volumes:
+  openldap-data:
+  openldap-config:
+  ldap-seed-out:

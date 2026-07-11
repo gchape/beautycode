@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import live.beautycode.backend.authentication.properties.JwtSecretProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @EnableConfigurationProperties(JwtSecretProperties.class)
 public class JwtService {
 
@@ -56,6 +58,7 @@ public class JwtService {
             Claims claims = parseClaims(token);
             return claims.getExpiration().after(new Date());
         } catch (Exception e) {
+            log.warn("Invalid or expired JWT presented: {}", e.getMessage());
             return false;
         }
     }

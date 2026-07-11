@@ -3,6 +3,7 @@ package live.beautycode.backend.authentication.controller;
 import live.beautycode.backend.authentication.dto.LoginRequest;
 import live.beautycode.backend.authentication.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
+@Slf4j
 @RequestMapping(
         path = "/api/login",
         produces = MediaType.APPLICATION_JSON_VALUE,
@@ -33,6 +35,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
         String token = jwtService.generateToken(authentication);
+        log.info("User authenticated: {}", request.email());
         return Map.of("token", token);
     }
 }
