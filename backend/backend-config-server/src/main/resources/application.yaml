@@ -14,34 +14,60 @@ spring:
           kv-version: 2
           profile-separator: /
           authentication: token
-          host: ${VAULT_HOST:127.0.0.1}
           port: ${VAULT_PORT:8200}
+          host: ${VAULT_HOST:127.0.0.1}
           token: ${VAULT_TOKEN:dev-only-vault-token}
+  jmx:
+    enabled: false
 management:
   endpoints:
     web:
       exposure:
-        include: health
-  endpoint:
-    health:
-      show-details: never
+        exclude: "*"
+    access:
+      default: none
 logging:
-  level:
-    root: info
+  file:
+    name: ${LOG_DIR:logs}/backend-config-server.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 50MB
 ---
 spring:
   config:
     activate:
       on-profile: dev
+management:
+  endpoint:
+    env:
+      access: unrestricted
+    health:
+      access: unrestricted
+    beans:
+      access: unrestricted
+  endpoints:
+    web:
+      exposure:
+        include: health,env,beans
 logging:
   level:
+    root: info
     org.springframework.cloud.config: debug
 ---
 spring:
   config:
     activate:
       on-profile: prod
+management:
+  endpoint:
+    health:
+      access: unrestricted
+  endpoints:
+    web:
+      exposure:
+        include: health
 logging:
   level:
     root: warn
-    org.springframework.cloud.config: info
