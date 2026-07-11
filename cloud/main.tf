@@ -18,6 +18,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "aws_caller_identity" "current" {}
+
 locals {
   beauty_code_table_arn = "arn:aws:dynamodb:eu-central-1:933428634968:table/BeautyCode"
   images_bucket_arn     = "arn:aws:s3:::beauty-code-images"
@@ -25,16 +27,11 @@ locals {
   api_domain            = "api.beautycode.live"
   site_domain           = "beautycode.live"
   site_domain_www       = "www.beautycode.live"
+  ssm_vault_path         = "/beautycode/vault"
 }
 
 variable "crisp_website_id" {
   description = "Crisp website ID"
-  type        = string
-  sensitive   = true
-}
-
-variable "vault_token" {
-  description = "Vault dev root token, shared between vault and backend containers"
   type        = string
   sensitive   = true
 }
@@ -47,6 +44,18 @@ variable "jwt_secret" {
 
 variable "ldap_admin_password" {
   description = "Password for the LDAP admin bind user, seeded into Vault and into OpenLDAP bootstrap"
+  type        = string
+  sensitive   = true
+}
+
+variable "postgres_user" {
+  description = "Postgres username for the backend database, passed directly to the postgres container and to the backend's datasource config"
+  type        = string
+  sensitive   = true
+}
+
+variable "postgres_password" {
+  description = "Postgres password, seeded into Vault at secret/backend/prod (spring.datasource.password) and passed directly to the postgres container"
   type        = string
   sensitive   = true
 }
@@ -125,10 +134,6 @@ resource "aws_s3_bucket_policy" "beauty_code_images" {
 }
 
 # --- S3: Frontend static site (private, only CloudFront can read via OAC) ---
-# NOTE: no S3 static-website-hosting config here on purpose -- CloudFront
-# talks to the bucket's REST endpoint via OAC, and SPA fallback (unknown
-# routes -> index.html) is handled below via custom_error_response, so
-# aws_s3_bucket_website_configuration would just be dead config.
 
 resource "aws_s3_bucket" "frontend" {
   bucket = "beauty-code-frontend"
@@ -155,15 +160,6 @@ resource "aws_acm_certificate" "frontend" {
   }
 }
 
-# DNS lives at name.com, not Route 53, so the CNAME records from
-# acm_validation_records must be added there by hand. This resource just
-# polls ACM until the cert flips to ISSUED, so `terraform apply` waits
-# instead of failing outright when CloudFront tries to attach the cert.
-#
-# First run:  terraform apply -target=aws_acm_certificate.frontend
-#             -> add the CNAMEs at name.com from the acm_validation_records output
-# Then:       terraform apply
-#             -> waits (up to 45m) for validation, then creates CloudFront
 resource "aws_acm_certificate_validation" "frontend" {
   provider        = aws.us_east_1
   certificate_arn = aws_acm_certificate.frontend.arn
@@ -198,14 +194,10 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_id   = "images-s3"
 
     s3_origin_config {
-      origin_access_identity = "" # bucket is already public via its own policy, no OAC/OAI needed
+      origin_access_identity = ""
     }
   }
 
-  # Backend API, reached over plain HTTP -- CloudFront<->origin traffic stays
-  # on AWS's internal network. Public-facing TLS for api.beautycode.live is
-  # handled entirely by CloudFront/ACM below, so nginx on the instance only
-  # needs to reverse-proxy on port 80, no certbot required.
   origin {
     domain_name = aws_eip.backend.public_dns
     origin_id    = "backend-api"
@@ -239,7 +231,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods           = ["GET", "HEAD"]
     target_origin_id         = "images-s3"
     viewer_protocol_policy   = "redirect-to-https"
-    compress                 = false # images are already compressed formats
+    compress                 = false
 
     forwarded_values {
       query_string = false
@@ -249,12 +241,10 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
 
     min_ttl     = 0
-    default_ttl = 31536000 # 1 year
+    default_ttl = 31536000
     max_ttl     = 31536000
   }
 
-  # API traffic: forward everything through to the backend, uncached.
-  # Auth header + query string + cookies all need to reach Spring Boot as-is.
   ordered_cache_behavior {
     path_pattern            = "/api/*"
     allowed_methods         = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -276,7 +266,6 @@ resource "aws_cloudfront_distribution" "frontend" {
     max_ttl     = 0
   }
 
-  # SPA fallback: unknown paths (client-side routes) serve index.html
   custom_error_response {
     error_code         = 403
     response_code      = 200
@@ -356,16 +345,24 @@ resource "aws_route_table_association" "public" {
 }
 
 # --- Security Groups ---
+# Fix #4: restrict inbound :80 to CloudFront's own origin-facing IP ranges
+# instead of 0.0.0.0/0, using AWS's managed prefix list -- no app-level
+# header check needed, and it stays current automatically as CloudFront's
+# ranges change over time.
+
+data "aws_ec2_managed_prefix_list" "cloudfront" {
+  name = "com.amazonaws.global.cloudfront.origin-facing"
+}
 
 resource "aws_security_group" "backend" {
   name   = "bc-backend-sg"
   vpc_id = aws_vpc.main.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # CloudFront -> nginx -> Spring Boot; TLS is terminated at CloudFront, not here
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    prefix_list_ids = [data.aws_ec2_managed_prefix_list.cloudfront.id]
   }
 
   egress {
@@ -374,6 +371,24 @@ resource "aws_security_group" "backend" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+# --- KMS (Vault auto-unseal) ---
+# Fix #3: Vault runs with file storage + awskms auto-seal. On every
+# container (re)start, Vault unseals itself automatically using this key --
+# no manual unseal-key handling. `vault operator init` still has to run
+# once per fresh data volume; user_data scripts that, storing the
+# generated root token in SSM Parameter Store so redeploys can reuse it.
+
+resource "aws_kms_key" "vault_unseal" {
+  description             = "KMS key for Vault auto-unseal (awskms seal)"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
+resource "aws_kms_alias" "vault_unseal" {
+  name          = "alias/bc-vault-unseal"
+  target_key_id = aws_kms_key.vault_unseal.key_id
 }
 
 # --- IAM ---
@@ -420,6 +435,18 @@ resource "aws_iam_role_policy" "backend" {
           "s3:DeleteObject", "s3:DeleteObjectVersion"
         ]
         Resource = [local.images_bucket_arn, "${local.images_bucket_arn}/*"]
+      },
+      {
+        Effect = "Allow"
+        Action = ["kms:Encrypt", "kms:Decrypt", "kms:DescribeKey", "kms:GenerateDataKey"]
+        Resource = [aws_kms_key.vault_unseal.arn]
+      },
+      {
+        Effect = "Allow"
+        Action = ["ssm:PutParameter", "ssm:GetParameter", "ssm:GetParameters"]
+        Resource = [
+          "arn:aws:ssm:eu-central-1:${data.aws_caller_identity.current.account_id}:parameter${local.ssm_vault_path}/*"
+        ]
       }
     ]
   })
@@ -436,13 +463,6 @@ resource "aws_iam_instance_profile" "backend" {
 }
 
 # --- EC2 ---
-# NOTE: backend, backend-config-server, and vault are all built FROM SOURCE on
-# the instance via `git clone` + `docker compose build`, using the repo's own
-# docker-compose.yml + docker-compose.prod.yaml
-# (https://github.com/gchape/beauty-code). No ghcr images are used anywhere.
-# The `frontend` service in that compose file is skipped entirely -- the
-# frontend is a static build served from S3 + CloudFront, not run on this
-# instance.
 
 resource "aws_instance" "backend" {
   ami                    = "ami-0a628e1e89aaedf80"
@@ -455,7 +475,7 @@ resource "aws_instance" "backend" {
     #!/bin/bash
     set -e
     apt-get update -y
-    apt-get install -y docker.io docker-compose-v2 git nginx
+    apt-get install -y docker.io docker-compose-v2 git nginx awscli jq
 
     systemctl enable docker && systemctl start docker
 
@@ -464,19 +484,67 @@ resource "aws_instance" "backend" {
     cd /opt/beauty-code
     git sparse-checkout set backend
 
-    cat > /opt/beauty-code/backend/.env <<ENVFILE
-    VAULT_TOKEN=${vault_token}
-    JWT_SECRET=${jwt_secret}
-    LDAP_ADMIN_PASSWORD=${ldap_admin_password}
-    ENVFILE
-
     cd /opt/beauty-code/backend
 
-    # docker-compose.yml + docker-compose.prod.yaml together define vault,
-    # backend-config-server, ldap-seed, openldap, backend -- the frontend is
-    # served separately via S3/CloudFront and was never part of this clone
-    # at all (sparse-checkout skips it entirely).
-    docker compose -f docker-compose.yml -f docker-compose.prod.yaml build
+    # --- Vault config file (file storage + AWS KMS auto-unseal) ---
+    mkdir -p vault/config
+    cat > vault/config/vault.hcl <<'VAULTHCL'
+    storage "file" {
+      path = "/vault/data"
+    }
+
+    seal "awskms" {
+      region     = "eu-central-1"
+      kms_key_id = "${aws_kms_key.vault_unseal.key_id}"
+    }
+
+    listener "tcp" {
+      address     = "0.0.0.0:8200"
+      tls_disable = true
+    }
+
+    api_addr = "http://vault:8200"
+    ui       = true
+    VAULTHCL
+
+    # --- App secrets (non-Vault-token) written up front ---
+    cat > .env <<ENVFILE
+    JWT_SECRET=${jwt_secret}
+    LDAP_ADMIN_PASSWORD=${ldap_admin_password}
+    POSTGRES_USER=${postgres_user}
+    POSTGRES_PASSWORD=${postgres_password}
+    POSTGRES_DB=beautycode
+    ENVFILE
+
+    # --- Bring up Vault first, on its own ---
+    docker compose -f docker-compose.yml -f docker-compose.prod.yaml build vault backend-config-server backend
+    docker compose -f docker-compose.yml -f docker-compose.prod.yaml up -d vault
+
+    echo "Waiting for Vault container to be ready..."
+    for i in $(seq 1 30); do
+      docker exec beauty-code-vault vault status >/dev/null 2>&1 && break
+      sleep 2
+    done
+
+    SSM_ROOT_TOKEN_PARAM="${local.ssm_vault_path}/root_token"
+    INITIALIZED=$(docker exec beauty-code-vault vault status -format=json | jq -r '.initialized')
+
+    if [ "$INITIALIZED" = "false" ]; then
+      echo "Vault not initialized -- running operator init (auto-unseal via KMS, no manual unseal keys needed)"
+      INIT_OUT=$(docker exec beauty-code-vault vault operator init -format=json)
+      ROOT_TOKEN=$(echo "$INIT_OUT" | jq -r '.root_token')
+      aws ssm put-parameter --name "$SSM_ROOT_TOKEN_PARAM" --value "$ROOT_TOKEN" \
+        --type SecureString --overwrite --region eu-central-1
+    else
+      echo "Vault already initialized -- fetching root token from SSM"
+      ROOT_TOKEN=$(aws ssm get-parameter --name "$SSM_ROOT_TOKEN_PARAM" --with-decryption \
+        --region eu-central-1 --query 'Parameter.Value' --output text)
+    fi
+
+    echo "VAULT_TOKEN=$ROOT_TOKEN" >> .env
+
+    # --- Seed app secrets into Vault, then bring up the rest ---
+    docker compose -f docker-compose.yml -f docker-compose.prod.yaml up -d vault-seed
     docker compose -f docker-compose.yml -f docker-compose.prod.yaml up -d
 
     cat > /etc/nginx/sites-available/api <<'NGINX'
@@ -499,8 +567,9 @@ resource "aws_instance" "backend" {
     systemctl restart nginx
 
     # No certbot/TLS setup here on purpose: this instance only ever receives
-    # plain HTTP from CloudFront, which terminates TLS for
-    # api.beautycode.live using the shared ACM cert (see aws_acm_certificate.frontend).
+    # plain HTTP, now restricted at the security-group level to CloudFront's
+    # own IP ranges (see aws_security_group.backend), with TLS for
+    # api.beautycode.live terminated at CloudFront/ACM.
   EOF
 
   tags = { Name = "bc-backend" }
@@ -515,7 +584,7 @@ resource "aws_eip" "backend" {
 
 output "backend_eip" {
   value       = aws_eip.backend.public_ip
-  description = "Static IP of the backend instance. Not a DNS target anymore -- CloudFront reaches it internally via public_dns. Useful for debugging/SSM only."
+  description = "Static IP of the backend instance. Not a DNS target -- CloudFront reaches it internally via public_dns. Useful for debugging/SSM only."
 }
 
 output "backend_instance_id" {
@@ -525,7 +594,7 @@ output "backend_instance_id" {
 
 output "cloudfront_domain_name" {
   value       = aws_cloudfront_distribution.frontend.domain_name
-  description = "Target for ALL THREE records at name.com: apex (beautycode.live, ALIAS/ANAME), www (CNAME), and api (CNAME). One distribution now serves the frontend, images, and API."
+  description = "Target for ALL THREE records at name.com: apex (beautycode.live, ALIAS/ANAME), www (CNAME), and api (CNAME)."
 }
 
 output "cloudfront_distribution_id" {
@@ -546,5 +615,10 @@ output "acm_validation_records" {
       value = dvo.resource_record_value
     }
   ]
-  description = "Add these CNAME records at name.com to validate the ACM certificate (covers apex, www, and api) before CloudFront can use it."
+  description = "Add these CNAME records at name.com to validate the ACM certificate before CloudFront can use it."
+}
+
+output "vault_kms_key_id" {
+  value       = aws_kms_key.vault_unseal.key_id
+  description = "KMS key used for Vault auto-unseal. Not secret, but useful for debugging seal status."
 }

@@ -45,9 +45,15 @@
 
     <properties>
         <java.version>25</java.version>
+
+        <!-- BOM versions -->
         <spring-cloud.version>2025.1.2</spring-cloud.version>
         <aws-spring-cloud.version>4.0.2</aws-spring-cloud.version>
+
+        <!-- Individually-versioned dependencies (not covered by a BOM) -->
         <jjwt.version>0.13.0</jjwt.version>
+        <embedded-postgres.version>2.2.2</embedded-postgres.version>
+        <dynamodb-local.version>3.3.0</dynamodb-local.version>
     </properties>
 
     <dependencies>
@@ -62,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-ldap</artifactId>
+            <artifactId>spring-boot-starter-data-ldap</artifactId>
         </dependency>
         <dependency>
             <groupId>com.unboundid</groupId>
@@ -93,6 +99,24 @@
             <artifactId>spring-cloud-aws-starter-s3</artifactId>
         </dependency>
 
+        <!-- JPA / Postgres -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- DynamoDB local (dev-profile embedded instance) -->
+        <dependency>
+            <groupId>software.amazon.dynamodb</groupId>
+            <artifactId>DynamoDBLocal</artifactId>
+            <version>${dynamodb-local.version}</version>
+        </dependency>
+
         <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -117,12 +141,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>software.amazon.dynamodb</groupId>
-            <artifactId>DynamoDBLocal</artifactId>
-            <version>3.3.0</version>
         </dependency>
 
         <!-- Test -->

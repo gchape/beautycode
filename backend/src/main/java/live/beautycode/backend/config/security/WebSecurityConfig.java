@@ -1,14 +1,12 @@
 package live.beautycode.backend.config.security;
 
 import live.beautycode.backend.authentication.jwt.JwtAuthenticationFilter;
-import live.beautycode.backend.authentication.ldap.OuBasedAuthoritiesPopulator;
 import live.beautycode.backend.authentication.properties.SpringLdapProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -32,7 +30,6 @@ public class WebSecurityConfig {
     private static final String USER_SEARCH_BASE = "";
     private static final String USER_SEARCH_FILTER = "(mail={0})";
 
-    private final SpringLdapProperties ldapProperties;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
@@ -44,27 +41,6 @@ public class WebSecurityConfig {
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    @Bean
-    LdapContextSource ldapContextSource() {
-        var contextSource = new LdapContextSource();
-        contextSource.setUrl(ldapProperties.urls());
-        contextSource.setBase(ldapProperties.base());
-        contextSource.setUserDn(ldapProperties.username());
-        contextSource.setPassword(ldapProperties.password());
-        contextSource.afterPropertiesSet();
-        return contextSource;
-    }
-
-    @Bean
-    LdapTemplate ldapTemplate(LdapContextSource ldapContextSource) {
-        return new LdapTemplate(ldapContextSource);
-    }
-
-    @Bean
-    LdapAuthoritiesPopulator ldapAuthoritiesPopulator() {
-        return new OuBasedAuthoritiesPopulator();
     }
 
     @Bean
@@ -94,9 +70,14 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/logout").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/newsletter/subscribe").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/users/orders").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/orders").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/orders/**").authenticated()
                         .anyRequest().denyAll()
                 )
 

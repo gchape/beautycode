@@ -8,11 +8,6 @@ export const tokenStorage = {
   clear: () => localStorage.removeItem(TOKEN_KEY),
 };
 
-/**
- * Centralized API client. Every request in the app goes through this
- * instance so retries, auth headers, base URL, and error shaping live
- * in exactly one place instead of being repeated per-feature.
- */
 export const http = ky.create({
   prefixUrl: import.meta.env.VITE_API_URL,
   retry: { limit: 1, methods: ["get"] },
@@ -35,7 +30,6 @@ export class ApiError extends Error {
   }
 }
 
-/** Normalizes ky's thrown errors into a small, predictable shape for loaders/actions. */
 export const toApiError = async (error: unknown): Promise<ApiError> => {
   if (error instanceof HTTPError) {
     return new ApiError(error.message, error.response.status);

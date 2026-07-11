@@ -1,10 +1,43 @@
 services:
+  vault:
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
+      - VAULT_ADDR=http://127.0.0.1:8200
+
   backend-config-server:
     environment:
       - SPRING_PROFILES_ACTIVE=dev,native,vault
+
   backend:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-beautycode}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:18.4-alpine
+    container_name: beauty-code-postgres-dev
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-beautycode}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data-dev:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-beautycode}" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
+    restart: unless-stopped
+
   vault-seed:
     image: hashicorp/vault
     container_name: beauty-code-vault-seed
@@ -20,3 +53,6 @@ services:
       - put
       - secret/backend/dev
       - spring.security.jwt.secret=dev-only-secret-key-must-be-at-least-32-bytes-long
+
+volumes:
+  postgres-data-dev:

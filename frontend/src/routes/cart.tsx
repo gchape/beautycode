@@ -6,7 +6,10 @@ import { EmptyCartState } from "src/ui/cart/EmptyCartState";
 
 export const Component = () => {
   const cart = useCart();
-  const total = cart.reduce((acc, item) => acc + item.quantity * item.newPrice, 0);
+  const total = cart.reduce(
+    (acc, item) => acc + item.quantity * item.newPrice,
+    0,
+  );
 
   return (
     <main className="max-w-7xl mx-auto px-6 pt-6 pb-16 md:pb-32">

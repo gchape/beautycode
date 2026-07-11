@@ -1,177 +1,77 @@
 # BeautyCode Backend
 
-Spring Boot backend for BeautyCode: product catalog, JWT-based auth against
-an LDAP directory, and a Spring Cloud Config Server submodule for externalized
-configuration. Data is stored in DynamoDB using a single-table design.
+Spring Boot 4.1 (Java 25) backend for BeautyCode, backed by:
 
-## Modules
+- **PostgreSQL** — orders, newsletter subscribers (JPA/Hibernate)
+- **DynamoDB** — product catalog (`dev`: embedded local instance, seeded on boot; `prod`: real AWS DynamoDB)
+- **OpenLDAP** — user directory & authentication (`dev`: embedded LDAP; `prod`: real OpenLDAP container)
+- **HashiCorp Vault** — secrets (JWT signing key, DB/LDAP passwords), fetched via Spring Cloud Config Server
+- **Spring Cloud Config Server** — serves per-profile config (`backend.yaml`, `backend-dev.yaml`, `backend-prod.yaml`)
+  from classpath + Vault
 
-```
-backend/
-├── backend-config-server/   # Spring Cloud Config Server (separate Spring Boot app)
-└── src/                     # Main backend application
-```
+## Services
 
-The config server is a standalone Spring Boot app (`BackendConfigServerApplication`)
-that serves `backend.yaml` / `backend-dev.yaml` / `backend-prod.yaml` from its
-own `resources/config` to the main backend at startup, via Spring Cloud Config.
+| Service                 | Port            | Purpose                                                        |
+|-------------------------|-----------------|----------------------------------------------------------------|
+| `backend`               | 8080            | Main API                                                       |
+| `backend-config-server` | 8888 (internal) | Spring Cloud Config, backed by native + Vault property sources |
+| `vault`                 | 8200            | Secrets store                                                  |
+| `postgres`              | 5432            | Relational data (orders, newsletter)                           |
+| `openldap`              | 389             | User directory (prod only; dev uses embedded LDAP)             |
 
-## Tech stack
+## Running locally (dev profile)
 
-- **Spring Boot** (Web, Security)
-- **Spring LDAP** — authentication and user lookups against an LDAP directory
-- **JWT** (`io.jsonwebtoken` / jjwt) — stateless auth, HMAC-signed tokens
-- **DynamoDB Enhanced Client** — single-table data access for products
-- **DynamoDB Embedded** (`software.amazon.dynamodb.services.local.embedded`) —
-  used only under the `dev` profile, so local development needs no real AWS
-  DynamoDB table
-- **Lombok**, **jspecify** (`@NullMarked` null-safety annotations)
-- **Spring Cloud Config** — externalized YAML config served by `backend-config-server`
+Requires Docker + Docker Compose, and a `.env` file in this directory:
 
-## Architecture
-
-### Auth flow
-
-```
-POST /api/login {email, password}
-        │
-        ▼
-AuthController → AuthenticationManager (LDAP bind)
-        │
-        ▼
-JwtService.generateToken() — HMAC-signed, includes authorities as a claim
-        │
-        ▼
-{ "token": "..." } returned to client
+```env
+VAULT_TOKEN=dev-only-vault-token
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=dev-only-password
 ```
 
-Every subsequent request carries `Authorization: Bearer <token>`.
-`JwtAuthenticationFilter` (a `OncePerRequestFilter`) validates the token,
-extracts the username and authorities, and populates the
-`SecurityContextHolder` — no server-side session, `SessionCreationPolicy.STATELESS`.
-
-User authentication itself binds directly against LDAP
-(`LdapBindAuthenticationManagerFactory`); users are matched by `mail={0}`
-and group membership is resolved via `DefaultLdapAuthoritiesPopulator`
-against `ou=groups`.
-
-### Authorization rules (`WebSecurityConfig`)
-
-| Route                  | Access        |
-|------------------------|---------------|
-| `POST /api/login`      | public        |
-| `GET /api/products/**` | public        |
-| `GET /api/users/**`    | authenticated |
-| anything else          | denied        |
-
-CORS is restricted to `localhost`, `localhost:5173` (Vite dev server), and
-`https://beautycode.live`.
-
-### Product catalog
-
-- `Category` is a closed enum (`EPILATOR`, `HAIR_DRYER`, `FACIAL_CLEANSER`)
-  with URL-friendly `toString()` (`epilator`, `hair-dryer`, `facial-cleanser`).
-  `CategoryConverter` lets Spring bind the query param `?category=hair-dryer`
-  straight into the enum.
-- `Product` is a `@DynamoDbBean` mapped onto a single table: `PK`/`SK` are
-  both `PRODUCT#<id>`, `Type` and `Category` are GSI partition keys
-  (`ProductsByType`, `ProductsByCategory`), matching the DynamoDB table
-  defined in the infra Terraform.
-- `ProductRepository` wraps the DynamoDB Enhanced Client: `save` uses a
-  conditional `attribute_not_exists(PK)` write to avoid overwriting existing
-  products; reads go through `findById`, `findAll` (via the `ProductsByType`
-  GSI), and `findByCategory` (via `ProductsByCategory`).
-- `ProductService` adds domain rules (`ProductAlreadyExistsException`,
-  `ProductNotFoundException`) on top of the repository.
-
-### Users
-
-- `UserController` exposes `GET /api/users/profile`, resolving the
-  authenticated principal's LDAP attributes (`givenName`, `sn`, `mail`,
-  `telephoneNumber`) into a `UserDto`. There's no local user table — LDAP is
-  the source of truth for user identity.
-
-### Error handling
-
-`GlobalExceptionHandler` (`@RestControllerAdvice`) maps domain exceptions to
-RFC 7807 `ProblemDetail` responses:
-
-| Exception                       | Status                                 |
-|---------------------------------|----------------------------------------|
-| `UserNotFoundException`         | 404                                    |
-| `UserAlreadyExistsException`    | 409                                    |
-| `ProductNotFoundException`      | 404                                    |
-| `ProductAlreadyExistsException` | 409                                    |
-| `AuthenticationException`       | 401                                    |
-| `AccessDeniedException`         | 403                                    |
-| anything else                   | 500 (logged, generic message returned) |
-
-## Configuration
-
-Config is externalized via `backend-config-server` and profile-specific
-YAML (`application.yaml`, plus `docker-compose.dev.yaml` /
-`docker-compose.prod.yaml` for environment wiring). Key properties used by
-the code:
-
-```yaml
-spring:
-  security:
-    jwt:
-      secret: <hmac-secret>
-      expiration-seconds: <token-ttl>
-  ldap:
-    urls: <ldap-url>
-    base: <base-dn>
-    username: <bind-dn>
-    password: <bind-password>
-  cloud:
-    aws:
-      dynamodb:
-        table-name: BeautyCode
-```
-
-## Running locally
-
-The `dev` profile swaps DynamoDB for an in-memory embedded instance
-(`EmbeddedDynamoDbConfig`), auto-creating the `BeautyCode` table with both
-GSIs and seeding it with sample products on startup — no AWS credentials or
-real table needed for local dev.
+Then:
 
 ```bash
-# from backend/
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+docker compose -f docker-compose.yml -f docker-compose.dev.yaml up --build
 ```
 
-For anything beyond product browsing (login, user profile) you still need a
-reachable LDAP server — see `resources/ldap/schema.ldif` for the schema used
-in dev/testing.
+This brings up, in order: `vault` (dev mode, in-memory) → `vault-seed` (writes the JWT secret into Vault) → `postgres` →
+`backend-config-server` → `backend`.
 
-### Via Docker Compose
+Once healthy:
 
-```bash
-docker compose -f docker-compose.dev.yaml up --build
-```
+- API: `http://localhost:8080`
+- Vault UI/API: `http://localhost:8200` (token: `dev-only-vault-token`)
+- Postgres: `localhost:5432` (for a DB client, if needed)
 
-This is the same flow the EC2 instance runs in production (see the infra
-repo's Terraform), just pointed at `docker-compose.prod.yaml` there instead.
+Login with the seeded LDAP admin user (`admin@beautycode.live` / `admin123`) or the seeded regular user (
+`jdoe@beautycode.live` / `password123`), defined in `src/main/resources/ldap/schema.ldif`.
 
-## API summary
+## Authentication
 
-| Method | Path                 | Auth          | Description                                 |
-|--------|----------------------|---------------|---------------------------------------------|
-| `POST` | `/api/login`         | public        | Authenticate against LDAP, returns a JWT    |
-| `GET`  | `/api/products`      | public        | List products, optional `?category=` filter |
-| `GET`  | `/api/products/{id}` | public        | Get a single product                        |
-| `GET`  | `/api/users/profile` | authenticated | Current user's LDAP profile                 |
+- LDAP bind authentication via `WebSecurityConfig` (`LdapBindAuthenticationManagerFactory`), searching the whole
+  directory tree (`ou=users` and `ou=admins`).
+- On successful login, `AuthController` issues an HS256 JWT (`JwtService`), signed with the secret stored in Vault at
+  `secret/backend/{profile}` under `spring.security.jwt.secret`.
+- `JwtAuthenticationFilter` validates the `Authorization: Bearer <token>` header on every request and populates the
+  `SecurityContext`.
+- Role mapping: LDAP entries under `ou=admins` get `ROLE_ADMIN`; everything else gets `ROLE_USER` (
+  `OuBasedAuthoritiesPopulator`).
 
-## Known gaps / things to revisit
+## Profiles
 
-- `Admin` and `User` (top-level classes in `admin/` and `user/`) are empty
-  placeholders — no fields, no behavior yet.
-- There's no `POST`/`PUT`/`DELETE` product endpoint exposed on the
-  controller yet, even though `ProductService.save()` exists — product
-  creation currently has no HTTP entry point.
-- JWT secret and LDAP bind credentials are plain config values — make sure
-  `backend.yaml`/`backend-prod.yaml` pull these from Vault rather than
-  committing them (the EC2 instance already runs a Vault container per the
-  infra setup, worth wiring this up if not done yet).
+- **`dev`** — embedded LDAP + embedded DynamoDB (seeded with sample products on boot), real Postgres via Docker, verbose
+  logging, `ddl-auto: update`.
+- **`prod`** — real OpenLDAP, real AWS DynamoDB, real Postgres, `ddl-auto: validate` (schema must already exist — no
+  auto-migration in prod), error-level logging.
+
+## Known gotchas
+
+- **Postgres major-version volume layout**: images use `/var/lib/postgresql` (not `/var/lib/postgresql/data`) as the
+  mount point, required by `postgres:18+`'s new pg_ctlcluster-compatible layout. Don't mix data volumes across major
+  versions.
+- **Vault dev-mode healthcheck** requires `VAULT_ADDR=http://127.0.0.1:8200` set explicitly in the container
+  environment — the Vault CLI defaults to `https://` otherwise and the healthcheck / any `vault status` call will fail
+  to connect.
+- **LDAP entity search base**: `User` (`@Entry(base = "")`) intentionally searches the whole directory (both `ou=users`
+  and `ou=admins`), so admin accounts are visible to `UserRepository`. Don't narrow this back to `ou=users` only.

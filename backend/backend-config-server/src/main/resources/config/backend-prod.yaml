@@ -7,6 +7,14 @@ spring:
         table-name: ${AWS_DYNAMODB_TABLE_NAME}
   ldap:
     urls: ${LDAP_URLS}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:postgres}:5432/${POSTGRES_DB:beautycode}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
   security:
     jwt:
       expiration-seconds: ${JWT_EXPIRATION_SECONDS:21600}

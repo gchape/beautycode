@@ -6,10 +6,42 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - LDAP_URLS=ldap://openldap:389
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-beautycode}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
       openldap:
         condition: service_healthy
+      postgres:
+        condition: service_healthy
     restart: always
+
+  vault:
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    volumes:
+      - vault-data:/vault/data
+      - ./vault/config:/vault/config:ro
+    command: server -config=/vault/config/vault.hcl
+
+  postgres:
+    image: postgres:18.4-alpine
+    container_name: beauty-code-postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-beautycode}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-beautycode}" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
+    restart: always
+
   vault-seed:
     image: hashicorp/vault
     container_name: beauty-code-vault-seed-prod
@@ -26,6 +58,8 @@ services:
       - secret/backend/prod
       - spring.security.jwt.secret=${JWT_SECRET}
       - ldap.admin.password=${LDAP_ADMIN_PASSWORD}
+      - spring.datasource.password=${POSTGRES_PASSWORD}
+
   ldap-seed:
     image: alpine
     container_name: beauty-code-ldap-seed
@@ -60,6 +94,7 @@ services:
         EOF
     volumes:
       - ldap-seed-out:/out
+
   openldap:
     image: osixia/openldap:1.5.0
     container_name: beauty-code-openldap
@@ -83,7 +118,10 @@ services:
       start_period: 20s
       retries: 5
     restart: always
+
 volumes:
   openldap-data:
   openldap-config:
   ldap-seed-out:
+  postgres-data:
+  vault-data:

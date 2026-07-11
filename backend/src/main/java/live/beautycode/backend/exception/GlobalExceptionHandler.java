@@ -45,6 +45,11 @@ public class GlobalExceptionHandler {
         return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ProblemDetail handleOrderNotFound(OrderNotFoundException e) {
+        return problem(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
     private ProblemDetail problem(HttpStatus status, String message) {
         return ProblemDetail.forStatusAndDetail(status, message);
     }

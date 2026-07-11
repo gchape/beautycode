@@ -5,12 +5,10 @@ services:
     cap_add:
       - IPC_LOCK
     ports:
-      - "8200:8200"
-    environment:
-      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
+      - "127.0.0.1:8200:8200"
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "VAULT_ADDR=http://127.0.0.1:8200 vault status" ]
+      test: [ "CMD-SHELL", "vault status -format=json 2>/dev/null | grep -Eq '\"sealed\":[[:space:]]*false'" ]
       interval: 10s
       timeout: 5s
       start_period: 15s

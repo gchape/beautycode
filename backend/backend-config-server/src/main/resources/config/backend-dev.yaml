@@ -11,6 +11,17 @@ spring:
       ldif: classpath:ldap/schema.ldif
       validation:
         enabled: false
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:postgres}:5432/${POSTGRES_DB:beautycode}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   security:
     jwt:
       expiration-seconds: 21600

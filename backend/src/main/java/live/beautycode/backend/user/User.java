@@ -10,7 +10,7 @@ import org.springframework.ldap.odm.annotations.Id;
 import javax.naming.Name;
 
 @Entry(
-        base = "ou=users",
+        base = "",
         objectClasses = {"inetOrgPerson"}
 )
 @Getter

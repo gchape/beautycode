@@ -51,6 +51,7 @@ const CartActionsContext = createContext<Dispatch<CartAction> | null>(null);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, dispatch] = useReducer(cartReducer, []);
+
   return (
     <CartStateContext.Provider value={cart}>
       <CartActionsContext.Provider value={dispatch}>
@@ -64,7 +65,9 @@ export const useCart = () => useContext(CartStateContext);
 
 export const useCartDispatch = () => {
   const context = useContext(CartActionsContext);
-  if (!context)
+
+  if (!context) {
     throw new Error("useCartDispatch must be used within CartProvider");
+  }
   return context;
 };
