@@ -7,19 +7,19 @@ import live.beautycode.backend.user.dto.RegisterRequest;
 import live.beautycode.backend.user.dto.UserProfile;
 import live.beautycode.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public void register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new UserAlreadyExistsException("ელ-ფოსტა უკვე გამოყენებულია");
+            throw new UserAlreadyExistsException("Email already in use");
         }
 
         User user = new User();
@@ -29,14 +29,15 @@ public class UserService {
         user.setLastName(request.lastName());
         user.setEmail(request.email());
         user.setPhone(request.phone());
-        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setPassword(request.password());
 
         userRepository.save(user);
+        log.info("User registered: {}", request.email());
     }
 
     public UserProfile findUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("მომხმარებელი ვერ მოიძებნა"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return new UserProfile(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone());
     }
