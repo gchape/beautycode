@@ -12,8 +12,7 @@ const Hero = () => {
   if (!item) return null;
 
   return (
-    <section className="relative min-h-[580px] flex flex-col md:flex-row items-center overflow-hidden pt-4 md:pt-8">
-      {/* Text side */}
+    <section className="relative min-h-145 flex flex-col md:flex-row items-center overflow-hidden pt-4 md:pt-8">
       <div className="w-full md:w-1/2 px-8 md:px-20 z-10 py-12 md:py-0 flex flex-col gap-6">
         <div>
           <span className="badge badge-outline border-pink-300 text-pink-500 font-label tracking-widest uppercase text-[10px] mb-3">
@@ -48,9 +47,8 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Image side */}
       <div
-        className="w-full md:w-1/2 h-[300px] sm:h-[400px] md:h-[640px]
+        className="w-full md:w-1/2 h-75 sm:h-100 md:h-160
                       rounded-l-[4rem] md:rounded-l-[8rem] overflow-hidden
                       bg-linear-to-br from-pink-100 to-pink-200 shadow-xl"
       >
