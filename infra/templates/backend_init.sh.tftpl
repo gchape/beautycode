@@ -1,0 +1,97 @@
+#!/bin/bash
+set -e
+apt-get update -y
+apt-get install -y docker.io docker-compose-v2 git nginx awscli jq
+
+systemctl enable docker && systemctl start docker
+
+rm -rf /opt/beauty-code
+git clone --depth 1 --filter=blob:none --sparse https://github.com/gchape/beauty-code.git /opt/beauty-code
+cd /opt/beauty-code
+git sparse-checkout set backend
+cd /opt/beauty-code/backend
+
+# --- Vault config file (file storage + AWS KMS auto-unseal) ---
+mkdir -p vault/config
+cat > vault/config/vault.hcl <<VAULTHCL
+storage "file" {
+  path = "/vault/data"
+}
+
+seal "awskms" {
+  region     = "eu-central-1"
+  kms_key_id = "${kms_key_id}"
+}
+
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = true
+}
+
+api_addr = "http://vault:8200"
+ui       = true
+VAULTHCL
+
+# --- App secrets (non-Vault-token) written up front ---
+cat > .env <<ENVFILE
+JWT_SECRET=${jwt_secret}
+LDAP_ADMIN_PASSWORD=${ldap_admin_password}
+POSTGRES_USER=${postgres_user}
+POSTGRES_PASSWORD=${postgres_password}
+POSTGRES_DB=beautycode
+ENVFILE
+
+# --- Bring up Vault first, on its own ---
+docker compose -f docker-compose.yml -f docker-compose.prod.yaml build vault backend-config-server backend
+docker compose -f docker-compose.yml -f docker-compose.prod.yaml up -d vault
+
+echo "Waiting for Vault container to be ready..."
+for i in $(seq 1 30); do
+  docker exec beauty-code-vault vault status >/dev/null 2>&1 && break
+  sleep 2
+done
+
+SSM_ROOT_TOKEN_PARAM="${ssm_vault_path}/root_token"
+INITIALIZED=$(docker exec beauty-code-vault vault status -format=json | jq -r '.initialized')
+
+if [ "$INITIALIZED" = "false" ]; then
+  echo "Vault not initialized -- running operator init (auto-unseal via KMS, no manual unseal keys needed)"
+  INIT_OUT=$(docker exec beauty-code-vault vault operator init -format=json)
+  ROOT_TOKEN=$(echo "$INIT_OUT" | jq -r '.root_token')
+  aws ssm put-parameter --name "$SSM_ROOT_TOKEN_PARAM" --value "$ROOT_TOKEN" \
+    --type SecureString --overwrite --region eu-central-1
+else
+  echo "Vault already initialized -- fetching root token from SSM"
+  ROOT_TOKEN=$(aws ssm get-parameter --name "$SSM_ROOT_TOKEN_PARAM" --with-decryption \
+    --region eu-central-1 --query 'Parameter.Value' --output text)
+fi
+
+echo "VAULT_TOKEN=$ROOT_TOKEN" >> .env
+
+# --- Seed app secrets into Vault, then bring up the rest ---
+docker compose -f docker-compose.yml -f docker-compose.prod.yaml up -d vault-seed
+docker compose -f docker-compose.yml -f docker-compose.prod.yaml up -d
+
+cat > /etc/nginx/sites-available/api <<'NGINX'
+server {
+    listen 80;
+    server_name ${api_domain};
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+NGINX
+
+ln -sf /etc/nginx/sites-available/api /etc/nginx/sites-enabled/api
+rm -f /etc/nginx/sites-enabled/default
+systemctl restart nginx
+
+# No certbot/TLS setup here on purpose: this instance only ever receives
+# plain HTTP, restricted at the security-group level to CloudFront's own
+# IP ranges (see aws_security_group.backend), with TLS for
+# api.beautycode.live terminated at CloudFront/ACM.
