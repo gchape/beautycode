@@ -2,7 +2,7 @@
 
 Georgian-market e-commerce storefront for beauty devices (IPL epilators, facial vacuum cleansers, hair styling tools). Monorepo containing the frontend, backend, and AWS infrastructure.
 
-![Architecture](./architecture.png)
+<img width="700" alt="BeautyCode infra architecture" src="https://github.com/user-attachments/assets/269d48fb-6b01-4a4b-a42b-4eaab772605c" />
 
 ## Repo layout
 
