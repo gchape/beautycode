@@ -6,13 +6,13 @@ dist/
 .env.*
 !.env.example
 .terraform/
-terraform.tfvars
+*.tfstate
 *.tfstate.*
-*.tfstate.backup
+terraform.tfvars
+*.tfvars
+!*.tfvars.example
 .vscode/
 !.vscode/extensions.json
 .idea/
 .DS_Store
 Thumbs.db
-infra/.terraform.lock.hcl
-infra/terraform.tfstate
