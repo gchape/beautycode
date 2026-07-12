@@ -1,19 +1,22 @@
 package live.beautycode.backend.authentication.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import live.beautycode.backend.authentication.properties.JwtSecretProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,12 +25,31 @@ import java.util.stream.Collectors;
 @EnableConfigurationProperties(JwtSecretProperties.class)
 public class JwtService {
 
-    private final SecretKey key;
+    private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
     private final long expirationSeconds;
 
-    public JwtService(JwtSecretProperties jwtSecretConfigurationProperties) {
-        this.key = Keys.hmacShaKeyFor(jwtSecretConfigurationProperties.secret().getBytes());
-        this.expirationSeconds = jwtSecretConfigurationProperties.expirationSeconds();
+    public JwtService(JwtSecretProperties properties) {
+        var key = new SecretKeySpec(
+                properties.secret().getBytes(StandardCharsets.UTF_8),
+                "HmacSHA256"
+        );
+
+        var jwk = new OctetSequenceKey.Builder(key)
+                .algorithm(JWSAlgorithm.HS256)
+                .build();
+
+        this.jwtEncoder = new NimbusJwtEncoder(
+                new ImmutableJWKSet<>(
+                        new JWKSet(jwk)
+                )
+        );
+
+        this.jwtDecoder = NimbusJwtDecoder.withSecretKey(key)
+                .macAlgorithm(MacAlgorithm.HS256)
+                .build();
+
+        this.expirationSeconds = properties.expirationSeconds();
     }
 
     public String generateToken(Authentication authentication) {
@@ -35,39 +57,37 @@ public class JwtService {
         List<@Nullable String> authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-        return Jwts.builder()
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
                 .subject(authentication.getName())
                 .claim("authorities", authorities)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(expirationSeconds)))
-                .signWith(key)
-                .compact();
+                .issuedAt(now)
+                .expiresAt(now.plusSeconds(expirationSeconds))
+                .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(
+                JwsHeader.with(MacAlgorithm.HS256).build(), claims)).getTokenValue();
     }
 
-    public String extractUsername(String token) {
+    public @Nullable String extractUsername(String token) {
         return parseClaims(token).getSubject();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<String> extractAuthorities(String token) {
-        return (List<String>) parseClaims(token).get("authorities", List.class);
+    public @Nullable List<String> extractAuthorities(String token) {
+        return parseClaims(token).getClaim("authorities");
     }
 
     public boolean isTokenValid(String token) {
         try {
-            Claims claims = parseClaims(token);
-            return claims.getExpiration().after(new Date());
-        } catch (Exception e) {
+            parseClaims(token);
+            return true;
+        } catch (JwtException e) {
             log.warn("Invalid or expired JWT presented: {}", e.getMessage());
             return false;
         }
     }
 
-    private Claims parseClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    private Jwt parseClaims(String token) {
+        return jwtDecoder.decode(token);
     }
 }

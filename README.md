@@ -1,107 +1,69 @@
 # BeautyCode
 
-Full-stack e-commerce app for BeautyCode: a React SPA storefront, a Spring
-Boot backend (JWT auth over LDAP, DynamoDB-backed product catalog), a Spring
-Cloud Config Server for externalized configuration, and Terraform-managed
-AWS infrastructure to run all of it.
+Georgian-market e-commerce storefront for beauty devices (IPL epilators, facial vacuum cleansers, hair styling tools). Monorepo containing the frontend, backend, and AWS infrastructure.
+
+![Architecture](./architecture.png)
 
 ## Repo layout
 
 ```
-.
-├── frontend/                # React + TypeScript SPA (Vite)
-├── backend/
-│   ├── backend-config-server/   # Spring Cloud Config Server
-│   └── src/                     # Main Spring Boot backend
-└── infra/                    # Terraform: DynamoDB, S3, CloudFront, EC2
+beauty-code/
+├── frontend/    # React 19 + Vite + TypeScript storefront
+├── backend/     # Spring Boot 4.1 API + Spring Cloud Config Server
+└── infra/       # Terraform — AWS resources, EC2 boot script
 ```
 
-Each has its own README with full detail:
+Each folder has its own README with details — this one is the map.
 
-- [`frontend/README.md`](./frontend/README.md) — components, routing, auth
-  flow, data fetching, env vars, local dev
-- [`backend/README.md`](./backend/README.md) — auth flow, product catalog,
-  DynamoDB model, API summary, local dev
-- [`backend/backend-config-server/README.md`](./backend/backend-config-server/README.md) —
-  what it serves, how the backend consumes it, running standalone
-- [`cloud/README.md`](./cloud/README.md) — what Terraform creates, deploy
-  steps, DNS setup, cost/architecture notes
+## How a request flows
 
-## Architecture at a glance
+Browser → **CloudFront** (TLS, routing) → one of:
 
-```
-Browser
-  │
-  ▼
-CloudFront (single distribution, one ACM cert for all three domains)
-  │
-  ├── beautycode.live, www  →  S3 (frontend build)
-  ├── /images/*             →  S3 (product images)
-  └── api.beautycode.live   →  EC2 (nginx → Spring Boot :8080)
-                                        │
-                                        ├── backend-config-server (Vault + config)
-                                        ├── LDAP (auth)
-                                        └── DynamoDB (product catalog)
-```
+- `/*` → **S3 (frontend)** — the built React app, private bucket read only via Origin Access Control
+- `/images/*` → **S3 (images)** — public product images
+- `/api/*` → **EC2 (backend)** — a single instance running the whole backend stack in Docker Compose: Vault, Postgres, OpenLDAP, `backend-config-server`, `backend`
 
-CloudFront is the single HTTPS entry point for everything — frontend,
-images, and API — so there's no ALB and no certbot; TLS is issued and
-renewed automatically by ACM/CloudFront. See `infra/README.md` for the full
-request-flow breakdown and deploy steps.
+The backend app reads products from **DynamoDB**, orders/newsletter from **Postgres**, authenticates users against **OpenLDAP** (bind-based), and issues **JWTs** signed with a secret pulled from **Vault** (KMS auto-unseal). See `infra/README.md` for the full breakdown of what's load-bearing in Vault vs. what's just container env vars.
 
-## Request flow, end to end
+## Local development
 
-1. Browser loads `beautycode.live` → CloudFront serves the React build from
-   S3.
-2. The SPA calls `api.beautycode.live/api/...` (see `frontend/services/api.ts`)
-   → CloudFront routes `/api/*` to the EC2 backend over internal HTTP.
-3. Login (`POST /api/login`) binds against LDAP, returns a JWT
-   (`backend/authentication`).
-4. The frontend stores the JWT and attaches it as `Authorization: Bearer`
-   on subsequent requests.
-5. Product reads (`GET /api/products`) hit DynamoDB via the Enhanced Client
-   (`backend/product`); user profile reads (`GET /api/users/profile`) hit
-   LDAP directly.
-6. The backend's own config (JWT secret, LDAP connection, DynamoDB table
-   name) comes from `backend-config-server` at startup, which in turn is
-   meant to source secrets from the Vault container running alongside it.
-
-## Quickstart (local dev)
+Each part can run independently:
 
 ```bash
-# 1. Backend config server
-cd backend/backend-config-server
-./mvnw spring-boot:run
-
-# 2. Backend (dev profile — embedded DynamoDB, seeded with sample products)
+# Backend + its dependencies (Postgres, embedded LDAP, Vault dev mode)
 cd backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
-# needs a reachable LDAP server for login/profile — see backend/README.md
+docker compose -f docker-compose.yml -f docker-compose.dev.yaml up -d
 
-# 3. Frontend
+# Frontend, pointed at the local backend
 cd frontend
-cp .env.example .env   # set VITE_API_URL=http://localhost:8080/api
+echo "VITE_API_URL=http://localhost:8080" > .env
+echo "VITE_CRISP_WEBSITE_ID=<your-crisp-id>" >> .env
 npm install
 npm run dev
 ```
 
-## Known cross-cutting gaps
-
-- The frontend calls `POST /users/register` and `GET /users/orders`, but
-  neither endpoint exists on the backend yet (`UserController` only has
-  `GET /users/profile`). Registration and order history will fail until
-  these are implemented.
-- `ProductService.save()` exists on the backend but has no controller route
-  — there's currently no way to create a product over HTTP.
-- Secrets (JWT signing key, LDAP bind password) should be sourced from
-  Vault via the config server rather than committed in plaintext YAML — the
-  infra already runs Vault alongside the backend, so this is mostly a
-  wiring gap rather than a missing piece.
+See `backend/README.md` for dev-profile specifics (embedded DynamoDB, test LDAP users) and `frontend/README.md` for the full env var / script list.
 
 ## Deploying
 
-See `infra/README.md` for the full Terraform deploy flow — in short:
-create and DNS-validate the ACM cert first (two-phase apply, since DNS is
-managed externally at name.com), then apply everything else and point
-`beautycode.live` / `www` / `api.beautycode.live` at the same CloudFront
-distribution.
+Infrastructure and both apps deploy manually via Terraform + a deploy script — see `infra/README.md` for the full first-time setup (state, DNS validation). Short version:
+
+```bash
+cd infra
+terraform init && terraform apply    # provisions everything, once — re-run after any infra/backend change
+```
+
+```bash
+cd frontend
+./scripts/deploy-frontend.sh ../infra   # build + sync + invalidate, run after any frontend change
+```
+
+Both steps are run by hand, whenever there's a change to deploy — there's no CI pipeline triggering these automatically.
+
+## Where to look for what
+
+| Question                                                          | Read                 |
+| ----------------------------------------------------------------- | -------------------- |
+| How is AWS set up? What does Vault actually protect?              | `infra/README.md`    |
+| How does auth/JWT/LDAP work server-side? Docker Compose profiles? | `backend/README.md`  |
+| Routing, cart state, env vars, deploy script?                     | `frontend/README.md` |
