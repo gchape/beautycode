@@ -26,25 +26,27 @@ test("migration supports Georgian prefix search and synchronizes edits/deletes",
 			),
 		);
 		db.prepare("INSERT INTO categories(slug,name) VALUES(?,?)").run(
-			"თმის-მოვლა",
+			"test-category",
 			"თმის მოვლა",
 		);
 		const insert = db.prepare(
 			"INSERT INTO products(slug,name,brand,category_slug,price_minor) VALUES(?,?,?,?,?)",
 		);
-		insert.run("საშრობი", "თმის საშრობი", "Beauty", "თმის-მოვლა", 1999);
+		insert.run("საშრობი", "თმის საშრობი", "TestBrand", "test-category", 1999);
 		const search = (q) =>
 			db
 				.prepare("SELECT rowid FROM products_fts WHERE products_fts MATCH ?")
 				.all(q);
 		assert.equal(search('"საშ"*').length, 1);
-		assert.equal(search('"Bea"*').length, 1);
-		db.prepare("UPDATE products SET name=? WHERE id=1").run("ახალი სტაილერი");
+		assert.equal(search('"TestBra"*').length, 1);
+		db.prepare("UPDATE products SET name=? WHERE slug='საშრობი'").run(
+			"ახალი სტაილერი",
+		);
 		assert.equal(search('"საშ"*').length, 0);
 		assert.equal(search('"სტაი"*').length, 1);
 		assert.throws(() => insert.run("bad", "Bad", "", "missing", 100));
-		assert.throws(() => insert.run("negative", "Bad", "", "თმის-მოვლა", -1));
-		db.exec("DELETE FROM products WHERE id=1");
+		assert.throws(() => insert.run("negative", "Bad", "", "test-category", -1));
+		db.exec("DELETE FROM products WHERE slug='საშრობი'");
 		assert.equal(search('"სტაი"*').length, 0);
 	} finally {
 		db.close();
