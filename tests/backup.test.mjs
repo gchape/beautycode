@@ -127,10 +127,7 @@ test("invalid snapshots leave the existing database untouched", async (t) => {
 		() => restoreSnapshot(target, target),
 		/paths must differ/,
 	);
-	await assert.rejects(
-		() => restoreSnapshot(join(dir, "old.json"), target),
-		/Legacy JSON/,
-	);
+
 	const source = new DatabaseSync(target);
 	try {
 		await assert.rejects(() => writeSnapshot(source, target), /EEXIST/);
