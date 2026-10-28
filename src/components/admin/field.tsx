@@ -1,4 +1,5 @@
 import { cloneElement, type ReactElement, useId } from "react";
+
 export function Field({
 	label,
 	children,
@@ -8,7 +9,7 @@ export function Field({
 }) {
 	const id = useId();
 	return (
-		<div className="admin-field">
+		<div className="flex flex-col gap-2 text-sm">
 			<label htmlFor={id}>{label}</label>
 			{cloneElement(children, { id })}
 		</div>
