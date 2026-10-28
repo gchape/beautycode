@@ -11,7 +11,11 @@ export function ProductPrice({
 	return (
 		<p className={className}>
 			<span>{money(price)}</span>{" "}
-			{price < product.price_minor && <del>{money(product.price_minor)}</del>}
+			{price < product.price_minor && (
+				<del className="ml-3 text-base text-[#8b777d]">
+					{money(product.price_minor)}
+				</del>
+			)}
 		</p>
 	);
 }

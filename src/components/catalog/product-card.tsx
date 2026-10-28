@@ -14,26 +14,34 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 	const image = coverImage(product);
 	const discount = discountPercent(product);
 	return (
-		<Card className="product-card">
+		<Card className="block border-0 bg-transparent p-0 shadow-none">
 			<Link to="/products/$slug" params={{ slug: product.slug }}>
-				<div className="product-image">
+				<div className="relative grid aspect-square place-items-center overflow-hidden rounded-[9px] bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-6">
 					{image ? (
 						<img src={image} alt={product.name} loading="lazy" />
 					) : (
 						<PackageOpen size={55} strokeWidth={1} />
 					)}
-					{discount > 0 && <Badge className="badge">−{discount}%</Badge>}
+					{discount > 0 && (
+						<Badge className="absolute top-3 left-3 h-auto rounded-[5px] border-0 bg-secondary px-2.5 py-1.5 text-sm text-primary">
+							−{discount}%
+						</Badge>
+					)}
 				</div>
-				<span className="eyebrow">{product.brand}</span>
-				<h3>{product.name}</h3>
-				<ProductPrice product={product} />
+				<span className="mt-5 block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
+					{product.brand}
+				</span>
+				<h3 className="my-3 text-[1.0625rem] max-[560px]:text-base">
+					{product.name}
+				</h3>
+				<ProductPrice className="text-[1.0625rem]" product={product} />
 				{product.stock_status === "out_of_stock" && (
 					<small>{stockLabels[product.stock_status]}</small>
 				)}
 			</Link>
 			<Button
 				variant="outline"
-				className="product-chat-button"
+				className="mt-[18px] w-full"
 				onClick={() => openChat(product)}
 				disabled={product.stock_status === "out_of_stock"}
 			>

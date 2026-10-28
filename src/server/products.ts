@@ -46,10 +46,7 @@ export interface PublicProductQuery {
 	limit?: number;
 }
 
-export function queryPublicProducts(
-	db: DatabaseSync,
-	options: PublicProductQuery = {},
-): PublicProduct[] {
+function publicProductFilters(options: PublicProductQuery) {
 	const where = ["p.status='published'", "c.is_active=1"];
 	const params: SQLInputValue[] = [];
 	const tokens =
@@ -69,6 +66,14 @@ export function queryPublicProducts(
 		params.push(options.slug);
 	}
 	if (options.featured) where.push("p.is_featured=1");
+	return { where, params };
+}
+
+export function queryPublicProducts(
+	db: DatabaseSync,
+	options: PublicProductQuery = {},
+): PublicProduct[] {
+	const { where, params } = publicProductFilters(options);
 	let sql = `SELECT ${publicColumns} FROM products p JOIN categories c ON c.slug=p.category_slug WHERE ${where.join(" AND ")} ORDER BY p.created_at DESC, p.id DESC`;
 	if (options.limit) {
 		sql += " LIMIT ?";

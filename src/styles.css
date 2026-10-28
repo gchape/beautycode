@@ -1,15 +1,143 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@fontsource-variable/noto-sans-georgian";
-@import "./styles/base.css";
-@import "./styles/button.css";
-@import "./styles/header.css";
-@import "./styles/home.css";
-@import "./styles/footer.css";
-@import "./styles/catalog.css";
-@import "./styles/policy.css";
-@import "./styles/responsive.css";
-@import "./styles/ui-overrides.css";
-@import "./styles/product-imagery.css";
 
-@import "./styles/admin.css";
+:root {
+	--rose-surface: #f3e4e9;
+	--rose-surface-strong: #f1e0e7;
+	--background: #fffdfb;
+	--foreground: #2e0003;
+	--primary: #2e0003;
+	--primary-foreground: #fff;
+	--secondary: #f0dbe4;
+	--muted: #f8f1f3;
+	--muted-foreground: #80696e;
+	--border: #e9dfe1;
+	--ring: #63303e;
+	--radius: 0.75rem;
+	--card: var(--background);
+	--card-foreground: var(--foreground);
+	--popover: var(--background);
+	--popover-foreground: var(--foreground);
+	--secondary-foreground: var(--foreground);
+	--accent: var(--secondary);
+	--accent-foreground: var(--foreground);
+	--input: #d9cbd0;
+	--destructive: #b42318;
+}
+@theme inline {
+	--color-rose-surface: var(--rose-surface);
+	--color-rose-surface-strong: var(--rose-surface-strong);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-border: var(--border);
+	--color-ring: var(--ring);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-input: var(--input);
+	--color-destructive: var(--destructive);
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--font-sans: "Noto Sans Georgian Variable", Arial, sans-serif;
+}
+
+@layer base {
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		margin: 0;
+		background: var(--background);
+		color: var(--foreground);
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		-webkit-font-smoothing: antialiased;
+	}
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+	button,
+	input,
+	select {
+		font: inherit;
+	}
+	button,
+	a,
+	input,
+	select,
+	summary {
+		-webkit-tap-highlight-color: transparent;
+	}
+	button {
+		cursor: pointer;
+	}
+	button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	button {
+		color: inherit;
+	}
+	a,
+	button {
+		transition:
+			background 0.2s,
+			color 0.2s,
+			transform 0.2s;
+	}
+	button:focus-visible,
+	a:focus-visible,
+	input:focus-visible,
+	select:focus-visible,
+	summary:focus-visible {
+		outline: 2px solid var(--ring);
+		outline-offset: 5px;
+	}
+	h1,
+	h2,
+	h3,
+	p {
+		margin-top: 0;
+	}
+	h1,
+	h2,
+	h3 {
+		font-weight: 500;
+	}
+	p {
+		line-height: 1.9;
+	}
+	h1 {
+		font-size: clamp(30px, 4vw, 48px);
+		line-height: 1.5;
+	}
+	h2 {
+		font-size: 1.875rem;
+	}
+	h3 {
+		font-size: 1.125rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation: none;
+		transition: none;
+		scroll-behavior: auto;
+	}
+}
