@@ -1,0 +1,23 @@
+.policy {
+	max-width: 860px;
+}
+.policy .policy-source {
+	font-size: 0.875rem;
+	color: var(--muted-foreground);
+	border-bottom: 1px solid var(--border);
+	padding-bottom: 25px;
+}
+.policy .policy-source a {
+	text-decoration: underline;
+}
+.policy-body h2 {
+	font-size: 1.5rem;
+	line-height: 1.6;
+	margin: 38px 0 18px;
+}
+.policy-body p {
+	font-size: 1rem;
+	line-height: 2;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
