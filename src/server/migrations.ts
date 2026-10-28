@@ -20,6 +20,10 @@ export function migrateDatabase(db: DatabaseSync) {
 		const { user_version } = db.prepare("PRAGMA user_version").get() as {
 			user_version: number;
 		};
+		if (user_version > latestSchemaVersion)
+			throw new Error(
+				"Database schema is newer than the migration baseline. Use a fresh database for the consolidated schema.",
+			);
 		migrations.slice(user_version).forEach((file, index) => {
 			db.exec(readFileSync(join(migrationsDir, file), "utf8"));
 			db.exec(`PRAGMA user_version=${user_version + index + 1}`);
