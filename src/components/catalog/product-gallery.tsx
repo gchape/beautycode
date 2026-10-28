@@ -7,8 +7,8 @@ export function ProductGallery({ product }: { product: PublicProduct }) {
 	const [selected, setSelected] = useState(0);
 	const current = images[selected] ?? images[0];
 	return (
-		<div className="product-gallery">
-			<div className="product-image">
+		<div className="min-w-0 self-start">
+			<div className="relative grid aspect-square place-items-center overflow-hidden rounded-[9px] bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-6">
 				{current ? (
 					<img
 						src={current.url}
@@ -22,7 +22,7 @@ export function ProductGallery({ product }: { product: PublicProduct }) {
 			</div>
 			{images.length > 1 && (
 				<fieldset
-					className="gallery-thumbnails"
+					className="mt-4 flex flex-wrap gap-2.5 [&_button]:rounded-md [&_button]:border [&_button]:border-border [&_button]:p-[5px] [&_button[aria-pressed=true]]:border-primary [&_img]:size-[70px] [&_img]:object-contain"
 					aria-label="პროდუქტის სურათები"
 				>
 					{images.map((image, index) => (

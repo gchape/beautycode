@@ -13,25 +13,36 @@ export async function optimizeUpload(file: File): Promise<Blob> {
 		throw new Error("აირჩიეთ JPG, PNG ან WebP სურათი, მაქსიმუმ 20 MB");
 	const bitmap = await createImageBitmap(file);
 	try {
-		const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
-		const canvas = document.createElement("canvas");
-		canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-		canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-		const context = canvas.getContext("2d");
-		if (!context) throw new Error("სურათი ვერ დამუშავდა");
-		context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-		const blob = await new Promise<Blob>((resolve, reject) =>
-			canvas.toBlob(
-				(value) =>
-					value ? resolve(value) : reject(new Error("სურათი ვერ დამუშავდა")),
-				"image/webp",
-				quality,
-			),
-		);
+		const canvas = resizeImage(bitmap);
+		const blob = await encodeWebP(canvas);
 		if (blob.size > maxImageUploadBytes)
 			throw new Error("სურათი 5 MB-ზე დიდია");
 		return blob;
 	} finally {
 		bitmap.close();
 	}
+}
+
+function resizeImage(bitmap: ImageBitmap) {
+	const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+	const canvas = document.createElement("canvas");
+	canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+	canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+	const context = canvas.getContext("2d");
+	if (!context) throw new Error("სურათი ვერ დამუშავდა");
+	context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+	return canvas;
+}
+
+function encodeWebP(canvas: HTMLCanvasElement): Promise<Blob> {
+	return new Promise((resolve, reject) => {
+		canvas.toBlob(
+			(blob) => {
+				if (blob) resolve(blob);
+				else reject(new Error("სურათი ვერ დამუშავდა"));
+			},
+			"image/webp",
+			quality,
+		);
+	});
 }

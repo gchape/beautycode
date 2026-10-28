@@ -14,6 +14,14 @@ export type CatalogSearch = z.infer<typeof catalogSearchSchema>;
 const newestFirst = (a: PublicProduct, b: PublicProduct) =>
 	(b.created_at ?? "").localeCompare(a.created_at ?? "") || b.id - a.id;
 
+const productSorters = {
+	newest: newestFirst,
+	"price-asc": (a: PublicProduct, b: PublicProduct) =>
+		finalPrice(a) - finalPrice(b),
+	"price-desc": (a: PublicProduct, b: PublicProduct) =>
+		finalPrice(b) - finalPrice(a),
+};
+
 /** Client-side filters. The text query `q` is applied in SQL by the server. */
 export function filterProducts(
 	products: readonly PublicProduct[],
@@ -21,16 +29,10 @@ export function filterProducts(
 ): PublicProduct[] {
 	return products
 		.filter(
-			(p) =>
-				(!search.category || p.category_slug === search.category) &&
-				(!search.discount || finalPrice(p) < p.price_minor) &&
-				(search.max === undefined || finalPrice(p) <= search.max * 100),
+			(product) =>
+				(!search.category || product.category_slug === search.category) &&
+				(!search.discount || finalPrice(product) < product.price_minor) &&
+				(search.max === undefined || finalPrice(product) <= search.max * 100),
 		)
-		.sort((a, b) =>
-			search.sort === "price-asc"
-				? finalPrice(a) - finalPrice(b)
-				: search.sort === "price-desc"
-					? finalPrice(b) - finalPrice(a)
-					: newestFirst(a, b),
-		);
+		.sort(productSorters[search.sort ?? "newest"]);
 }

@@ -45,33 +45,42 @@ export const Route = createFileRoute("/products/$slug")({
 });
 
 function ProductPage() {
-	const p = Route.useLoaderData(),
-		contact = useOpenChat();
+	const product = Route.useLoaderData();
+	const openChat = useOpenChat();
 	return (
-		<section className="wrap page-section">
-			<Breadcrumb title={p.name} />
-			<div className="product-detail">
-				<ProductGallery key={p.id} product={p} />
+		<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-[25px] pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
+			<Breadcrumb title={product.name} />
+			<div className="grid grid-cols-2 gap-[65px] [&_h1]:my-5 [&_h1]:text-[2rem] max-[800px]:gap-[30px] max-[800px]:[&_h1]:text-[1.6875rem] max-[560px]:grid-cols-1 max-[560px]:gap-[35px]">
+				<ProductGallery key={product.id} product={product} />
 				<div>
-					<span className="eyebrow">{p.brand}</span>
-					<h1>{p.name}</h1>
-					<p className="stock">{stockLabels[p.stock_status]}</p>
-					<ProductPrice product={p} className="detail-price" />
-					<h2 className="product-section-title">აღწერა</h2>
-					<p className="product-description">{p.description}</p>
-					<ProductFeatures features={p.features ?? []} />
+					<span className="block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
+						{product.brand}
+					</span>
+					<h1>{product.name}</h1>
+					<p className="text-[0.9375rem]">
+						{stockLabels[product.stock_status]}
+					</p>
+					<ProductPrice product={product} className="text-3xl" />
+					<h2 className="mt-6 mb-3 text-base">აღწერა</h2>
+					<p className="text-base whitespace-pre-line text-muted-foreground">
+						{product.description}
+					</p>
+					<ProductFeatures features={product.features ?? []} />
 					<Button
-						disabled={p.stock_status === "out_of_stock"}
-						onClick={() => contact(p)}
+						disabled={product.stock_status === "out_of_stock"}
+						onClick={() => openChat(product)}
 					>
 						<MessageCircle size={19} />
 						შეკვეთა / კონსულტაცია
 					</Button>
-					<p className="delivery-note">
+					<p className="my-[25px] flex flex-wrap items-center gap-2.5 text-sm">
 						<Truck size={18} />
 						უფასო მიწოდება მთელ საქართველოში
 					</p>
-					<Accordion type="multiple" className="product-accordion">
+					<Accordion
+						type="multiple"
+						className="[&_[data-slot=accordion-item]]:border-t [&_[data-slot=accordion-item]]:border-b-0 [&_[data-slot=accordion-item]]:border-border [&_[data-slot=accordion-trigger]]:py-5 [&_[data-slot=accordion-trigger]]:text-[0.9375rem] [&_[data-slot=accordion-trigger]]:font-normal [&_[data-slot=accordion-content]]:text-[0.9375rem] [&_a]:underline [&_p]:mt-[15px]"
+					>
 						<AccordionItem value="delivery">
 							<AccordionTrigger>მიწოდების პირობები</AccordionTrigger>
 							<AccordionContent>
