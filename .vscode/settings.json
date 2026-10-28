@@ -32,5 +32,8 @@
 	"editor.codeActionsOnSave": {
 		"source.organizeImports.biome": "explicit"
 	},
-	"css.lint.unknownAtRules": "ignore"
+	"css.lint.unknownAtRules": "ignore",
+	"json.schemaDownload.trustedDomains": {
+		"https://ui.shadcn.com/schema.json": true
+	}
 }
