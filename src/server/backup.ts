@@ -53,32 +53,32 @@ function validateSnapshot(db: DatabaseSync) {
 	db.prepare("SELECT rowid FROM products_fts LIMIT 0").all();
 }
 
+async function prepareRestoreTarget(target: string) {
+	await mkdir(dirname(target), { recursive: true });
+	if (!existsSync(target)) {
+		const file = await open(target, "wx", 0o600);
+		await file.close();
+		return undefined;
+	}
+	const current = new DatabaseSync(target, { readOnly: true });
+	try {
+		const safety = `${target}.before-restore-${randomUUID()}.db`;
+		await writeSnapshot(current, safety);
+		return safety;
+	} finally {
+		current.close();
+	}
+}
+
 // The application must be stopped. SQLite handles target WAL files and commits
 // the replacement itself; do not copy or delete live database/WAL files manually.
 export async function restoreSnapshot(source: string, target: string) {
 	if (resolve(source) === resolve(target))
 		throw new Error("Backup and database paths must differ");
-	if (source.endsWith(".json"))
-		throw new Error(
-			"Legacy JSON backup: restore with release 901c88c first, then create a SQLite snapshot. See README.",
-		);
 	const snapshot = new DatabaseSync(source, { readOnly: true });
 	try {
 		validateSnapshot(snapshot);
-		await mkdir(dirname(target), { recursive: true });
-		let safety: string | undefined;
-		if (existsSync(target)) {
-			const current = new DatabaseSync(target, { readOnly: true });
-			try {
-				safety = `${target}.before-restore-${randomUUID()}.db`;
-				await writeSnapshot(current, safety);
-			} finally {
-				current.close();
-			}
-		} else {
-			const file = await open(target, "wx", 0o600);
-			await file.close();
-		}
+		const safety = await prepareRestoreTarget(target);
 		await backup(snapshot, target);
 		return { safety };
 	} finally {

@@ -9,10 +9,6 @@ if (!source || confirmation !== "--replace")
 	throw new Error(
 		"Stop the app, then run: node scripts/restore.ts <local.db|s3:backups/key.db> --replace",
 	);
-if (source.endsWith(".json"))
-	throw new Error(
-		"Restore legacy JSON with release 901c88c first, then create a SQLite snapshot. See README.",
-	);
 const temporary = source.startsWith("s3:")
 	? await mkdtemp(join(tmpdir(), "beautycode-restore-"))
 	: undefined;
