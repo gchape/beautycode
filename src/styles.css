@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/noto-sans-georgian";
+@import "./styles/base.css";
+@import "./styles/header.css";
+@import "./styles/home.css";
+@import "./styles/footer.css";
+@import "./styles/catalog.css";
+@import "./styles/policy.css";
+@import "./styles/responsive.css";
+@import "./styles/ui-overrides.css";
+@import "./styles/product-imagery.css";
+
+@import "./styles/admin.css";
