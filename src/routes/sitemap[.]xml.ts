@@ -3,6 +3,7 @@ import { queryCategories } from "../server/categories.ts";
 import { getDatabase } from "../server/database.ts";
 import { queryPublicProducts } from "../server/products.ts";
 import { sitemapXml } from "../server/sitemap.ts";
+
 export const Route = createFileRoute("/sitemap.xml")({
 	server: {
 		handlers: {
