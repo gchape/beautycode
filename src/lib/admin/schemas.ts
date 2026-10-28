@@ -1,6 +1,12 @@
 import { z } from "zod";
+import { maxImagesPerProduct } from "../../data/image-types.ts";
+import {
+	categoryIconNames,
+	productStatuses,
+	stockStatuses,
+} from "../../data/labels.ts";
 
-const text = (max: number) => z.string().trim().max(max);
+const trimmedString = (max: number) => z.string().trim().max(max);
 
 const imageUrl = z
 	.string()
@@ -17,19 +23,21 @@ const imageUrl = z
 export const productInput = z
 	.object({
 		id: z.number().int().positive().optional(),
-		name: text(200).min(1),
-		brand: text(100),
-		category_slug: text(200).min(1),
-		description: text(10000),
+		name: trimmedString(200).min(1),
+		brand: trimmedString(100),
+		category_slug: trimmedString(200).min(1),
+		description: trimmedString(10000),
 		price_minor: z.number().int().min(0).max(100000000),
 		sale_price_minor: z.number().int().min(0).max(100000000).nullable(),
-		stock_status: z.enum(["in_stock", "out_of_stock", "preorder"]),
-		status: z.enum(["draft", "published", "archived"]),
-		sku: text(100).nullable(),
-		meta_description: text(300),
+		stock_status: z.enum(stockStatuses),
+		status: z.enum(productStatuses),
+		sku: trimmedString(100).nullable(),
+		meta_description: trimmedString(300),
 		is_featured: z.boolean(),
-		features: z.array(text(500).min(1)).max(50),
-		images: z.array(z.object({ url: imageUrl, alt: text(200) })).max(12),
+		features: z.array(trimmedString(500).min(1)).max(50),
+		images: z
+			.array(z.object({ url: imageUrl, alt: trimmedString(200) }))
+			.max(maxImagesPerProduct),
 	})
 	.refine(
 		(p) => p.sale_price_minor === null || p.sale_price_minor <= p.price_minor,
@@ -42,10 +50,10 @@ export const productInput = z
 export type ProductInput = z.infer<typeof productInput>;
 
 export const categoryInput = z.object({
-	slug: text(200).optional(),
-	name: text(100).min(1),
-	description: text(500),
-	icon: z.enum(["wind", "sparkles", "droplet", "smile"]),
+	slug: trimmedString(200).optional(),
+	name: trimmedString(100).min(1),
+	description: trimmedString(500),
+	icon: z.enum(categoryIconNames),
 	sort_order: z.number().int().min(0).max(10000),
 	is_active: z.boolean(),
 });

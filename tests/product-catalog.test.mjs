@@ -2,9 +2,14 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { test } from "node:test";
-import { categories, finalPrice } from "../src/data/catalog.ts";
+import { coverImage, finalPrice } from "../src/data/catalog.ts";
 import { filterProducts } from "../src/lib/catalog-search.ts";
-import { migrateDatabase } from "../src/server/migrations.ts";
+import { queryCategories } from "../src/server/categories.ts";
+import {
+	latestSchemaVersion,
+	migrateDatabase,
+} from "../src/server/migrations.ts";
+import { queryPublicProducts } from "../src/server/products.ts";
 
 for (const existing of [false, true]) {
 	test(`catalog migration ${existing ? "upgrades an existing" : "initializes a fresh"} database`, () => {
@@ -19,20 +24,19 @@ for (const existing of [false, true]) {
 			}
 			migrateDatabase(db);
 			migrateDatabase(db);
-			const products = db
-				.prepare("SELECT * FROM products WHERE status='published' ORDER BY id")
-				.all();
+			const categories = queryCategories(db);
+			const products = queryPublicProducts(db).sort((a, b) => a.id - b.id);
 			assert.equal(products.length, 6);
 			assert.deepEqual(
 				products.map(finalPrice),
 				[14900, 44900, 14900, 11900, 13000, 12900],
 			);
-			assert.equal(new Set(products.map((p) => p.image_url)).size, 6);
+			assert.equal(new Set(products.map(coverImage)).size, 6);
 			for (const product of products) {
 				assert.ok(categories.some((c) => c.slug === product.category_slug));
 				assert.ok(product.description.length > 30);
-				assert.ok(JSON.parse(product.features_json).length >= 3);
-				assert.ok(existsSync(`public${product.image_url}`));
+				assert.ok(product.features.length >= 3);
+				assert.ok(existsSync(`public${coverImage(product)}`));
 			}
 			assert.equal(
 				filterProducts(products, { category: "კანის-მოვლა" }).length,
@@ -52,26 +56,25 @@ for (const existing of [false, true]) {
 						.name,
 					"Keep me",
 				);
-			assert.equal(db.prepare("PRAGMA user_version").get().user_version, 3);
+			assert.equal(
+				db.prepare("PRAGMA user_version").get().user_version,
+				latestSchemaVersion,
+			);
 		} finally {
 			db.close();
 		}
 	});
 }
 
-test("exact sale prices override rounded discounts, including a zero sale price", () => {
+test("exact sale prices include a zero sale price", () => {
 	assert.equal(
 		finalPrice({
 			price_minor: 30000,
-			discount_percent: 50,
 			sale_price_minor: 14900,
 		}),
 		14900,
 	);
-	assert.equal(
-		finalPrice({ price_minor: 100, discount_percent: 0, sale_price_minor: 0 }),
-		0,
-	);
+	assert.equal(finalPrice({ price_minor: 100, sale_price_minor: 0 }), 0);
 });
 
 test("descriptive search triggers synchronize product changes", () => {

@@ -36,6 +36,7 @@ export async function adminRequest(
 		);
 	}
 }
+
 export async function readJson(request: Request): Promise<unknown> {
 	const raw = await request.text();
 	if (raw.length > 128000)

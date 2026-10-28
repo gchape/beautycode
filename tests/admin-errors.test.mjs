@@ -28,7 +28,6 @@ test("server validation errors survive the fetch client unchanged", async (t) =>
 	const request = new Request("https://beautycode.ge/admin/api/products", {
 		headers: {
 			"x-remote-user": "admin",
-			authorization: `Basic ${Buffer.from(`admin:${process.env.DEV_ADMIN_PASSWORD || "admin"}`).toString("base64")}`,
 		},
 	});
 	const response = await adminRequest(request, () =>

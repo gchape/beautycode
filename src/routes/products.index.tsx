@@ -1,19 +1,18 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Breadcrumb } from "../components/breadcrumb";
-import { CatalogFilters } from "../components/catalog/catalog-filters";
-import { CatalogSearchForm } from "../components/catalog/catalog-search-form";
-import { ProductGrid } from "../components/catalog/product-grid";
-import { Button } from "../components/ui/button";
-import { Card } from "../components/ui/card";
+import { Breadcrumb } from "../components/breadcrumb.tsx";
+import { CatalogFilters } from "../components/catalog/catalog-filters.tsx";
+import { CatalogSearchForm } from "../components/catalog/catalog-search-form.tsx";
+import { ProductGrid } from "../components/catalog/product-grid.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Card } from "../components/ui/card.tsx";
 import {
 	type CatalogSearch,
 	catalogSearchSchema,
 	filterProducts,
-} from "../lib/catalog-search";
-import { seoHead } from "../lib/seo";
-import { getProducts } from "../server/catalog";
+} from "../lib/catalog-search.ts";
+import { seoHead } from "../lib/seo.ts";
+import { getProducts } from "../server/catalog.ts";
 export const Route = createFileRoute("/products/")({
 	validateSearch: catalogSearchSchema,
 	loaderDeps: ({ search }) => ({ q: search.q }),
@@ -32,11 +31,10 @@ export const Route = createFileRoute("/products/")({
 function Catalog() {
 	const allProducts = Route.useLoaderData();
 	const search = Route.useSearch();
-	const [query, setQuery] = useState(search.q || "");
-	useEffect(() => setQuery(search.q || ""), [search.q]);
 	const navigate = useNavigate({ from: Route.fullPath });
 	const update = (values: Partial<CatalogSearch>) =>
 		navigate({ search: (previous) => ({ ...previous, ...values }) });
+	// Full-text search runs in SQLite; remaining filters sort/refine these results locally.
 	const products = filterProducts(allProducts, search);
 	return (
 		<section className="wrap page-section">
@@ -44,8 +42,8 @@ function Catalog() {
 			<span className="eyebrow">იპოვე შენი სილამაზის კოდი</span>
 			<h1>ყველა პროდუქტი</h1>
 			<CatalogSearchForm
-				query={query}
-				onQueryChange={setQuery}
+				key={search.q || ""}
+				defaultValue={search.q || ""}
 				onSearch={(q) => {
 					void update({ q });
 				}}
@@ -56,7 +54,6 @@ function Catalog() {
 				<Button
 					variant="ghost"
 					onClick={() => {
-						setQuery("");
 						void navigate({ search: {} });
 					}}
 				>

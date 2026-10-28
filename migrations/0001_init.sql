@@ -12,12 +12,11 @@ CREATE TABLE products (
     category_slug TEXT NOT NULL REFERENCES categories (slug),
     description TEXT NOT NULL DEFAULT '',
     price_minor INTEGER NOT NULL CHECK (price_minor >= 0),
-    discount_percent INTEGER NOT NULL DEFAULT 0 CHECK (discount_percent BETWEEN 0 AND 100),
     stock_status TEXT NOT NULL DEFAULT 'in_stock'
         CHECK (stock_status IN ('in_stock', 'out_of_stock', 'preorder')),
     status TEXT NOT NULL DEFAULT 'draft'
         CHECK (status IN ('draft', 'published', 'archived')),
-    image_url TEXT,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
@@ -56,3 +55,13 @@ BEGIN
 END;
 
 CREATE INDEX products_status_category_index ON products (status, category_slug);
+
+CREATE TABLE product_images (
+    id INTEGER PRIMARY KEY,
+    product_id INTEGER NOT NULL REFERENCES products (id) ON DELETE CASCADE,
+    url TEXT NOT NULL,
+    alt TEXT NOT NULL DEFAULT '',
+    sort_order INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX product_images_product_order_index ON product_images (product_id, sort_order);

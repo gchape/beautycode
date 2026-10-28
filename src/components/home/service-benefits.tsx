@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { MessageCircle, RotateCcw, Truck } from "lucide-react";
-import { useContact } from "../contact/contact-context";
-import { Button } from "../ui/button";
+import { useOpenChat } from "../contact/contact-context.tsx";
+import { Button } from "../ui/button.tsx";
 
 export function ServiceBenefits() {
-	const contact = useContact();
+	const openChat = useOpenChat();
 	return (
 		<section className="benefits wrap" aria-label="ჩვენი მომსახურება">
 			<Link to="/delivery">
@@ -21,7 +21,7 @@ export function ServiceBenefits() {
 					<p>გაეცანი დაბრუნების პირობებს</p>
 				</div>
 			</Link>
-			<Button variant="ghost" onClick={() => contact()}>
+			<Button variant="ghost" onClick={() => openChat()}>
 				<MessageCircle />
 				<div>
 					<h3>შენ გვერდით ვართ</h3>

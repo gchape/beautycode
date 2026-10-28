@@ -1,17 +1,17 @@
 import { Search } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { useState } from "react";
+import { Button } from "../ui/button.tsx";
+import { Input } from "../ui/input.tsx";
+import { Label } from "../ui/label.tsx";
 
 export function CatalogSearchForm({
-	query,
-	onQueryChange,
+	defaultValue,
 	onSearch,
 }: {
-	query: string;
-	onQueryChange: (value: string) => void;
+	defaultValue: string;
 	onSearch: (query?: string) => void;
 }) {
+	const [query, setQuery] = useState(defaultValue);
 	return (
 		<form
 			className="search-form"
@@ -29,7 +29,7 @@ export function CatalogSearchForm({
 				placeholder="რას ეძებ?"
 				value={query}
 				maxLength={200}
-				onChange={(e) => onQueryChange(e.target.value)}
+				onChange={(e) => setQuery(e.target.value)}
 			/>
 			<Button type="submit">ძებნა</Button>
 		</form>

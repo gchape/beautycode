@@ -1,10 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { MessageCircle, Truck } from "lucide-react";
+import { useOpenChat } from "#/components/contact/contact-context.tsx";
 import { Breadcrumb } from "../components/breadcrumb";
 import { ProductFeatures } from "../components/catalog/product-features";
 import { ProductGallery } from "../components/catalog/product-gallery";
 import { ProductPrice } from "../components/catalog/product-price";
-import { useContact } from "../components/contact/contact-context";
 import {
 	Accordion,
 	AccordionContent,
@@ -12,13 +12,14 @@ import {
 	AccordionTrigger,
 } from "../components/ui/accordion";
 import { Button } from "../components/ui/button";
+import { coverImage } from "../data/catalog.ts";
+import { stockLabels } from "../data/labels.ts";
 import { breadcrumbData, productData, productPath, seoHead } from "../lib/seo";
-import { getProducts } from "../server/catalog";
+import { getProduct } from "../server/catalog";
 
 export const Route = createFileRoute("/products/$slug")({
 	loader: async ({ params }) => {
-		const products = await getProducts({ data: {} });
-		const product = products.find((p) => p.slug === params.slug);
+		const product = await getProduct({ data: { slug: params.slug } });
 		if (!product) throw notFound();
 		return product;
 	},
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/products/$slug")({
 					description:
 						product.meta_description || product.description.slice(0, 180),
 					path: productPath(product.slug),
-					image: product.image_url || undefined,
+					image: coverImage(product) || undefined,
 					data: [
 						productData(product),
 						breadcrumbData([
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/products/$slug")({
 
 function ProductPage() {
 	const p = Route.useLoaderData(),
-		contact = useContact();
+		contact = useOpenChat();
 	return (
 		<section className="wrap page-section">
 			<Breadcrumb title={p.name} />
@@ -54,13 +55,7 @@ function ProductPage() {
 				<div>
 					<span className="eyebrow">{p.brand}</span>
 					<h1>{p.name}</h1>
-					<p className="stock">
-						{p.stock_status === "in_stock"
-							? "მარაგშია"
-							: p.stock_status === "preorder"
-								? "წინასწარი შეკვეთა"
-								: "არ არის მარაგში"}
-					</p>
+					<p className="stock">{stockLabels[p.stock_status]}</p>
 					<ProductPrice product={p} className="detail-price" />
 					<h2 className="product-section-title">აღწერა</h2>
 					<p className="product-description">{p.description}</p>

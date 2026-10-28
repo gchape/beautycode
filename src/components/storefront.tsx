@@ -1,12 +1,12 @@
 import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
-import { ContactProvider } from "./contact/contact-context";
-import { SiteFooter } from "./layout/site-footer";
-import { SiteHeader } from "./layout/site-header";
+import { ChatProvider } from "./contact/contact-context.tsx";
+import { SiteFooter } from "./layout/site-footer.tsx";
+import { SiteHeader } from "./layout/site-header.tsx";
 
 export function Storefront({ children }: { children: ReactNode }) {
 	return (
-		<ContactProvider>
+		<ChatProvider>
 			<div className="announcement">
 				უფასო მიწოდება მთელ საქართველოში
 				<ArrowUpRight size={13} />
@@ -14,6 +14,6 @@ export function Storefront({ children }: { children: ReactNode }) {
 			<SiteHeader />
 			<main id="main">{children}</main>
 			<SiteFooter />
-		</ContactProvider>
+		</ChatProvider>
 	);
 }

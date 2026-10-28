@@ -1,18 +1,20 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { Breadcrumb } from "../components/breadcrumb";
-import { ProductGrid } from "../components/catalog/product-grid";
-import { breadcrumbData, categoryPath, seoHead } from "../lib/seo";
-import { getCategories, getProducts } from "../server/catalog";
+import { Breadcrumb } from "../components/breadcrumb.tsx";
+import { ProductGrid } from "../components/catalog/product-grid.tsx";
+import { breadcrumbData, categoryPath, seoHead } from "../lib/seo.ts";
+import { getCategories, getProductsByCategory } from "../server/catalog.ts";
 
 export const Route = createFileRoute("/categories/$slug")({
 	loader: async ({ params }) => {
 		const categories = await getCategories();
 		const category = categories.find((c) => c.slug === params.slug);
 		if (!category) throw notFound();
-		const products = await getProducts({ data: {} });
+		const products = await getProductsByCategory({
+			data: { slug: category.slug },
+		});
 		return {
 			category,
-			products: products.filter((p) => p.category_slug === category.slug),
+			products,
 		};
 	},
 	head: ({ loaderData }) =>

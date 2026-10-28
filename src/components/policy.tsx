@@ -1,7 +1,7 @@
 import policies from "../data/policies.json";
-import { Breadcrumb } from "./breadcrumb";
+import { Breadcrumb } from "./breadcrumb.tsx";
 
-export function Policy({ page }: { page: keyof typeof policies }) {
+export function PolicyPage({ page }: { page: keyof typeof policies }) {
 	const policy = policies[page];
 	return (
 		<article className="wrap policy page-section">

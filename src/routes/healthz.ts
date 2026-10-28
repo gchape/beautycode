@@ -5,7 +5,7 @@ export const Route = createFileRoute("/healthz")({
 		handlers: {
 			GET: async () => {
 				try {
-					const { getDatabase } = await import("../server/database");
+					const { getDatabase } = await import("../server/database.ts");
 					getDatabase().prepare("SELECT 1").get();
 					return Response.json({ status: "ok" });
 				} catch {

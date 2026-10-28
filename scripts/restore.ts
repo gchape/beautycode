@@ -1,28 +1,32 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
-import { DatabaseSync } from "node:sqlite";
-import { exportBackup, restoreBackup } from "../src/server/backup.ts";
-import { migrateDatabase } from "../src/server/migrations.ts";
-import { databasePath } from "../src/server/paths.ts";
-import { getBackup } from "../src/server/storage.ts";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { restoreSnapshot } from "../src/server/backup.ts";
+import { databasePath } from "../src/server/config.ts";
 
 const [source, confirmation] = process.argv.slice(2);
 if (!source || confirmation !== "--replace")
 	throw new Error(
-		"Stop the app, then run: node scripts/restore.ts <local.json|s3:backups/key.json> --replace",
+		"Stop the app, then run: node scripts/restore.ts <local.db|s3:backups/key.db> --replace",
 	);
-const raw = source.startsWith("s3:")
-	? await getBackup(source.slice(3))
-	: readFileSync(source, "utf8");
-const path = databasePath();
-mkdirSync(dirname(path), { recursive: true });
-const db = new DatabaseSync(path);
+if (source.endsWith(".json"))
+	throw new Error(
+		"Restore legacy JSON with release 901c88c first, then create a SQLite snapshot. See README.",
+	);
+const temporary = source.startsWith("s3:")
+	? await mkdtemp(join(tmpdir(), "beautycode-restore-"))
+	: undefined;
 try {
-	migrateDatabase(db);
-	const safety = `${path}.before-restore-${Date.now()}.json`;
-	writeFileSync(safety, exportBackup(db), { mode: 0o600 });
-	restoreBackup(db, raw);
-	console.log(`Restored. Previous data saved to ${safety}`);
+	let path = source;
+	if (temporary) {
+		const { downloadBackup } = await import("../src/server/storage.ts");
+		path = join(temporary, "snapshot.db");
+		await downloadBackup(source.slice(3), path);
+	}
+	const { safety } = await restoreSnapshot(path, databasePath());
+	console.log(
+		safety ? `Restored. Previous database saved to ${safety}` : "Restored.",
+	);
 } finally {
-	db.close();
+	if (temporary) await rm(temporary, { recursive: true, force: true });
 }

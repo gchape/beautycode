@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { absoluteUrl } from "../lib/seo";
+import { absoluteUrl } from "../lib/seo.ts";
 
 export const Route = createFileRoute("/robots.txt")({
 	server: {

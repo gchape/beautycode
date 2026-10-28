@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Policy } from "../components/policy";
-import { seoHead } from "../lib/seo";
+import { PolicyPage } from "../components/policy.tsx";
+import { seoHead } from "../lib/seo.ts";
 
 export const Route = createFileRoute("/terms")({
 	head: () =>
@@ -9,5 +9,5 @@ export const Route = createFileRoute("/terms")({
 			description: "Beauty Code-ის მომსახურების წესები და პირობები.",
 			path: "/terms",
 		}),
-	component: () => <Policy page="terms" />,
+	component: () => <PolicyPage page="terms" />,
 });

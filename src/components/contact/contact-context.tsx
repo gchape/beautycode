@@ -1,14 +1,14 @@
 import { createContext, type ReactNode, useContext } from "react";
-import type { Product } from "../../data/catalog";
-import { useTawkChat } from "../../lib/tawk-chat";
+import type { PublicProduct } from "../../data/catalog.ts";
+import { useChatLauncher } from "../../lib/tawk-chat.ts";
 
-const ContactContext = createContext<(product?: Product) => void>(() => {});
+const ChatContext = createContext<(product?: PublicProduct) => void>(() => {});
 
-export const useContact = () => useContext(ContactContext);
+export const useOpenChat = () => useContext(ChatContext);
 
-export function ContactProvider({ children }: { children: ReactNode }) {
-	const open = useTawkChat();
+export function ChatProvider({ children }: { children: ReactNode }) {
+	const openChat = useChatLauncher();
 	return (
-		<ContactContext.Provider value={open}>{children}</ContactContext.Provider>
+		<ChatContext.Provider value={openChat}>{children}</ChatContext.Provider>
 	);
 }

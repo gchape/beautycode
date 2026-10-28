@@ -1,16 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
-import type { Category, Product } from "../../data/catalog";
-import { adminApi } from "../../lib/admin/api";
-import { readProductForm } from "../../lib/admin/product-form";
-import { Button } from "../ui/button";
-import { FormError } from "./form-error";
-import { ImageEditor } from "./image-editor";
+import type { AdminProduct, Category } from "../../data/catalog.ts";
+import { adminApi } from "../../lib/admin/api.ts";
+import { readProductForm } from "../../lib/admin/product-form.ts";
+import { Button } from "../ui/button.tsx";
+import { FormError } from "./form-error.tsx";
+import { type EditableImage, ImageEditor } from "./image-editor.tsx";
 import {
 	ProductDescriptionFields,
 	ProductDetailsFields,
 	ProductPricingFields,
-} from "./product-fields";
+} from "./product-fields.tsx";
 
 export function ProductEditor({
 	product,
@@ -18,12 +18,17 @@ export function ProductEditor({
 	onSaved,
 	onCancel,
 }: {
-	product?: Product;
+	product?: AdminProduct;
 	categories: Category[];
 	onSaved: () => void;
 	onCancel: () => void;
 }) {
-	const [images, setImages] = useState(product?.images || []);
+	const [images, setImages] = useState<EditableImage[]>(() =>
+		(product?.images ?? []).map((image) => ({
+			...image,
+			key: crypto.randomUUID(),
+		})),
+	);
 	const [uploading, setUploading] = useState(false);
 	const save = useMutation({
 		mutationFn: async (form: FormData) =>

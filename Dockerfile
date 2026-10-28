@@ -1,4 +1,4 @@
-FROM node:24-bookworm-slim AS build
+FROM node:26-bookworm-slim AS build
 WORKDIR /app
 RUN npm install --global pnpm@12.14.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -9,9 +9,9 @@ RUN test -n "$SITE_URL"
 ENV VITE_SITE_URL=$SITE_URL
 RUN pnpm build && pnpm prune --prod
 
-FROM node:24-bookworm-slim
+FROM node:26-bookworm-slim
 WORKDIR /app
-ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 DB_PATH=/data/beautycode.db
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 MIGRATIONS_DIR=/app/migrations DB_PATH=/data/beautycode.db
 COPY --from=build --chown=node:node /app/.output ./.output
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/package.json ./package.json

@@ -1,4 +1,4 @@
-import { validationDetails } from "../../lib/admin/errors";
+import { validationDetails } from "../../lib/admin/errors.ts";
 
 const labels: Record<string, string> = {
 	name: "დასახელება",

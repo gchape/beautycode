@@ -1,16 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { readCategories, readProducts } from "../server/database";
-import { sitemapXml } from "../server/sitemap";
+import { queryCategories } from "../server/categories.ts";
+import { getDatabase } from "../server/database.ts";
+import { queryPublicProducts } from "../server/products.ts";
+import { sitemapXml } from "../server/sitemap.ts";
 export const Route = createFileRoute("/sitemap.xml")({
 	server: {
 		handlers: {
-			GET: () =>
-				new Response(sitemapXml(readCategories(), readProducts()), {
-					headers: {
-						"Content-Type": "application/xml; charset=utf-8",
-						"Cache-Control": "public, max-age=300",
+			GET: () => {
+				const db = getDatabase();
+				return new Response(
+					sitemapXml(queryCategories(db), queryPublicProducts(db)),
+					{
+						headers: {
+							"Content-Type": "application/xml; charset=utf-8",
+							"Cache-Control": "public, max-age=300",
+						},
 					},
-				}),
+				);
+			},
 		},
 	},
 });

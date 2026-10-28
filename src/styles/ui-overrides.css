@@ -27,7 +27,7 @@
 .filters [data-slot="checkbox"][data-state="checked"] {
 	border-color: var(--primary);
 }
-.benefits .button {
+.benefits .button[data-size] {
 	border-radius: 0;
 	padding: 0;
 	font-weight: 400;

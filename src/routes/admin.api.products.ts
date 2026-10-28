@@ -1,19 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { adminRequest, readJson } from "../server/admin/http";
-import { hydrateProducts, saveProduct } from "../server/admin/repository";
-import { getDatabase } from "../server/database";
+import { adminRequest, readJson } from "../server/admin/http.ts";
+import { listProducts, saveProduct } from "../server/admin/repository.ts";
+import { getDatabase } from "../server/database.ts";
+
 export const Route = createFileRoute("/admin/api/products")({
 	server: {
 		handlers: {
 			GET: ({ request }) =>
-				adminRequest(request, () =>
-					hydrateProducts(
-						getDatabase(),
-						getDatabase()
-							.prepare("SELECT * FROM products ORDER BY id DESC")
-							.all(),
-					),
-				),
+				adminRequest(request, () => listProducts(getDatabase())),
 			POST: ({ request }) =>
 				adminRequest(request, async (user) =>
 					saveProduct(getDatabase(), await readJson(request), user),

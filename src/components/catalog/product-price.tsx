@@ -1,10 +1,10 @@
-import { finalPrice, money, type Product } from "../../data/catalog";
+import { finalPrice, money, type PublicProduct } from "../../data/catalog.ts";
 
 export function ProductPrice({
 	product,
 	className,
 }: {
-	product: Product;
+	product: PublicProduct;
 	className?: string;
 }) {
 	const price = finalPrice(product);

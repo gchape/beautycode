@@ -13,19 +13,6 @@ UPDATE products SET is_featured = 1 WHERE status = 'published';
 
 CREATE UNIQUE INDEX products_sku_index ON products (sku) WHERE sku IS NOT NULL;
 
-CREATE TABLE product_images (
-    id INTEGER PRIMARY KEY,
-    product_id INTEGER NOT NULL REFERENCES products (id) ON DELETE CASCADE,
-    url TEXT NOT NULL,
-    alt TEXT NOT NULL DEFAULT '',
-    sort_order INTEGER NOT NULL DEFAULT 0
-);
-
-CREATE INDEX product_images_product_order_index ON product_images (product_id, sort_order);
-
-INSERT INTO product_images (product_id, url, alt)
-SELECT id, image_url, name FROM products WHERE image_url IS NOT NULL;
-
 CREATE TABLE admin_audit_log (
     id INTEGER PRIMARY KEY,
     username TEXT NOT NULL,

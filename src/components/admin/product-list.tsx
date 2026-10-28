@@ -1,16 +1,17 @@
 import { useState } from "react";
-import type { Category, Product } from "../../data/catalog";
-import { finalPrice, money } from "../../data/catalog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import type { AdminProduct, Category } from "../../data/catalog.ts";
+import { finalPrice, money } from "../../data/catalog.ts";
+import { statusLabels } from "../../data/labels.ts";
+import { Button } from "../ui/button.tsx";
+import { Input } from "../ui/input.tsx";
 export function ProductList({
 	products,
 	categories,
 	onEdit,
 }: {
-	products: Product[];
+	products: AdminProduct[];
 	categories: Category[];
-	onEdit: (product: Product) => void;
+	onEdit?: (product: AdminProduct) => void;
 }) {
 	const [query, setQuery] = useState("");
 	const [status, setStatus] = useState("");
@@ -21,11 +22,6 @@ export function ProductList({
 			(!category || p.category_slug === category) &&
 			`${p.name} ${p.sku || ""}`.toLowerCase().includes(query.toLowerCase()),
 	);
-	const statuses = {
-		published: "გამოქვეყნებული",
-		draft: "მონახაზი",
-		archived: "არქივი",
-	};
 	return (
 		<>
 			<div className="admin-actions">
@@ -41,7 +37,7 @@ export function ProductList({
 					onChange={(e) => setStatus(e.target.value)}
 				>
 					<option value="">ყველა სტატუსი</option>
-					{Object.entries(statuses).map(([value, label]) => (
+					{Object.entries(statusLabels).map(([value, label]) => (
 						<option key={value} value={value}>
 							{label}
 						</option>
@@ -67,7 +63,7 @@ export function ProductList({
 							<th>პროდუქტი</th>
 							<th>ფასი</th>
 							<th>სტატუსი</th>
-							<th>მოქმედება</th>
+							{onEdit && <th>მოქმედება</th>}
 						</tr>
 					</thead>
 					<tbody>
@@ -78,12 +74,14 @@ export function ProductList({
 									{p.is_featured ? " ★" : ""}
 								</td>
 								<td>{money(finalPrice(p))}</td>
-								<td>{statuses[p.status || "draft"]}</td>
-								<td>
-									<Button variant="outline" onClick={() => onEdit(p)}>
-										რედაქტირება
-									</Button>
-								</td>
+								<td>{statusLabels[p.status || "draft"]}</td>
+								{onEdit && (
+									<td>
+										<Button variant="outline" onClick={() => onEdit(p)}>
+											რედაქტირება
+										</Button>
+									</td>
+								)}
 							</tr>
 						))}
 					</tbody>

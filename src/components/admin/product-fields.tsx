@@ -1,12 +1,13 @@
-import type { Category, Product } from "../../data/catalog";
-import { Input } from "../ui/input";
-import { Field } from "./field";
+import type { AdminProduct, Category } from "../../data/catalog.ts";
+import { statusLabels, stockLabels } from "../../data/labels.ts";
+import { Input } from "../ui/input.tsx";
+import { Field } from "./field.tsx";
 
 export function ProductDetailsFields({
 	product,
 	categories,
 }: {
-	product?: Product;
+	product?: AdminProduct;
 	categories: Category[];
 }) {
 	return (
@@ -27,7 +28,11 @@ export function ProductDetailsFields({
 				/>
 			</Field>
 			<Field label="კატეგორია">
-				<select name="category" defaultValue={product?.category_slug} required>
+				<select
+					name="category_slug"
+					defaultValue={product?.category_slug}
+					required
+				>
 					<option value="">აირჩიეთ კატეგორია</option>
 					{categories.map((c) => (
 						<option value={c.slug} key={c.slug}>
@@ -44,7 +49,7 @@ export function ProductDetailsFields({
 	);
 }
 
-export function ProductPricingFields({ product }: { product?: Product }) {
+export function ProductPricingFields({ product }: { product?: AdminProduct }) {
 	return (
 		<>
 			<Field label="ფასი (₾)">
@@ -60,7 +65,7 @@ export function ProductPricingFields({ product }: { product?: Product }) {
 			</Field>
 			<Field label="ფასდაკლებული ფასი (₾), სურვილისამებრ">
 				<Input
-					name="sale"
+					name="sale_price"
 					type="number"
 					min="0"
 					max="1000000"
@@ -74,23 +79,34 @@ export function ProductPricingFields({ product }: { product?: Product }) {
 			</Field>
 			<Field label="სტატუსი">
 				<select name="status" defaultValue={product?.status || "draft"}>
-					<option value="draft">მონახაზი</option>
-					<option value="published">გამოქვეყნებული</option>
-					<option value="archived">არქივი</option>
+					{Object.entries(statusLabels).map(([value, label]) => (
+						<option key={value} value={value}>
+							{label}
+						</option>
+					))}
 				</select>
 			</Field>
 			<Field label="მარაგი">
-				<select name="stock" defaultValue={product?.stock_status || "in_stock"}>
-					<option value="in_stock">მარაგშია</option>
-					<option value="out_of_stock">არ არის მარაგში</option>
-					<option value="preorder">წინასწარი შეკვეთა</option>
+				<select
+					name="stock_status"
+					defaultValue={product?.stock_status || "in_stock"}
+				>
+					{Object.entries(stockLabels).map(([value, label]) => (
+						<option key={value} value={value}>
+							{label}
+						</option>
+					))}
 				</select>
 			</Field>
 		</>
 	);
 }
 
-export function ProductDescriptionFields({ product }: { product?: Product }) {
+export function ProductDescriptionFields({
+	product,
+}: {
+	product?: AdminProduct;
+}) {
 	return (
 		<>
 			<Field label="აღწერა">
@@ -110,7 +126,7 @@ export function ProductDescriptionFields({ product }: { product?: Product }) {
 			</Field>
 			<Field label="SEO აღწერა">
 				<textarea
-					name="meta"
+					name="meta_description"
 					rows={2}
 					maxLength={300}
 					defaultValue={product?.meta_description}
@@ -119,8 +135,8 @@ export function ProductDescriptionFields({ product }: { product?: Product }) {
 			<label className="admin-check">
 				<input
 					type="checkbox"
-					name="featured"
-					defaultChecked={!!product?.is_featured}
+					name="is_featured"
+					defaultChecked={product?.is_featured}
 				/>{" "}
 				მთავარ გვერდზე გამოჩენა
 			</label>

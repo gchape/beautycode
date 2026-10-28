@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "@fontsource-variable/noto-sans-georgian";
 @import "./styles/base.css";
+@import "./styles/button.css";
 @import "./styles/header.css";
 @import "./styles/home.css";
 @import "./styles/footer.css";

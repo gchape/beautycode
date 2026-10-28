@@ -11,9 +11,8 @@ test("structured product data uses sale prices and escapes embedded markup", () 
 		description: "Test",
 		price_minor: 30000,
 		sale_price_minor: 14900,
-		discount_percent: 50,
 		stock_status: "out_of_stock",
-		image_url: "/images/ipl-kit-cutout.png",
+		images: [{ url: "/images/ipl-kit-cutout.png", alt: "" }],
 	};
 	const data = productData(product);
 	assert.equal(data.offers.price, "149.00");

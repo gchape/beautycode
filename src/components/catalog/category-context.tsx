@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useContext } from "react";
-import type { Category } from "../../data/catalog";
+import type { Category } from "../../data/catalog.ts";
 
 const CategoryContext = createContext<Category[]>([]);
 

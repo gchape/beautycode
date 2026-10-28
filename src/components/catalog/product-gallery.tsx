@@ -1,13 +1,9 @@
 import { PackageOpen } from "lucide-react";
 import { useState } from "react";
-import type { Product } from "../../data/catalog";
+import type { PublicProduct } from "../../data/catalog.ts";
 
-export function ProductGallery({ product }: { product: Product }) {
-	const images = product.images?.length
-		? product.images
-		: product.image_url
-			? [{ url: product.image_url, alt: product.name }]
-			: [];
+export function ProductGallery({ product }: { product: PublicProduct }) {
+	const images = product.images;
 	const [selected, setSelected] = useState(0);
 	const current = images[selected] ?? images[0];
 	return (
@@ -32,7 +28,8 @@ export function ProductGallery({ product }: { product: Product }) {
 					{images.map((image, index) => (
 						<button
 							type="button"
-							key={image.url}
+							// biome-ignore lint/suspicious/noArrayIndexKey: Gallery order is fixed for this product, and duplicate URLs are valid.
+							key={`${image.url}-${index}`}
 							aria-label={`სურათი ${index + 1}`}
 							aria-pressed={selected === index}
 							onClick={() => setSelected(index)}
