@@ -1,5 +1,6 @@
 import type { Category } from "../../data/catalog.ts";
 import { Button } from "../ui/button.tsx";
+import { AdminTable } from "./admin-table.tsx";
 
 export function CategoryList({
 	categories,
@@ -9,14 +10,14 @@ export function CategoryList({
 	onEdit?: (category: Category) => void;
 }) {
 	return (
-		<div className="admin-table">
+		<AdminTable>
 			<table>
 				<thead>
 					<tr>
-						<th>კატეგორია</th>
-						<th>რიგითობა</th>
-						<th>ხილვადობა</th>
-						{onEdit && <th>მოქმედება</th>}
+						<th scope="col">კატეგორია</th>
+						<th scope="col">რიგითობა</th>
+						<th scope="col">ხილვადობა</th>
+						{onEdit && <th scope="col">მოქმედება</th>}
 					</tr>
 				</thead>
 				<tbody>
@@ -36,6 +37,6 @@ export function CategoryList({
 					))}
 				</tbody>
 			</table>
-		</div>
+		</AdminTable>
 	);
 }

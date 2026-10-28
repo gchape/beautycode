@@ -1,4 +1,5 @@
 import type { AuditEntry } from "../../data/audit.ts";
+import { AdminTable } from "./admin-table.tsx";
 
 export function AuditLog({
 	entries,
@@ -8,14 +9,14 @@ export function AuditLog({
 	pending: boolean;
 }) {
 	return (
-		<div className="admin-table">
+		<AdminTable>
 			<table>
 				<thead>
 					<tr>
-						<th>თარიღი</th>
-						<th>მომხმარებელი</th>
-						<th>მოქმედება</th>
-						<th>ჩანაწერი</th>
+						<th scope="col">თარიღი</th>
+						<th scope="col">მომხმარებელი</th>
+						<th scope="col">მოქმედება</th>
+						<th scope="col">ჩანაწერი</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -31,7 +32,11 @@ export function AuditLog({
 					))}
 				</tbody>
 			</table>
-			{!pending && !entries.length && <p>ცვლილებები ჯერ არ არის.</p>}
-		</div>
+			{!pending && !entries.length && (
+				<p className="px-5 py-12 text-center text-sm text-muted-foreground">
+					ცვლილებები ჯერ არ არის.
+				</p>
+			)}
+		</AdminTable>
 	);
 }

@@ -1,41 +1,38 @@
-import { Link, useRouter } from "@tanstack/react-router";
-import {
-	ChevronRight,
-	Grid2X2,
-	Menu,
-	MessageCircle,
-	Search,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { MessageCircle, Search } from "lucide-react";
 import { useCategories } from "../catalog/category-context.tsx";
-import { categoryIcons } from "../category-icons.ts";
 import { useOpenChat } from "../contact/contact-context.tsx";
 import { Button } from "../ui/button.tsx";
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetTitle,
-	SheetTrigger,
-} from "../ui/sheet.tsx";
+import { MobileMenu } from "./mobile-menu.tsx";
+
 export function SiteHeader() {
 	const categories = useCategories();
-	const [menu, setMenu] = useState(false);
 	const openChat = useOpenChat();
-	const router = useRouter();
-	useEffect(
-		() => router.subscribe("onResolved", () => setMenu(false)),
-		[router],
-	);
 	return (
-		<header className="header wrap">
-			<Link to="/" className="brand" aria-label="Beauty Code, მთავარი">
-				<img src="/logo.jpg" alt="Beauty Code" width="82" height="82" />
-				<span>
-					BEAUTY CODE<small>სილამაზე შენებურად</small>
+		<header className="flex h-28 items-center justify-between gap-6 max-[1100px]:gap-[15px] max-[560px]:h-[87px] max-[560px]:gap-2 mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)]">
+			<Link
+				to="/"
+				className="flex shrink-0 items-center gap-[9px]"
+				aria-label="Beauty Code, მთავარი"
+			>
+				<img
+					className="size-[68px] object-cover mix-blend-multiply max-[1100px]:size-[55px] max-[560px]:size-[47px]"
+					src="/logo.jpg"
+					alt="Beauty Code"
+					width="82"
+					height="82"
+				/>
+				<span className="text-[1.0625rem] font-semibold tracking-[0.17em] max-[1100px]:text-[0.9375rem] max-[560px]:text-sm">
+					BEAUTY CODE
+					<small className="mt-[7px] block text-xs font-normal tracking-[0.06em] max-[560px]:text-[0.6875rem]">
+						სილამაზე შენებურად
+					</small>
 				</span>
 			</Link>
-			<nav className="desktop-nav" aria-label="მთავარი ნავიგაცია">
+			<nav
+				className="flex items-center gap-1.5 text-sm leading-[1.6] max-[1100px]:hidden [&_a]:rounded-md [&_a]:px-[9px] [&_a]:py-2 [&_a:hover]:bg-muted [&_a:hover]:text-[#975c70] [&_a[aria-current=page]]:bg-muted [&_a[aria-current=page]]:text-primary"
+				aria-label="მთავარი ნავიგაცია"
+			>
 				<Link to="/products" search={{}}>
 					ყველა პროდუქტი
 				</Link>
@@ -45,11 +42,11 @@ export function SiteHeader() {
 					</Link>
 				))}
 			</nav>
-			<div className="header-actions">
+			<div className="flex items-center gap-[15px] max-[1100px]:gap-2 max-[560px]:gap-[3px]">
 				<Link
 					to="/products"
 					search={{}}
-					className="icon-button"
+					className="inline-flex size-9 min-h-9 items-center justify-center gap-0 bg-transparent p-0"
 					aria-label="პროდუქტის ძებნა"
 				>
 					<Search size={21} />
@@ -57,69 +54,11 @@ export function SiteHeader() {
 				<Button
 					variant="outline"
 					onClick={() => openChat()}
-					className="contact-button"
+					className="min-h-10 px-[17px] py-2 max-[1100px]:px-3 max-[560px]:hidden"
 				>
 					<MessageCircle size={17} /> მოგვწერე
 				</Button>
-				<Sheet open={menu} onOpenChange={setMenu}>
-					<SheetTrigger asChild>
-						<Button
-							variant="ghost"
-							size="icon"
-							className="icon-button mobile-menu"
-							aria-label="მენიუ"
-						>
-							<Menu />
-						</Button>
-					</SheetTrigger>
-					<SheetContent side="right" className="mobile-sheet">
-						<div className="menu-heading">
-							<span className="eyebrow">BEAUTY CODE</span>
-							<SheetTitle>აღმოაჩინე შენი რჩეული</SheetTitle>
-						</div>
-						<SheetDescription className="menu-description">
-							აირჩიე პროდუქტის კატეგორია
-						</SheetDescription>
-						<nav className="mobile-nav" aria-label="მობილური ნავიგაცია">
-							<Link to="/products" search={{}} onClick={() => setMenu(false)}>
-								<span className="menu-category-icon">
-									<Grid2X2 size={20} />
-								</span>
-								<span>ყველა პროდუქტი</span>
-								<ChevronRight className="menu-chevron" size={16} />
-							</Link>
-							{categories.map((c) => {
-								const Icon = categoryIcons[c.icon];
-								return (
-									<Link
-										key={c.slug}
-										to="/categories/$slug"
-										params={{ slug: c.slug }}
-										onClick={() => setMenu(false)}
-									>
-										<span className="menu-category-icon">
-											<Icon size={20} />
-										</span>
-										<span>{c.name}</span>
-										<ChevronRight className="menu-chevron" size={16} />
-									</Link>
-								);
-							})}
-						</nav>
-						<div className="menu-footer">
-							<p>არჩევაში დაგეხმარებით</p>
-							<Button
-								variant="outline"
-								onClick={() => {
-									setMenu(false);
-									void openChat();
-								}}
-							>
-								<MessageCircle size={18} /> მოგვწერე
-							</Button>
-						</div>
-					</SheetContent>
-				</Sheet>
+				<MobileMenu />
 			</div>
 		</header>
 	);
