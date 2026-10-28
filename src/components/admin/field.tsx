@@ -8,9 +8,9 @@ export function Field({
 }) {
 	const id = useId();
 	return (
-		<label className="admin-field" htmlFor={id}>
-			<span>{label}</span>
+		<div className="admin-field">
+			<label htmlFor={id}>{label}</label>
 			{cloneElement(children, { id })}
-		</label>
+		</div>
 	);
 }

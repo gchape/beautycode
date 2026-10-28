@@ -1,13 +1,13 @@
-import type { CatalogSearch } from "../../lib/catalog-search";
-import { useCategories } from "../catalog/category-context";
-import { Checkbox } from "../ui/checkbox";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { NativeSelect, NativeSelectOption } from "../ui/native-select";
+import type { CatalogSearch } from "../../lib/catalog-search.ts";
+import { useCategories } from "../catalog/category-context.tsx";
+import { Checkbox } from "../ui/checkbox.tsx";
+import { Input } from "../ui/input.tsx";
+import { Label } from "../ui/label.tsx";
+import { NativeSelect, NativeSelectOption } from "../ui/native-select.tsx";
 
 export function CatalogFilters({
 	search,
-	onChange: update,
+	onChange,
 }: {
 	search: CatalogSearch;
 	onChange: (values: Partial<CatalogSearch>) => void;
@@ -21,7 +21,7 @@ export function CatalogFilters({
 					id="category"
 					value={search.category || ""}
 					onChange={(e) =>
-						void update({ category: e.target.value || undefined })
+						void onChange({ category: e.target.value || undefined })
 					}
 				>
 					<NativeSelectOption value="">ყველა კატეგორია</NativeSelectOption>
@@ -40,7 +40,7 @@ export function CatalogFilters({
 					min="0"
 					value={search.max ?? ""}
 					onChange={(e) =>
-						void update({
+						void onChange({
 							max: e.target.value === "" ? undefined : Number(e.target.value),
 						})
 					}
@@ -52,7 +52,7 @@ export function CatalogFilters({
 					id="sort"
 					value={search.sort || "newest"}
 					onChange={(e) =>
-						void update({
+						void onChange({
 							sort: e.target.value as "newest" | "price-asc" | "price-desc",
 						})
 					}
@@ -73,7 +73,7 @@ export function CatalogFilters({
 					id="discount"
 					checked={search.discount || false}
 					onCheckedChange={(checked) =>
-						void update({ discount: checked === true || undefined })
+						void onChange({ discount: checked === true || undefined })
 					}
 				/>
 				მხოლოდ ფასდაკლებით

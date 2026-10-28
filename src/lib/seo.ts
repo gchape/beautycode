@@ -1,4 +1,4 @@
-import { finalPrice, type Product } from "../data/catalog.ts";
+import { finalPrice, type PublicProduct } from "../data/catalog.ts";
 export const siteOrigin = (
 	import.meta.env?.VITE_SITE_URL || "http://localhost:3000"
 ).replace(/\/$/, "");
@@ -61,7 +61,7 @@ export function breadcrumbData(items: { name: string; path: string }[]) {
 		})),
 	};
 }
-export function productData(product: Product) {
+export function productData(product: PublicProduct) {
 	const availability = {
 		in_stock: "InStock",
 		out_of_stock: "OutOfStock",
@@ -72,13 +72,7 @@ export function productData(product: Product) {
 		"@type": "Product",
 		name: product.name,
 		description: product.description,
-		sku: product.sku || undefined,
-		image: (product.images?.length
-			? product.images.map((i) => i.url)
-			: product.image_url
-				? [product.image_url]
-				: []
-		).map(absoluteUrl),
+		image: product.images.map((image) => absoluteUrl(image.url)),
 		brand: product.brand
 			? { "@type": "Brand", name: product.brand }
 			: undefined,

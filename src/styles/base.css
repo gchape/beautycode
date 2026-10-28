@@ -1,4 +1,6 @@
 :root {
+	--rose-surface: #f3e4e9;
+	--rose-surface-strong: #f1e0e7;
 	--background: #fffdfb;
 	--foreground: #2e0003;
 	--primary: #2e0003;
@@ -87,9 +89,6 @@ button {
 		background 0.2s,
 		color 0.2s,
 		transform 0.2s;
-}
-button:not(.button):not([data-slot="checkbox"]) {
-	border: 0;
 }
 button:focus-visible,
 a:focus-visible,

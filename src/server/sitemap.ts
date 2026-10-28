@@ -1,4 +1,4 @@
-import type { Category, Product } from "../data/catalog.ts";
+import type { Category, PublicProduct } from "../data/catalog.ts";
 import { absoluteUrl, categoryPath, productPath } from "../lib/seo.ts";
 export const escapeXml = (value: string) =>
 	value.replace(
@@ -12,7 +12,7 @@ export const escapeXml = (value: string) =>
 				"'": "&apos;",
 			})[c] || c,
 	);
-export function sitemapXml(categories: Category[], products: Product[]) {
+export function sitemapXml(categories: Category[], products: PublicProduct[]) {
 	const paths = [
 		"/",
 		"/products",

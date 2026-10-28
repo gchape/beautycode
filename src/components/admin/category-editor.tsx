@@ -1,12 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import type { FormEvent } from "react";
-import type { Category } from "../../data/catalog";
-import { adminApi } from "../../lib/admin/api";
-import { categoryInput } from "../../lib/admin/schemas";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Field } from "./field";
-import { FormError } from "./form-error";
+import type { Category } from "../../data/catalog.ts";
+import { categoryIconLabels } from "../../data/labels.ts";
+import { adminApi } from "../../lib/admin/api.ts";
+import { readCategoryForm } from "../../lib/admin/category-form.ts";
+import { Button } from "../ui/button.tsx";
+import { Input } from "../ui/input.tsx";
+import { Field } from "./field.tsx";
+import { FormError } from "./form-error.tsx";
 export function CategoryEditor({
 	category,
 	onSaved,
@@ -18,17 +19,7 @@ export function CategoryEditor({
 }) {
 	const save = useMutation({
 		mutationFn: async (form: FormData) =>
-			adminApi(
-				"categories",
-				categoryInput.parse({
-					slug: category?.slug,
-					name: form.get("name"),
-					description: form.get("description"),
-					icon: form.get("icon"),
-					sort_order: Number(form.get("order")),
-					is_active: form.has("active"),
-				}),
-			),
+			adminApi("categories", readCategoryForm(form, category?.slug)),
 		onSuccess: onSaved,
 	});
 	function submit(event: FormEvent<HTMLFormElement>) {
@@ -59,7 +50,7 @@ export function CategoryEditor({
 				<Field label="რიგითობა">
 					<Input
 						type="number"
-						name="order"
+						name="sort_order"
 						min="0"
 						max="10000"
 						required
@@ -68,17 +59,18 @@ export function CategoryEditor({
 				</Field>
 				<Field label="ხატულა">
 					<select name="icon" defaultValue={category?.icon || "sparkles"}>
-						<option value="wind">თმა</option>
-						<option value="sparkles">ეპილაცია</option>
-						<option value="droplet">სახე</option>
-						<option value="smile">ღიმილი</option>
+						{Object.entries(categoryIconLabels).map(([value, label]) => (
+							<option key={value} value={value}>
+								{label}
+							</option>
+						))}
 					</select>
 				</Field>
 				<label className="admin-check">
 					<input
 						type="checkbox"
-						name="active"
-						defaultChecked={category ? !!category.is_active : true}
+						name="is_active"
+						defaultChecked={category ? category.is_active : true}
 					/>{" "}
 					საიტზე გამოჩენა
 				</label>

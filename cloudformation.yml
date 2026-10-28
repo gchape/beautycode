@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Beauty Code private images, CloudFront, JSON backups, and EC2 instance role
+Description: Beauty Code private images, CloudFront, SQLite backups, and EC2 instance role
 Parameters:
   SiteOrigin:
     Type: String

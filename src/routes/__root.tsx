@@ -5,10 +5,10 @@ import {
 	Link,
 	Scripts,
 } from "@tanstack/react-router";
-import { CategoryProvider } from "../components/catalog/category-context";
-import { Storefront } from "../components/storefront";
-import { Button } from "../components/ui/button";
-import { getCategories } from "../server/catalog";
+import { CategoryProvider } from "../components/catalog/category-context.tsx";
+import { Storefront } from "../components/storefront.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { getCategories } from "../server/catalog.ts";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(

@@ -1,10 +1,12 @@
 import { AdminError } from "./errors.ts";
+
 export async function adminApi<T>(path: string, data?: unknown): Promise<T> {
+	const hasBody = data !== undefined;
 	const response = await fetch(`/admin/api/${path}`, {
-		method: data === undefined ? "GET" : "POST",
+		method: hasBody ? "POST" : "GET",
 		credentials: "same-origin",
-		headers: data === undefined ? {} : { "Content-Type": "application/json" },
-		body: data === undefined ? undefined : JSON.stringify(data),
+		headers: hasBody ? { "Content-Type": "application/json" } : {},
+		body: hasBody ? JSON.stringify(data) : undefined,
 	});
 	if (!response.ok) {
 		const fallback =
@@ -16,48 +18,4 @@ export async function adminApi<T>(path: string, data?: unknown): Promise<T> {
 		);
 	}
 	return response.json();
-}
-export async function optimizeUpload(file: File): Promise<Blob> {
-	if (
-		!["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-		file.size > 20 * 1024 * 1024
-	)
-		throw new Error("აირჩიეთ JPG, PNG ან WebP სურათი, მაქსიმუმ 20 MB");
-	const bitmap = await createImageBitmap(file);
-	try {
-		const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-		const canvas = document.createElement("canvas");
-		canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-		canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-		const context = canvas.getContext("2d");
-		if (!context) throw new Error("სურათი ვერ დამუშავდა");
-		context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-		const blob = await new Promise<Blob>((resolve, reject) =>
-			canvas.toBlob(
-				(value) =>
-					value ? resolve(value) : reject(new Error("სურათი ვერ დამუშავდა")),
-				"image/webp",
-				0.86,
-			),
-		);
-		if (blob.size > 5 * 1024 * 1024) throw new Error("სურათი 5 MB-ზე დიდია");
-		return blob;
-	} finally {
-		bitmap.close();
-	}
-}
-export async function uploadImage(file: File) {
-	const blob = await optimizeUpload(file);
-	const signed = await adminApi<{
-		url: string;
-		fields: Record<string, string>;
-		imageUrl: string;
-	}>("uploads", { type: blob.type, size: blob.size });
-	const form = new FormData();
-	for (const [key, value] of Object.entries(signed.fields))
-		form.append(key, value);
-	form.append("file", blob, "product.webp");
-	const response = await fetch(signed.url, { method: "POST", body: form });
-	if (!response.ok) throw new Error("სურათის ატვირთვა ვერ შესრულდა");
-	return signed.imageUrl || (await response.json()).imageUrl;
 }

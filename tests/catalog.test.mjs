@@ -2,12 +2,17 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { test } from "node:test";
-import { finalPrice, money } from "../src/data/catalog.ts";
+import { discountPercent, finalPrice, money } from "../src/data/catalog.ts";
 
-test("discounts are rounded to integer tetri", () => {
-	assert.equal(finalPrice({ price_minor: 1999, discount_percent: 15 }), 1699);
-	assert.equal(finalPrice({ price_minor: 105, discount_percent: 50 }), 53);
-	assert.equal(finalPrice({ price_minor: 1999, discount_percent: 100 }), 0);
+test("prices use exact tetri and discounts are derived from sale prices", () => {
+	assert.equal(finalPrice({ price_minor: 1999, sale_price_minor: 1699 }), 1699);
+	assert.equal(finalPrice({ price_minor: 105, sale_price_minor: 53 }), 53);
+	assert.equal(finalPrice({ price_minor: 1999, sale_price_minor: 0 }), 0);
+	assert.equal(
+		discountPercent({ price_minor: 1999, sale_price_minor: 1699 }),
+		15,
+	);
+	assert.equal(finalPrice({ price_minor: 1999, sale_price_minor: null }), 1999);
 	assert.match(money(1699), /16[.,]99/);
 });
 test("migration supports Georgian prefix search and synchronizes edits/deletes", () => {

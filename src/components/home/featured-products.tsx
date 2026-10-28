@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import type { Product } from "../../data/catalog";
-import { ProductGrid } from "../catalog/product-grid";
+import type { PublicProduct } from "../../data/catalog.ts";
+import { ProductGrid } from "../catalog/product-grid.tsx";
 
-export function FeaturedProducts({ products }: { products: Product[] }) {
+export function FeaturedProducts({ products }: { products: PublicProduct[] }) {
 	return (
 		<section className="wrap section">
 			<div className="section-heading">
@@ -15,9 +15,7 @@ export function FeaturedProducts({ products }: { products: Product[] }) {
 					ყველა პროდუქტი <ArrowRight size={18} />
 				</Link>
 			</div>
-			<ProductGrid
-				products={products.filter((product) => product.is_featured).slice(0, 6)}
-			/>
+			<ProductGrid products={products} />
 		</section>
 	);
 }

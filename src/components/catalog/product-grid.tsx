@@ -1,10 +1,10 @@
 import { PackageOpen } from "lucide-react";
-import type { Product } from "../../data/catalog";
-import { ContactButton } from "../contact/contact-button";
-import { Card } from "../ui/card";
-import { ProductCard } from "./product-card";
+import type { PublicProduct } from "../../data/catalog.ts";
+import { ContactButton } from "../contact/contact-button.tsx";
+import { Card } from "../ui/card.tsx";
+import { ProductCard } from "./product-card.tsx";
 
-export function ProductGrid({ products }: { products: Product[] }) {
+export function ProductGrid({ products }: { products: PublicProduct[] }) {
 	if (!products.length)
 		return (
 			<Card className="empty-state">

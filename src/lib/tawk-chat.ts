@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { finalPrice, type Product } from "../data/catalog";
+import { useCallback, useEffect } from "react";
+import { finalPrice, type PublicProduct } from "../data/catalog.ts";
+import { site } from "../data/site.ts";
 
 interface TawkAPI {
 	onLoad?: () => void;
@@ -34,8 +35,7 @@ function loadChat(): Promise<TawkAPI> {
 		window.Tawk_LoadStart = new Date();
 		const script = document.createElement("script");
 		script.async = true;
-		script.src = "https://embed.tawk.to/6ae1948af331aa346f4de4b4/1k60iof7u";
-		script.charset = "UTF-8";
+		script.src = site.tawkEmbedUrl;
 		script.crossOrigin = "anonymous";
 		script.onerror = () => {
 			script.remove();
@@ -48,7 +48,7 @@ function loadChat(): Promise<TawkAPI> {
 	return loading;
 }
 
-export function useTawkChat() {
+export function useChatLauncher() {
 	useEffect(() => {
 		const timer = window.setTimeout(() => {
 			void loadChat().catch(() => {});
@@ -56,7 +56,7 @@ export function useTawkChat() {
 		return () => window.clearTimeout(timer);
 	}, []);
 
-	return async (product?: Product) => {
+	return useCallback(async (product?: PublicProduct) => {
 		try {
 			const api = await loadChat();
 			api.showWidget?.();
@@ -76,5 +76,5 @@ export function useTawkChat() {
 		} catch {
 			/* A blocked widget must not interrupt the storefront. */
 		}
-	};
+	}, []);
 }

@@ -6,9 +6,9 @@ import {
 } from "../src/lib/catalog-search.ts";
 
 const products = [
-	{ id: 1, category_slug: "hair", price_minor: 10000, discount_percent: 50 },
-	{ id: 3, category_slug: "hair", price_minor: 6000, discount_percent: 0 },
-	{ id: 2, category_slug: "skin", price_minor: 8000, discount_percent: 25 },
+	{ id: 1, category_slug: "hair", price_minor: 10000, sale_price_minor: 5000 },
+	{ id: 3, category_slug: "hair", price_minor: 6000, sale_price_minor: null },
+	{ id: 2, category_slug: "skin", price_minor: 8000, sale_price_minor: 6000 },
 ];
 
 test("catalog combines filters using discounted prices and an inclusive price limit", () => {

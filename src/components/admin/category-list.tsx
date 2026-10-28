@@ -1,12 +1,12 @@
-import type { Category } from "../../data/catalog";
-import { Button } from "../ui/button";
+import type { Category } from "../../data/catalog.ts";
+import { Button } from "../ui/button.tsx";
 
 export function CategoryList({
 	categories,
 	onEdit,
 }: {
 	categories: Category[];
-	onEdit: (category: Category) => void;
+	onEdit?: (category: Category) => void;
 }) {
 	return (
 		<div className="admin-table">
@@ -16,7 +16,7 @@ export function CategoryList({
 						<th>კატეგორია</th>
 						<th>რიგითობა</th>
 						<th>ხილვადობა</th>
-						<th>მოქმედება</th>
+						{onEdit && <th>მოქმედება</th>}
 					</tr>
 				</thead>
 				<tbody>
@@ -25,11 +25,13 @@ export function CategoryList({
 							<td>{c.name}</td>
 							<td>{c.sort_order}</td>
 							<td>{c.is_active ? "აქტიური" : "დამალული"}</td>
-							<td>
-								<Button variant="outline" onClick={() => onEdit(c)}>
-									რედაქტირება
-								</Button>
-							</td>
+							{onEdit && (
+								<td>
+									<Button variant="outline" onClick={() => onEdit(c)}>
+										რედაქტირება
+									</Button>
+								</td>
+							)}
 						</tr>
 					))}
 				</tbody>

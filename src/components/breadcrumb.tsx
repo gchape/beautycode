@@ -6,7 +6,7 @@ import {
 	BreadcrumbPage,
 	Breadcrumb as BreadcrumbRoot,
 	BreadcrumbSeparator,
-} from "./ui/breadcrumb";
+} from "./ui/breadcrumb.tsx";
 export function Breadcrumb({ title }: { title: string }) {
 	return (
 		<BreadcrumbRoot aria-label="გვერდის მდებარეობა" className="breadcrumb">

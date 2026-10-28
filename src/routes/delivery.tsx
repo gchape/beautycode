@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Policy } from "../components/policy";
-import { seoHead } from "../lib/seo";
+import { PolicyPage } from "../components/policy.tsx";
+import { seoHead } from "../lib/seo.ts";
 
 export const Route = createFileRoute("/delivery")({
 	head: () =>
@@ -9,5 +9,5 @@ export const Route = createFileRoute("/delivery")({
 			description: "შეკვეთის დამუშავებისა და საქართველოში მიწოდების პირობები.",
 			path: "/delivery",
 		}),
-	component: () => <Policy page="delivery" />,
+	component: () => <PolicyPage page="delivery" />,
 });

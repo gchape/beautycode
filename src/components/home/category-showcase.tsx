@@ -1,16 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Droplet, Smile, Sparkles, Wind } from "lucide-react";
-import { useCategories } from "../catalog/category-context";
-import { Card } from "../ui/card";
+import { ArrowUpRight } from "lucide-react";
+import { useCategories } from "../catalog/category-context.tsx";
+import { categoryIcons } from "../category-icons.ts";
+import { Card } from "../ui/card.tsx";
 
 export function CategoryShowcase() {
 	const categories = useCategories();
-	const icons = {
-		wind: Wind,
-		sparkles: Sparkles,
-		droplet: Droplet,
-		smile: Smile,
-	};
+
 	return (
 		<section className="wrap section">
 			<div className="section-heading">
@@ -24,15 +20,17 @@ export function CategoryShowcase() {
 			</div>
 			<div className="category-grid">
 				{categories.map((c, i) => {
-					const Icon = icons[c.icon];
+					const Icon = categoryIcons[c.icon];
 					return (
 						<Card asChild key={c.slug}>
 							<Link
 								to="/categories/$slug"
 								params={{ slug: c.slug }}
-								className={`category-card category-${i}`}
+								className={`category-card category-${i % 4}`}
 							>
-								<span className="category-number">0{i + 1}</span>
+								<span className="category-number">
+									{String(i + 1).padStart(2, "0")}
+								</span>
 								<Icon size={75} strokeWidth={0.8} />
 								<div>
 									<h3>{c.name}</h3>

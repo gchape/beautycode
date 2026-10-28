@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { finalPrice, type Product } from "../data/catalog.ts";
+import { finalPrice, type PublicProduct } from "../data/catalog.ts";
 
 export const catalogSearchSchema = z.object({
 	q: z.string().max(200).optional(),
@@ -11,15 +11,19 @@ export const catalogSearchSchema = z.object({
 
 export type CatalogSearch = z.infer<typeof catalogSearchSchema>;
 
+const newestFirst = (a: PublicProduct, b: PublicProduct) =>
+	(b.created_at ?? "").localeCompare(a.created_at ?? "") || b.id - a.id;
+
+/** Client-side filters. The text query `q` is applied in SQL by the server. */
 export function filterProducts(
-	products: readonly Product[],
+	products: readonly PublicProduct[],
 	search: CatalogSearch,
-): Product[] {
+): PublicProduct[] {
 	return products
 		.filter(
 			(p) =>
 				(!search.category || p.category_slug === search.category) &&
-				(!search.discount || p.discount_percent > 0) &&
+				(!search.discount || finalPrice(p) < p.price_minor) &&
 				(search.max === undefined || finalPrice(p) <= search.max * 100),
 		)
 		.sort((a, b) =>
@@ -27,6 +31,6 @@ export function filterProducts(
 				? finalPrice(a) - finalPrice(b)
 				: search.sort === "price-desc"
 					? finalPrice(b) - finalPrice(a)
-					: b.id - a.id,
+					: newestFirst(a, b),
 		);
 }

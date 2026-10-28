@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminPanel } from "../components/admin/admin-panel";
+import { AdminPanel } from "../components/admin/admin-panel.tsx";
 export const Route = createFileRoute("/admin")({
 	head: () => ({
 		meta: [

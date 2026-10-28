@@ -4,7 +4,7 @@ Georgian product storefront and catalog admin, built with React, TanStack Start,
 
 ## Local development
 
-Use Node 24+ and pnpm. Run commands from the repository root.
+Use Node 26 and pnpm. Run commands from the repository root.
 
 ```sh
 pnpm install
@@ -24,7 +24,7 @@ Development needs no nginx or AWS credentials. AWS packages remain installed for
 | Authentication | App Basic Auth, `admin / admin` | nginx Basic Auth |
 | Catalog | `data-dev/beautycode.db` | `data/beautycode.db` |
 | New images | `public/images/dev-*` | S3 through signed uploads; CloudFront delivery |
-| Admin backups | `backups/*.json` | S3 backup bucket |
+| Admin backups | `data-dev/backups/*.db` | S3 backup bucket |
 
 `NODE_ENV=development` enables local behavior; Vite sets this for `pnpm dev`. `DB_PATH` overrides the database location. Production credentials and storage never fall back to the development defaults.
 
@@ -45,16 +45,16 @@ This deletes local catalog edits, development uploads and generated local backup
 After the app has initialized the development database:
 
 ```sh
-NODE_ENV=development pnpm backup
+pnpm backup:dev
 ```
 
 Stop the app before restoring:
 
 ```sh
-NODE_ENV=development pnpm restore backups/latest.json --replace
+pnpm restore:dev data-dev/backups/beautycode-TIMESTAMP-ID.db --replace
 ```
 
-Backups contain catalog data and image references, not image files. Preserve `public/images/dev-*` separately when saving a development catalog. Restore validates the schema and creates a safety export before replacing data.
+Backups contain catalog data and image references, not image files. Preserve `public/images/dev-*` separately when saving a development catalog. Use the actual filename printed by the backup command. Restore checks SQLite integrity, references and schema version, and saves the existing database before replacement. `backup:dev` and `restore:dev` select the same local database as `pnpm dev`.
 
 ## Architecture
 
@@ -101,6 +101,8 @@ sequenceDiagram
 | `Dockerfile` | Production Node image |
 | `tests/` | Catalog, authorization, storage, backup and SEO checks |
 
+Seeding is part of the existing versioned migrations and runs once per database. Startup never re-applies seeds or overwrites catalog edits. Keep applied migrations unchanged; add a new migration for future schema changes. Deleting the development database resets it to the bundled catalog.
+
 Form sections and tables are plain components. Database writes use explicit SQL transactions. Local and cloud storage share image validation, with no provider registry or extra service framework. `src/routeTree.gen.ts` is generated; edit route files instead.
 
 ## Checks
@@ -111,6 +113,8 @@ pnpm exec biome check src scripts tests
 pnpm test
 pnpm build
 ```
+
+For a bundled server outside Docker, set `MIGRATIONS_DIR` to the absolute path of the `migrations` directory before starting it. Docker sets `/app/migrations`; native scripts and development resolve migrations relative to the source module.
 
 Tests use temporary or in-memory databases. The build may emit upstream `use client` bundler warnings.
 
@@ -185,21 +189,25 @@ docker compose up -d --build
 
 ### Backups and restore
 
-The admin backup button and backup script write to S3. For a local export:
+The admin button and CLI use the same SQLite snapshot function. Snapshots contain the full database, including indexes, triggers, search data and migration version. Each backup has one timestamped key; there is no `latest` duplicate.
+
+Production first writes to `/data/backups/`, then streams that file to S3. It deletes the local snapshot only after upload succeeds; failed uploads leave it available for recovery. S3 lifecycle rules retain backups for 30 days. Development snapshots remain local until you remove them. For an explicit local snapshot:
 
 ```sh
-docker compose exec -T app node scripts/backup.ts /data/export.json
+docker compose exec -T app node scripts/backup.ts /data/export.db
 ```
 
 Stop writes before restoring:
 
 ```sh
 docker compose stop app
-docker compose run --rm --no-deps app node scripts/restore.ts s3:backups/latest.json --replace
+docker compose run --rm --no-deps app node scripts/restore.ts s3:backups/beautycode-TIMESTAMP-ID.db --replace
 docker compose up -d app
 ```
 
-Use `/data/export.json` instead of the S3 source to restore a local export. Restore creates a safety export beside the database and rolls back invalid data. Restart only after success. JSON backups contain image references, not image files.
+Replace the example key with the actual key returned by the backup command or listed in the S3 console. Use `/data/export.db` instead of the S3 source for a local snapshot. Existing output files are never overwritten by the backup command.
+
+Stop the app before restoring. Restore validates the snapshot before touching the destination, saves a `*.before-restore-*.db` safety copy, and uses SQLite’s backup API to replace the database. SQLite handles WAL files; do not manually copy or delete them. The snapshot must match the current schema version. Restart only after success. Snapshots contain image references, not image files.
 
 Optional daily backup cron entry (adjust the checkout path):
 
@@ -211,10 +219,23 @@ Optional daily backup cron entry (adjust the checkout path):
 
 The bundled images work immediately. New admin uploads go directly to S3 through signed POST requests and are served by CloudFront. Removing a gallery image removes its catalog reference, not the S3 object.
 
-To publish bundled catalog images to S3:
+Bundled images stay bundled; only new admin uploads use S3. There is no separate image-publishing step.
+
+### Existing JSON backups
+
+New backups use SQLite files. Keep old JSON backups until you have verified a new snapshot. To convert one, restore it into a separate temporary database using the previous release, then use the current backup command:
 
 ```sh
-docker compose exec -T app node scripts/publish-images.ts
+git worktree add --detach /tmp/beautycode-json-restore 901c88c
+cd /tmp/beautycode-json-restore
+pnpm install --frozen-lockfile
+DB_PATH=/tmp/beautycode-converted.db pnpm restore /absolute/path/old-backup.json --replace
 ```
 
-The script saves a safety export before updating references. Homepage assets remain bundled.
+Return to the current checkout and create the new snapshot:
+
+```sh
+DB_PATH=/tmp/beautycode-converted.db pnpm backup /tmp/beautycode-converted-snapshot.db
+```
+
+The old release supports `s3:backups/latest.json` as a source when its AWS environment is configured. Run conversion against a new temporary database, never the live production file. Restore the converted snapshot through the normal stopped-app procedure above. This keeps legacy JSON handling out of the current application.

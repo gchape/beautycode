@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../ui/button.tsx";
 
 export function HomeHero() {
 	return (

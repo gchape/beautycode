@@ -66,9 +66,9 @@
 	height: auto;
 	box-shadow: none;
 	font-size: inherit;
-	border: 1px solid #d9cbd0;
+	border: 1px solid var(--input);
 	border-radius: 5px;
-	background: white;
+	background: var(--background);
 	min-height: 42px;
 	padding: 8px 12px;
 	max-width: 200px;
@@ -84,13 +84,16 @@
 	accent-color: var(--primary);
 }
 .results-count {
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
 	display: flex;
 	justify-content: space-between;
 	margin: 30px 0;
 	font-size: 0.875rem;
 	color: var(--muted-foreground);
 }
-.results-count button {
+.results-count .button[data-size] {
 	min-height: 0;
 	padding: 0;
 	font-size: inherit;

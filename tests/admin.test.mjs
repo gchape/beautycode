@@ -4,12 +4,9 @@ import { test } from "node:test";
 import { readProductForm } from "../src/lib/admin/product-form.ts";
 import { gelToMinor } from "../src/lib/admin/schemas.ts";
 import { requireAdmin } from "../src/server/admin/auth.ts";
-import {
-	hydrateProducts,
-	saveCategory,
-	saveProduct,
-} from "../src/server/admin/repository.ts";
+import { saveCategory, saveProduct } from "../src/server/admin/repository.ts";
 import { migrateDatabase } from "../src/server/migrations.ts";
+import { getAdminProduct } from "../src/server/products.ts";
 
 function database() {
 	const db = new DatabaseSync(":memory:");
@@ -87,12 +84,9 @@ test("product edits preserve slugs, exact prices, gallery order and search synch
 			"editor",
 		);
 		assert.equal(edited.slug, first.slug);
-		const rows = hydrateProducts(
-			db,
-			db.prepare("SELECT * FROM products WHERE id=?").all(first.id),
-		);
+		const rows = [getAdminProduct(db, first.id)];
 		assert.equal(rows[0].sale_price_minor, 0);
-		assert.equal(rows[0].image_url, "/images/ipl-kit-cutout.png");
+		assert.equal(rows[0].images[0].url, "/images/ipl-kit-cutout.png");
 		assert.equal(rows[0].images.length, 2);
 		assert.deepEqual(rows[0].features, ["რეჟიმი"]);
 		assert.equal(
@@ -169,11 +163,11 @@ test("product form preserves zero sale prices and normalizes optional fields", (
 	for (const [key, value] of Object.entries({
 		name: " Product ",
 		brand: "Brand",
-		category: "skin",
+		category_slug: "skin",
 		description: " Details ",
 		price: "19.99",
-		sale: "0",
-		stock: "in_stock",
+		sale_price: "0",
+		stock_status: "in_stock",
 		status: "draft",
 		features: " First \n\n Second ",
 	}))
@@ -187,8 +181,8 @@ test("product form preserves zero sale prices and normalizes optional fields", (
 	assert.equal(result.is_featured, false);
 	assert.deepEqual(result.features, ["First", "Second"]);
 	assert.deepEqual(result.images, product.images);
-	form.set("sale", "");
-	form.set("featured", "on");
+	form.set("sale_price", "");
+	form.set("is_featured", "on");
 	assert.equal(readProductForm(form, []).sale_price_minor, null);
 	assert.equal(readProductForm(form, []).is_featured, true);
 	form.set("price", "1.999");

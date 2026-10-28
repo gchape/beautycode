@@ -1,15 +1,12 @@
-import { writeFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { createBackup, exportBackup } from "../src/server/backup.ts";
-import { databasePath } from "../src/server/paths.ts";
+import { createBackup, writeSnapshot } from "../src/server/backup.ts";
+import { databasePath } from "../src/server/config.ts";
 
-const db = new DatabaseSync(databasePath(), {
-	readOnly: true,
-});
+const db = new DatabaseSync(databasePath(), { readOnly: true });
 try {
 	const output = process.argv[2];
 	if (output) {
-		writeFileSync(output, exportBackup(db), { mode: 0o600 });
+		await writeSnapshot(db, output);
 		console.log(`Backup saved: ${output}`);
 	} else console.log(await createBackup(db));
 } finally {

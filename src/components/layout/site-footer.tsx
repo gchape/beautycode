@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { useCategories } from "../catalog/category-context";
-import { SocialIcon } from "../social-icon";
+import { site } from "../../data/site.ts";
+import { useCategories } from "../catalog/category-context.tsx";
+import { SocialIcon } from "../social-icon.tsx";
 export function SiteFooter() {
 	const categories = useCategories();
 	return (
@@ -16,20 +17,7 @@ export function SiteFooter() {
 						შენი კოდი.
 					</p>
 					<nav className="footer-socials" aria-label="სოციალური ქსელები">
-						{[
-							{
-								name: "Facebook" as const,
-								href: "https://www.facebook.com/Beatlovegeorgia/",
-							},
-							{
-								name: "Instagram" as const,
-								href: "https://www.instagram.com/beautycode1_",
-							},
-							{
-								name: "TikTok" as const,
-								href: "https://www.tiktok.com/@beauty.code13",
-							},
-						].map(({ name, href }) => (
+						{site.socials.map(({ name, href }) => (
 							<a
 								key={name}
 								href={href}
@@ -59,14 +47,14 @@ export function SiteFooter() {
 				</div>
 				<div>
 					<h3>დაგვიკავშირდი</h3>
-					<a href="tel:+995574074833">574 07 48 33</a>
-					<a href="mailto:13beautycode@gmail.com">13beautycode@gmail.com</a>
+					<a href={`tel:${site.phone.e164}`}>{site.phone.display}</a>
+					<a href={`mailto:${site.email}`}>{site.email}</a>
 					<p>
-						შპს Tech Beauty ტექ ბიუთი
+						{site.company.name}
 						<br />
-						ს/კ 412794196
+						{site.company.taxId}
 						<br />
-						ქ. ქუთაისი ნინოშვილის 10-ე შესახვევი N2
+						{site.company.address}
 					</p>
 				</div>
 			</div>

@@ -29,3 +29,5 @@ backups/
 
 # Local development uploads
 /public/images/dev-*
+
+*.before-restore-*.db

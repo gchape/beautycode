@@ -10,12 +10,15 @@
 		"generate-routes": "tsr generate",
 		"build": "vite build",
 		"preview": "vite preview",
-		"format": "biome format",
+		"format": "biome format --write .",
 		"lint": "biome lint",
 		"check": "biome check",
 		"test": "node --test tests/*.test.mjs",
 		"backup": "node scripts/backup.ts",
-		"restore": "node scripts/restore.ts"
+		"restore": "node scripts/restore.ts",
+		"backup:dev": "NODE_ENV=development node scripts/backup.ts",
+		"restore:dev": "NODE_ENV=development node scripts/restore.ts",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1157.0",
@@ -48,5 +51,8 @@
 		"@vitejs/plugin-react": "^6.1.2",
 		"typescript": "^7.0.2",
 		"vite": "^8.3.5"
+	},
+	"engines": {
+		"node": ">=26 <27"
 	}
 }
