@@ -1,11 +1,30 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Beauty Code private images, CloudFront, SQLite backups, and EC2 instance role
+Description: Beauty Code private images, CloudFront, SQLite backups, and EC2 application host
 Parameters:
   SiteOrigin:
     Type: String
     Default: https://beautycode.ge
     AllowedPattern: 'https://[a-zA-Z0-9.-]+'
     Description: Exact HTTPS website origin without trailing slash
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Existing VPC for the application host
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Public subnet in VpcId with a route to an internet gateway
+  InstanceType:
+    Type: String
+    Default: t3.small
+    AllowedValues: [t3.small, t3.medium, t3.large]
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+    Description: Amazon Linux 2023 x86_64 AMI parameter
+  RootVolumeSize:
+    Type: Number
+    Default: 30
+    MinValue: 30
+    MaxValue: 1024
 Resources:
   Images:
     Type: AWS::S3::Bucket
@@ -123,6 +142,8 @@ Resources:
           - Effect: Allow
             Principal: { Service: ec2.amazonaws.com }
             Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore'
       Policies:
         - PolicyName: CatalogStorage
           PolicyDocument:
@@ -137,7 +158,54 @@ Resources:
   AppProfile:
     Type: AWS::IAM::InstanceProfile
     Properties: { Roles: [!Ref AppRole] }
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Public HTTP and HTTPS; administration through Session Manager
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  AppInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref AppProfile
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds: [!Ref AppSecurityGroup]
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: required
+        HttpPutResponseHopLimit: 2
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: !Ref RootVolumeSize
+            Encrypted: true
+            DeleteOnTermination: false
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-app'
+  AppAddress:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+  AppAddressAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt AppAddress.AllocationId
+      InstanceId: !Ref AppInstance
 Outputs:
+  InstanceId: { Value: !Ref AppInstance }
+  PublicIp: { Value: !Ref AppAddress }
   ImagesBucket: { Value: !Ref Images }
   BackupsBucket: { Value: !Ref Backups }
   ImagesBaseUrl: { Value: !Sub 'https://${ImageDistribution.DomainName}' }
