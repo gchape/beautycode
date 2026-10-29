@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
+import { productImageProps } from "../../lib/product-images.ts";
 import { Button } from "../ui/button.tsx";
 
 export function HomeHero() {
@@ -15,9 +16,9 @@ export function HomeHero() {
 					<em className="text-[#9e627b] not-italic">შენით.</em>
 				</h1>
 				<p className="mb-7.25 text-base leading-[2.1] text-[#795d66] max-[560px]:text-[0.9375rem]">
-					აღმოაჩინე მოვლა, რომელიც შენ გიხდება.
+					ეპილატორები და მოვლის მოწყობილობები.
 					<br />
-					პატარა დეტალები, დიდი თავდაჯერებულობა.
+					სახის, თმისა და პირის ღრუს მოვლა Beauty Code-ში.
 				</p>
 				<Button asChild>
 					<Link to="/products" search={{}}>
@@ -35,14 +36,20 @@ export function HomeHero() {
 				/>
 				<img
 					className="absolute bottom-10 left-[12%] h-[44%] w-[76%] object-contain drop-shadow-[0_18px_16px_#643d4b20]"
-					src="/images/ipl-kit-cutout.png"
+					{...productImageProps(
+						"/images/ipl-kit-cutout.png",
+						"(max-width: 800px) 60vw, 480px",
+					)}
 					alt="IPL ეპილაციის ნაკრები დამცავი სათვალით და ორი თავაკით"
 					width="1536"
 					height="1024"
 				/>
 				<img
 					className="absolute top-5 right-[3%] h-[53%] w-[48%] object-contain drop-shadow-[0_18px_16px_#643d4b20] max-[600px]:right-0"
-					src="/images/scalp-massager-cutout.png"
+					{...productImageProps(
+						"/images/scalp-massager-cutout.png",
+						"(max-width: 800px) 60vw, 480px",
+					)}
 					alt="წითელი სკალპის მასაჟორ-სავარცხელი"
 					width="1254"
 					height="1254"
@@ -50,7 +57,10 @@ export function HomeHero() {
 				/>
 				<img
 					className="absolute top-8.75 left-7.5 h-[48%] w-[46%] object-contain drop-shadow-[0_18px_16px_#643d4b20] max-[600px]:left-3"
-					src="/images/ipl-colors-cutout.png"
+					{...productImageProps(
+						"/images/ipl-colors-cutout.png",
+						"(max-width: 800px) 60vw, 480px",
+					)}
 					alt="ეპილაციის აპარატები სამ ფერში"
 					width="1312"
 					height="1199"

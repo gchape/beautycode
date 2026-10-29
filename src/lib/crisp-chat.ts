@@ -1,5 +1,5 @@
 import { Crisp, type CrispClass } from "crisp-sdk-web";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { finalPrice, type PublicProduct } from "../data/catalog.ts";
 
 export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
@@ -46,11 +46,6 @@ export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 const chat = createChatLauncher(import.meta.env?.VITE_CRISP_WEBSITE_ID ?? "");
 
 export function useChatLauncher(onError: (error: unknown) => void) {
-	useEffect(() => {
-		const timer = setTimeout(() => chat.load().catch(() => {}), 1000);
-		return () => clearTimeout(timer);
-	}, []);
-
 	return useCallback(
 		(product?: PublicProduct) => chat.open(product).catch(onError),
 		[onError],

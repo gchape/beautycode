@@ -3,6 +3,7 @@ import { MessageCircle, PackageOpen } from "lucide-react";
 import type { PublicProduct } from "../../data/catalog.ts";
 import { coverImage, discountPercent } from "../../data/catalog.ts";
 import { stockLabels } from "../../data/labels.ts";
+import { productImageProps } from "../../lib/product-images.ts";
 import { useOpenChat } from "../contact/contact-context.tsx";
 import { Badge } from "../ui/badge.tsx";
 import { Button } from "../ui/button.tsx";
@@ -18,7 +19,17 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 			<Link to="/products/$slug" params={{ slug: product.slug }}>
 				<div className="relative grid aspect-square place-items-center overflow-hidden rounded-[9px] bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-6">
 					{image ? (
-						<img src={image} alt={product.name} loading="lazy" />
+						<img
+							{...productImageProps(
+								image,
+								"(max-width: 400px) 100vw, (max-width: 800px) 50vw, 400px",
+							)}
+							alt={product.name}
+							width="400"
+							height="400"
+							loading="lazy"
+							decoding="async"
+						/>
 					) : (
 						<PackageOpen size={55} strokeWidth={1} />
 					)}

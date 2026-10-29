@@ -2,6 +2,8 @@ import { PackageOpen } from "lucide-react";
 import { useState } from "react";
 import type { PublicProduct } from "../../data/catalog.ts";
 
+import { productImageProps } from "../../lib/product-images.ts";
+
 export function ProductGallery({ product }: { product: PublicProduct }) {
 	const images = product.images;
 	const [selected, setSelected] = useState(0);
@@ -11,7 +13,11 @@ export function ProductGallery({ product }: { product: PublicProduct }) {
 			<div className="relative grid aspect-square place-items-center overflow-hidden rounded-[9px] bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-6">
 				{current ? (
 					<img
-						src={current.url}
+						{...productImageProps(
+							current.url,
+							"(max-width: 800px) 100vw, 600px",
+						)}
+						fetchPriority="high"
 						alt={current.alt || product.name}
 						width="800"
 						height="800"
@@ -35,7 +41,7 @@ export function ProductGallery({ product }: { product: PublicProduct }) {
 							onClick={() => setSelected(index)}
 						>
 							<img
-								src={image.url}
+								{...productImageProps(image.url, "80px")}
 								alt={image.alt || product.name}
 								width="80"
 								height="80"
