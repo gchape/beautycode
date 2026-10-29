@@ -13,12 +13,18 @@ const imageUrl = z
 	.max(2048)
 	.refine((value) => {
 		if (/^\/images\/[a-zA-Z0-9._-]+$/.test(value)) return true;
+		if (
+			/^\/uploads\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:webp|png|jpg|avif)$/.test(
+				value,
+			)
+		)
+			return true;
 		try {
 			return new URL(value).protocol === "https:";
 		} catch {
 			return false;
 		}
-	}, "სურათის მისამართი უნდა იყოს HTTPS ან /images/... ");
+	}, "სურათის მისამართი უნდა იყოს HTTPS, /images/... ან /uploads/...");
 
 export const productInput = z
 	.object({

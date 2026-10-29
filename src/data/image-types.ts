@@ -2,6 +2,7 @@ export const imageTypes = {
 	"image/webp": "webp",
 	"image/png": "png",
 	"image/jpeg": "jpg",
+	"image/avif": "avif",
 } as const;
 
 export type ImageType = keyof typeof imageTypes;
