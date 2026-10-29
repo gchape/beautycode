@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import { test } from "node:test";
 import { readProductForm } from "../src/lib/admin/product-form.ts";
-import { gelToMinor } from "../src/lib/admin/schemas.ts";
+import { gelToMinor, productInput } from "../src/lib/admin/schemas.ts";
 import { requireAdmin } from "../src/server/admin/auth.ts";
 import { saveCategory, saveProduct } from "../src/server/admin/repository.ts";
 import { migrateDatabase } from "../src/server/migrations.ts";
@@ -124,6 +124,29 @@ test("product edits preserve slugs, exact prices, gallery order and search synch
 	} finally {
 		db.close();
 	}
+});
+
+test("product validation accepts generated upload paths and rejects unsafe upload paths", () => {
+	const uploaded = {
+		...product,
+		images: [
+			{
+				url: "/uploads/550e8400-e29b-41d4-a716-446655440000.webp",
+				alt: "ატვირთული სურათი",
+			},
+		],
+	};
+	assert.equal(
+		productInput.parse(uploaded).images[0].url,
+		uploaded.images[0].url,
+	);
+	assert.equal(
+		productInput.safeParse({
+			...uploaded,
+			images: [{ url: "/uploads/../private.webp", alt: "bad" }],
+		}).success,
+		false,
+	);
 });
 
 test("categories can be reordered, renamed and hidden without changing slugs", () => {

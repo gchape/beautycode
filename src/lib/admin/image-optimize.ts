@@ -10,7 +10,7 @@ const quality = 0.86;
 /** Resizes to at most 1600px and re-encodes as WebP before upload. */
 export async function optimizeUpload(file: File): Promise<Blob> {
 	if (!(file.type in imageTypes) || file.size > maxSourceImageBytes)
-		throw new Error("აირჩიეთ JPG, PNG ან WebP სურათი, მაქსიმუმ 20 MB");
+		throw new Error("აირჩიეთ JPG, PNG, WebP ან AVIF სურათი, მაქსიმუმ 20 MB");
 	const bitmap = await createImageBitmap(file);
 	try {
 		const canvas = resizeImage(bitmap);
