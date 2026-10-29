@@ -29,7 +29,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 			{failed && (
 				<div
 					role="alert"
-					className="fixed bottom-4 left-4 z-[2147483647] w-[calc(100%-32px)] max-w-sm rounded-lg border border-border bg-background p-5 shadow-lg"
+					className="fixed bottom-4 left-4 z-2147483647 w-[calc(100%-32px)] max-w-sm rounded-lg border border-border bg-background p-5 shadow-lg"
 				>
 					<p className="mb-3 text-sm">
 						ჩატი ვერ ჩაიტვირთა. განაახლე გვერდი ან დაგვირეკე.
