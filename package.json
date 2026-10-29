@@ -2,6 +2,7 @@
 	"name": "beautycode",
 	"private": true,
 	"type": "module",
+	"packageManager": "pnpm@12.16.1",
 	"imports": {
 		"#/*": "./src/*"
 	},
@@ -11,8 +12,8 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"format": "biome format --write .",
-		"lint": "biome lint",
-		"check": "biome check",
+		"lint": "biome check .",
+		"check": "pnpm typecheck && pnpm lint && pnpm test",
 		"test": "node --test tests/*.test.mjs",
 		"backup": "node scripts/backup.ts",
 		"restore": "node scripts/restore.ts",
@@ -21,8 +22,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.1157.0",
-		"@aws-sdk/s3-presigned-post": "^3.1157.0",
+		"@aws-sdk/client-s3": "^3.1158.0",
 		"@fontsource-variable/noto-sans-georgian": "^5.3.0",
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/react-query": "5.105.0",
@@ -31,7 +31,7 @@
 		"@tanstack/react-start": "1.169.4",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"lucide-react": "^1.61.0",
+		"lucide-react": "^1.62.0",
 		"nitro": "3.0.260903-beta",
 		"radix-ui": "^1.8.1",
 		"react": "^19.3.1",
@@ -53,6 +53,6 @@
 		"vite": "^8.3.5"
 	},
 	"engines": {
-		"node": ">=26 <27"
+		"node": ">=26.13 <27"
 	}
 }
