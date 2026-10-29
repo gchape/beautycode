@@ -15,7 +15,7 @@ test("parses typed defaults and coerces the port", () => {
 
 test("rejects invalid URLs and non-numeric ports with readable variable names", () => {
 	assert.throws(
-		() => readServerEnvironment({ SITE_URL: "http://beautycode.ge/" }),
+		() => readServerEnvironment({ SITE_URL: "http://beautycode.com.ge/" }),
 		/Invalid server environment:[\s\S]*SITE_URL/,
 	);
 	assert.throws(
@@ -33,7 +33,7 @@ test("requires runtime storage and backup settings in production", () => {
 		NODE_ENV: "production",
 		DB_PATH: "/data/beautycode.db",
 		UPLOADS_DIR: "/data/uploads",
-		SITE_URL: "https://beautycode.ge",
+		SITE_URL: "https://beautycode.com.ge",
 		AWS_REGION: "eu-central-1",
 		S3_BACKUPS_BUCKET: "beautycode-ge-backups",
 	});

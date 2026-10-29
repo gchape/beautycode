@@ -25,7 +25,7 @@ test("validation groups nested errors under their form fields", () => {
 });
 
 test("server validation errors survive the fetch client unchanged", async (t) => {
-	const request = new Request("https://beautycode.ge/admin/api/products", {
+	const request = new Request("https://beautycode.com.ge/admin/api/products", {
 		headers: {
 			"x-remote-user": "admin",
 		},

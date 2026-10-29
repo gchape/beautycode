@@ -193,6 +193,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      crisp-sdk-web:
+        specifier: ^1.2.1
+        version: 1.2.1
       lucide-react:
         specifier: ^1.62.0
         version: 1.62.0(@types/react@19.3.0)(react@19.3.1)
@@ -1964,6 +1967,9 @@ packages:
 
   cookie-es@3.1.1:
     resolution: {integrity: sha512-UaXxwISYJPTr9hwQxMFYZ7kNhSXboMXP+Z3TRX6f1/NyaGPfuNUZOWP1pUEb75B2HjfklIYLVRfWiFZJyC6Npg==}
+
+  crisp-sdk-web@1.2.1:
+    resolution: {integrity: sha512-tp62o82QktRiaGqFQLuRNRwndN/+VIY/mOQVeKnA2nKHn9wTFAzdRXTT5pBbxgLKcvT5uryfd9eL/u7s1N7yEA==}
 
   crossws@0.4.16:
     resolution: {integrity: sha512-gKc2u346c6tZazImz8/4KkRRKW6cEHot3Z3+gzKNSkfHTWkYrXeiidMKYN0JnHqeszIs5++iDaVzP/pWl/efpw==}
@@ -4355,6 +4361,8 @@ snapshots:
   convert-source-map@2.0.0: {}
 
   cookie-es@3.1.1: {}
+
+  crisp-sdk-web@1.2.1: {}
 
   crossws@0.4.16(srvx@1.0.7):
     optionalDependencies:

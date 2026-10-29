@@ -15,7 +15,7 @@ export function ProductGrid({ products }: { products: PublicProduct[] }) {
 			</Card>
 		);
 	return (
-		<div className="grid grid-cols-3 gap-6 max-[800px]:grid-cols-2 max-[560px]:gap-3.75">
+		<div className="grid grid-cols-3 gap-6 max-[800px]:grid-cols-2 max-[560px]:gap-3.75 max-[400px]:grid-cols-1">
 			{products.map((product) => (
 				<ProductCard key={product.id} product={product} />
 			))}

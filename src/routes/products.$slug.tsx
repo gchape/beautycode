@@ -50,9 +50,9 @@ function ProductPage() {
 	return (
 		<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-[25px] pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
 			<Breadcrumb title={product.name} />
-			<div className="grid grid-cols-2 gap-[65px] [&_h1]:my-5 [&_h1]:text-[2rem] max-[800px]:gap-[30px] max-[800px]:[&_h1]:text-[1.6875rem] max-[560px]:grid-cols-1 max-[560px]:gap-[35px]">
+			<div className="grid grid-cols-2 gap-[65px] [&_h1]:my-5 [&_h1]:text-[2rem] max-[800px]:gap-[30px] max-[800px]:[&_h1]:text-[1.6875rem] max-[800px]:grid-cols-1 max-[560px]:gap-[35px]">
 				<ProductGallery key={product.id} product={product} />
-				<div>
+				<div className="min-w-0 wrap-anywhere">
 					<span className="block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
 						{product.brand}
 					</span>
@@ -73,13 +73,13 @@ function ProductPage() {
 						<MessageCircle size={19} />
 						შეკვეთა / კონსულტაცია
 					</Button>
-					<p className="my-[25px] flex flex-wrap items-center gap-2.5 text-sm">
+					<p className="my-6.25 flex flex-wrap items-center gap-2.5 text-sm">
 						<Truck size={18} />
 						უფასო მიწოდება მთელ საქართველოში
 					</p>
 					<Accordion
 						type="multiple"
-						className="[&_[data-slot=accordion-item]]:border-t [&_[data-slot=accordion-item]]:border-b-0 [&_[data-slot=accordion-item]]:border-border [&_[data-slot=accordion-trigger]]:py-5 [&_[data-slot=accordion-trigger]]:text-[0.9375rem] [&_[data-slot=accordion-trigger]]:font-normal [&_[data-slot=accordion-content]]:text-[0.9375rem] [&_a]:underline [&_p]:mt-[15px]"
+						className="**:data-[slot=accordion-item]:border-t **:data-[slot=accordion-item]:border-b-0 **:data-[slot=accordion-item]:border-border **:data-[slot=accordion-trigger]:py-5 **:data-[slot=accordion-trigger]:text-[0.9375rem] **:data-[slot=accordion-trigger]:font-normal **:data-[slot=accordion-content]:text-[0.9375rem] [&_a]:underline [&_p]:mt-3.75"
 					>
 						<AccordionItem value="delivery">
 							<AccordionTrigger>მიწოდების პირობები</AccordionTrigger>

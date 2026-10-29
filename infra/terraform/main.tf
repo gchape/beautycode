@@ -176,9 +176,9 @@ resource "aws_iam_role_policy" "backups" {
         Resource = ["${aws_s3_bucket.backups.arn}/backups/*", "${aws_s3_bucket.backups.arn}/uploads/*"]
       },
       {
-        Effect   = "Allow"
-        Action   = "s3:ListBucket"
-        Resource = aws_s3_bucket.backups.arn
+        Effect    = "Allow"
+        Action    = "s3:ListBucket"
+        Resource  = aws_s3_bucket.backups.arn
         Condition = { StringLike = { "s3:prefix" = ["uploads/*"] } }
       }
     ]
@@ -197,7 +197,7 @@ resource "aws_instance" "app" {
   vpc_security_group_ids      = [aws_security_group.app.id]
   iam_instance_profile        = aws_iam_instance_profile.app.name
   associate_public_ip_address = true
-  depends_on                  = [
+  depends_on = [
     aws_route_table_association.public,
     aws_iam_role_policy_attachment.ssm,
     aws_iam_role_policy.backups,

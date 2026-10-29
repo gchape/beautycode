@@ -94,9 +94,8 @@
 	a,
 	button {
 		transition:
-			background 0.2s,
-			color 0.2s,
-			transform 0.2s;
+			background-color 0.2s,
+			color 0.2s;
 	}
 	button:focus-visible,
 	a:focus-visible,
@@ -129,6 +128,24 @@
 	}
 	h3 {
 		font-size: 1.125rem;
+	}
+}
+
+.site-navigation a {
+	padding: 0.625rem 0;
+	border-bottom: 2px solid transparent;
+	white-space: nowrap;
+	transition:
+		color 0.2s,
+		border-color 0.2s;
+}
+.site-navigation a[aria-current="page"] {
+	border-bottom-color: var(--primary);
+}
+@media (hover: hover) {
+	.site-navigation a:hover {
+		color: #975c70;
+		border-bottom-color: #975c70;
 	}
 }
 
