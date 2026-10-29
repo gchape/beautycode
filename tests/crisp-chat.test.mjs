@@ -14,15 +14,8 @@ globalThis.document = undefined;
 
 function browser(t) {
 	const scripts = [];
-	const timers = new Map();
 	t.mock.property(globalThis, "window", {
 		location: { origin: "https://beautycode.com.ge" },
-		setTimeout: (callback) => {
-			const id = timers.size + 1;
-			timers.set(id, callback);
-			return id;
-		},
-		clearTimeout: (id) => timers.delete(id),
 	});
 	t.mock.property(globalThis, "document", {
 		getElementsByTagName: () => [
@@ -38,7 +31,7 @@ function browser(t) {
 		)[2]();
 	const messages = () =>
 		window.$crisp.filter((command) => command[1] === "message:send");
-	return { chat, scripts, timers, loaded, messages };
+	return { chat, scripts, loaded, messages };
 }
 
 test("official SDK injects one loader and sends product details only after session readiness", async (t) => {
@@ -85,14 +78,20 @@ test("ordinary contact opens chat without sending or replacing any message", asy
 });
 
 test("a failed load does not queue a product to send unexpectedly later", async (t) => {
-	const { chat, timers, loaded, messages } = browser(t);
+	t.mock.timers.enable({ apis: ["setTimeout"] });
+	const { chat, loaded, messages } = browser(t);
+
 	const pending = chat.open(product);
 	const rejection = assert.rejects(pending, /could not connect/);
-	[...timers.values()][0]();
+	t.mock.timers.tick(20_000); // fire the load timeout
 	await rejection;
-	loaded();
+
+	loaded(); // stale callback from the failed attempt
 	assert.equal(messages().length, 0);
-	await chat.open(product);
+
+	const retry = chat.open(product); // starts a fresh load
+	loaded(); // session becomes ready on the retry
+	await retry;
 	assert.equal(messages().length, 1);
 });
 
