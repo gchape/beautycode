@@ -1,11 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Beauty Code private images, CloudFront, SQLite backups, and EC2 application host
+Description: Beauty Code application host (EC2) with S3 backups for the SQLite database and product images
 Parameters:
-  SiteOrigin:
-    Type: String
-    Default: https://beautycode.ge
-    AllowedPattern: 'https://[a-zA-Z0-9.-]+'
-    Description: Exact HTTPS website origin without trailing slash
   VpcId:
     Type: AWS::EC2::VPC::Id
     Description: Existing VPC for the application host
@@ -26,28 +21,6 @@ Parameters:
     MinValue: 30
     MaxValue: 1024
 Resources:
-  Images:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
-    Properties:
-      BucketName: beautycode-ge-images
-      VersioningConfiguration: { Status: Enabled }
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        IgnorePublicAcls: true
-        BlockPublicPolicy: true
-        RestrictPublicBuckets: true
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
-      CorsConfiguration:
-        CorsRules:
-          - AllowedOrigins: [!Ref SiteOrigin]
-            AllowedMethods: [POST, GET, HEAD]
-            AllowedHeaders: ['*']
-            ExposedHeaders: [ETag]
-            MaxAge: 300
   Backups:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
@@ -65,62 +38,15 @@ Resources:
           - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
       LifecycleConfiguration:
         Rules:
+          # Database snapshots expire after 30 days. Product images under uploads/ never expire.
           - Id: ExpireOldBackups
             Status: Enabled
             Prefix: backups/
             ExpirationInDays: 30
             NoncurrentVersionExpiration: { NoncurrentDays: 30 }
+          - Id: AbortIncompleteUploads
+            Status: Enabled
             AbortIncompleteMultipartUpload: { DaysAfterInitiation: 1 }
-  ImageOriginAccess:
-    Type: AWS::CloudFront::OriginAccessControl
-    Properties:
-      OriginAccessControlConfig:
-        Name: !Sub '${AWS::StackName}-images'
-        OriginAccessControlOriginType: s3
-        SigningBehavior: always
-        SigningProtocol: sigv4
-  ImageDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        Enabled: true
-        HttpVersion: http2
-        PriceClass: PriceClass_100
-        Origins:
-          - Id: images
-            DomainName: !GetAtt Images.RegionalDomainName
-            OriginAccessControlId: !GetAtt ImageOriginAccess.Id
-            S3OriginConfig: { OriginAccessIdentity: '' }
-        DefaultCacheBehavior:
-          TargetOriginId: images
-          ViewerProtocolPolicy: redirect-to-https
-          AllowedMethods: [GET, HEAD]
-          CachedMethods: [GET, HEAD]
-          Compress: true
-          ForwardedValues: { QueryString: false }
-          DefaultTTL: 86400
-          MaxTTL: 31536000
-          MinTTL: 0
-        ViewerCertificate: { CloudFrontDefaultCertificate: true }
-  ImagesPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref Images
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal: { Service: cloudfront.amazonaws.com }
-            Action: s3:GetObject
-            Resource: !Sub '${Images.Arn}/*'
-            Condition:
-              StringEquals:
-                AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${ImageDistribution}'
-          - Effect: Deny
-            Principal: '*'
-            Action: s3:*
-            Resource: [!GetAtt Images.Arn, !Sub '${Images.Arn}/*']
-            Condition: { Bool: { 'aws:SecureTransport': 'false' } }
   BackupsPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -145,16 +71,23 @@ Resources:
       ManagedPolicyArns:
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore'
       Policies:
-        - PolicyName: CatalogStorage
+        - PolicyName: BackupStorage
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              - Effect: Allow
-                Action: [s3:PutObject]
-                Resource: !Sub '${Images.Arn}/products/*'
+              # Database snapshots (written by the app) and image sync (written by the host script).
               - Effect: Allow
                 Action: [s3:PutObject, s3:GetObject]
-                Resource: !Sub '${Backups.Arn}/backups/*'
+                Resource:
+                  - !Sub '${Backups.Arn}/backups/*'
+                  - !Sub '${Backups.Arn}/uploads/*'
+              # Listing is limited to uploads/ so aws s3 sync can compare and restore images.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt Backups.Arn
+                Condition:
+                  StringLike:
+                    's3:prefix': ['uploads/*']
   AppProfile:
     Type: AWS::IAM::InstanceProfile
     Properties: { Roles: [!Ref AppRole] }
@@ -191,6 +124,20 @@ Resources:
             VolumeSize: !Ref RootVolumeSize
             Encrypted: true
             DeleteOnTermination: false
+      # A 2 GiB swap file keeps Docker image builds from being killed on small instances.
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          set -eu
+          if [ ! -f /swapfile ]; then
+            dd if=/dev/zero of=/swapfile bs=1M count=2048
+            chmod 600 /swapfile
+            mkswap /swapfile
+            echo '/swapfile none swap sw 0 0' >> /etc/fstab
+          fi
+          swapon -a
+          echo 'vm.swappiness=10' > /etc/sysctl.d/99-swappiness.conf
+          sysctl -w vm.swappiness=10
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}-app'
@@ -206,7 +153,5 @@ Resources:
 Outputs:
   InstanceId: { Value: !Ref AppInstance }
   PublicIp: { Value: !Ref AppAddress }
-  ImagesBucket: { Value: !Ref Images }
   BackupsBucket: { Value: !Ref Backups }
-  ImagesBaseUrl: { Value: !Sub 'https://${ImageDistribution.DomainName}' }
   InstanceProfile: { Value: !Ref AppProfile }

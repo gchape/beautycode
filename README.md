@@ -20,13 +20,13 @@ pnpm dev
 
 Open <http://localhost:3000> or <http://localhost:3000/admin>. Development admin has no login prompt and is **read-only**: browsing, searching, and filtering work; saves, uploads, and admin backup requests are disabled. Keep the development server on localhost.
 
-| Behavior | Development | Production with Docker Compose |
-| --- | --- | --- |
-| Admin authentication | No login; reads only | nginx Basic Auth |
-| Database | `data/beautycode.db` by default | Host `./data/beautycode.db`, mounted as `/data/beautycode.db` |
-| Admin writes | Rejected by the API | Authenticated, same-origin requests |
-| Image uploads | Disabled | Browser uploads directly to private S3 using a signed POST |
-| CLI backup | Local `data/backups/*.db` | Upload to S3; local snapshot removed after success |
+| Behavior             | Development                     | Production with Docker Compose                                  |
+| -------------------- | ------------------------------- | --------------------------------------------------------------- |
+| Admin authentication | No login; reads only            | nginx Basic Auth                                                |
+| Database             | `data/beautycode.db` by default | Host `./data/beautycode.db`, mounted as `/data/beautycode.db`   |
+| Admin writes         | Rejected by the API             | Authenticated, same-origin requests                             |
+| Image uploads        | Disabled                        | Written to `./data/uploads/` and served by nginx at `/uploads/` |
+| CLI backup           | Local `data/backups/*.db`       | Upload to S3; local snapshot removed after success              |
 
 Vite sets `NODE_ENV=development`. Development browsing needs no AWS credentials. `DB_PATH` overrides the native database path. Development and production **do not automatically use separate databases**. To use an isolated development catalog:
 
@@ -87,7 +87,7 @@ flowchart TD
     Admin --> Writes["Transactional writes and audit log"]
     Reads --> DB[("SQLite: catalog, images, audit, search")]
     Writes --> DB
-    Admin --> Signing["S3 upload signing"]
+    Admin --> Uploads["Validated image writes to data/uploads"]
     Admin --> Snapshot["SQLite snapshot service"]
     Snapshot --> BackupBucket[("S3 backups")]
 ```
@@ -96,27 +96,27 @@ Public queries return only published products in active categories. Draft and ar
 
 Product saves validate input, update product fields and gallery references, and record an audit entry in one transaction. Search triggers keep SQLite FTS synchronized. Existing product slugs remain stable when names change.
 
-| Location | Responsibility |
-| --- | --- |
-| `src/routes/` | Pages, loaders, and HTTP endpoints |
-| `src/components/admin/` | Admin overview, filters, tables, and editors |
-| `src/components/ui/` | Shared Tailwind-styled primitives, including Radix dropdowns |
-| `src/lib/admin/` | Browser API calls, image optimization, form conversion, validation |
-| `src/server/admin/` | Authentication, error responses, persistence, and audit |
-| `src/server/` | Database reads, migrations, snapshots, and S3 integration |
-| `src/styles.css` | Theme tokens, base styles, and reduced-motion defaults |
-| `migrations/` | Versioned SQL schema and initial catalog |
-| `scripts/` | SQLite backup and restore CLI |
-| `cloudformation.yml` | EC2, instance role, S3 buckets, and image CDN |
-| `docker-compose.yaml`, `Dockerfile` | Production containers and app build |
-| `nginx.conf` | TLS, proxying, and admin authentication |
-| `tests/` | Catalog, authorization, backup, search, and SEO checks |
+| Location                            | Responsibility                                                          |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| `src/routes/`                       | Pages, loaders, and HTTP endpoints                                      |
+| `src/components/admin/`             | Admin overview, filters, tables, and editors                            |
+| `src/components/ui/`                | Shared Tailwind-styled primitives, including Radix dropdowns            |
+| `src/lib/admin/`                    | Browser API calls, image optimization, form conversion, validation      |
+| `src/server/admin/`                 | Authentication, error responses, persistence, and audit                 |
+| `src/server/`                       | Database reads, migrations, snapshots, upload storage, and S3 backups   |
+| `src/styles.css`                    | Theme tokens, base styles, and reduced-motion defaults                  |
+| `migrations/`                       | Versioned SQL schema and initial catalog                                |
+| `scripts/`                          | SQLite backup and restore CLI; `backup.sh` and `deploy.sh` for the host |
+| `cloudformation.yml`                | EC2 host, instance role, Elastic IP, and S3 backups bucket              |
+| `docker-compose.yaml`, `Dockerfile` | Production containers and app build                                     |
+| `nginx.conf`                        | TLS, proxying, admin authentication, and `/uploads/`                    |
+| `tests/`                            | Catalog, authorization, backup, search, and SEO checks                  |
 
 Component styling lives in Tailwind classes. Edit route files rather than generated `src/routeTree.gen.ts`.
 
 ## Production deployment
 
-The deployment uses one EC2 host and one app process. SQLite lives on the host disk, outside the containers. Recreating containers preserves the catalog; replacing the EC2 instance requires data recovery. This is a single-host deployment, without a load balancer or automatic failover.
+The deployment uses one EC2 host and one app process. SQLite and uploaded product images live on the host disk, outside the containers. Recreating containers preserves them; replacing the EC2 instance requires data recovery. This is a single-host deployment, without a load balancer, CDN, or automatic failover.
 
 ```mermaid
 flowchart LR
@@ -124,34 +124,35 @@ flowchart LR
     Owner["Admin browser"] -->|"HTTPS + Basic Auth"| Proxy
     subgraph Host["EC2: Amazon Linux 2023 / t3.small"]
         Proxy["nginx: public ports 80 and 443"] -->|"Private Compose network: app:3000"| App["Node 26 / TanStack Start"]
-        App -->|"/data bind mount"| Disk[("Encrypted EBS: ./data/beautycode.db")]
+        Proxy -->|"/uploads/ read-only"| Disk
+        App -->|"/data bind mount"| Disk[("Encrypted EBS: ./data database and uploads")]
         Role["EC2 instance role / IMDSv2"] -.->|"Temporary AWS credentials"| App
+        Cron["Daily backup script"] --> Disk
     end
-    Customer -->|"Uploaded product images"| CDN["CloudFront"]
-    CDN -->|"Origin access control"| Images[("Private S3 images bucket")]
-    Owner -->|"Signed POST: image bytes"| Images
-    App -->|"SQLite snapshots"| Backups[("Private S3 backups bucket")]
+    Cron -->|"DB snapshots and image sync"| Backups[("Private S3 backups bucket")]
+    App -->|"Admin backup button"| Backups
     Operator["Operator / Session Manager"] -.-> Host
 ```
 
-CloudFront serves uploaded images only. Website HTML, bundled images, and assets are served through nginx and the app. The app's port 3000 is not published on the host. nginx sets the trusted admin identity header only after authentication; do not expose the app directly.
+nginx serves the website through the app, and serves uploaded product images directly from disk. The app's port 3000 is not published on the host. nginx sets the trusted admin identity header only after authentication; do not expose the app directly.
 
 ### 1. Prepare AWS and DNS inputs
+
+Use an AWS account on the **Paid plan**. New accounts can receive promotional credits on either plan, but the Free plan closes the account after six months or when credits run out, which would take down a live site. Create an AWS Budgets alert before deploying.
 
 Run AWS commands from a workstation or CloudShell with permission to manage the resources in the template. You need:
 
 - An existing VPC and a **public subnet in that VPC**, with a route to an internet gateway and outbound connectivity for SSM, S3, package installation, and image pulls.
 - Control of the website domain's DNS records.
-- Availability of the template's fixed bucket names: `beautycode-ge-images` and `beautycode-ge-backups`. They are globally unique; change the template if necessary before deploying.
+- Availability of the template's fixed bucket name: `beautycode-ge-backups`. It is globally unique; change the template if necessary before deploying.
 
-| Parameter | Default / required input |
-| --- | --- |
-| `SiteOrigin` | `https://beautycode.ge`; exact browser origin, no trailing slash |
-| `VpcId` | Required existing VPC ID |
-| `SubnetId` | Required public subnet ID in that VPC |
-| `InstanceType` | `t3.small`; also supports `t3.medium` and `t3.large` |
-| `RootVolumeSize` | 30 GiB encrypted gp3 |
-| `AmiId` | SSM parameter for the latest Amazon Linux 2023 x86_64 AMI |
+| Parameter        | Default / required input                                  |
+| ---------------- | --------------------------------------------------------- |
+| `VpcId`          | Required existing VPC ID                                  |
+| `SubnetId`       | Required public subnet ID in that VPC                     |
+| `InstanceType`   | `t3.small`; also supports `t3.medium` and `t3.large`      |
+| `RootVolumeSize` | 30 GiB encrypted gp3                                      |
+| `AmiId`          | SSM parameter for the latest Amazon Linux 2023 x86_64 AMI |
 
 ### 2. Create the infrastructure
 
@@ -163,51 +164,50 @@ aws cloudformation validate-template \
 
 aws cloudformation deploy \
   --template-file cloudformation.yml \
-  --stack-name beautycode-storage \
+  --stack-name beautycode-prod \
   --parameter-overrides \
-    SiteOrigin=https://beautycode.ge \
     VpcId=vpc-REPLACE \
     SubnetId=subnet-REPLACE \
   --capabilities CAPABILITY_IAM \
   --region eu-central-1
 
 aws cloudformation describe-stacks \
-  --stack-name beautycode-storage \
+  --stack-name beautycode-prod \
   --region eu-central-1 \
   --query 'Stacks[0].Outputs' \
   --output table
 ```
 
-Keep the existing stack name when updating an installation. Creating a second stack with the same fixed bucket names fails.
+Use the same stack name (`beautycode-prod`) for every later update. A different name creates a second stack, which fails on the fixed bucket name.
 
-| Stack output | Use |
-| --- | --- |
-| `InstanceId` | Connect through AWS Systems Manager Session Manager |
-| `PublicIp` | Domain's DNS A record |
-| `ImagesBucket` | `.env`: `S3_IMAGES_BUCKET` |
-| `BackupsBucket` | `.env`: `S3_BACKUPS_BUCKET` |
-| `ImagesBaseUrl` | `.env`: `IMAGES_BASE_URL` |
-| `InstanceProfile` | Already attached to the new EC2 instance |
+| Stack output      | Use                                                 |
+| ----------------- | --------------------------------------------------- |
+| `InstanceId`      | Connect through AWS Systems Manager Session Manager |
+| `PublicIp`        | Domain's DNS A record                               |
+| `BackupsBucket`   | `.env`: `S3_BACKUPS_BUCKET`                         |
+| `InstanceProfile` | Already attached to the new EC2 instance            |
 
-The template creates the host, role, security group, Elastic IP, buckets, and CloudFront distribution. **It does not install the application, configure DNS, issue certificates, or schedule backups.** Only ports 80 and 443 are open inbound; use Session Manager instead of SSH. The template requires IMDSv2 with hop limit 2 so containers can obtain role credentials. See [AWS metadata guidance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html).
+The template creates the host, role, security group, Elastic IP, a 2 GiB swap file, and the backups bucket. **It does not install the application, configure DNS, issue certificates, or schedule backups.** Only ports 80 and 443 are open inbound; use Session Manager instead of SSH. The template requires IMDSv2 with hop limit 2 so containers can obtain role credentials. See [AWS metadata guidance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html).
 
 ### 3. Prepare the EC2 host
 
-Connect using the EC2 console's **Connect → Session Manager**. Use a host account with sudo access. Install Docker, Git, and `htpasswd` on Amazon Linux 2023:
+Connect using the EC2 console's **Connect → Session Manager**. Use a host account with sudo access. Install Docker, Git, and `htpasswd` on Amazon Linux 2023. The AWS CLI is preinstalled.
 
 ```sh
-sudo dnf install -y docker git httpd-tools
-sudo systemctl enable --now docker
+sudo dnf install -y docker git httpd-tools cronie
+sudo systemctl enable --now docker crond
 ```
 
 The Docker package follows [AWS's Amazon Linux installation guidance](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-docker.html). Install the Compose CLI plugin for all users using [Docker's installation instructions](https://docs.docker.com/compose/install/linux/), so `sudo docker compose` works too. Install Certbot using a method appropriate for the host; the [Certbot Python virtual-environment instructions](https://certbot.eff.org/instructions?os=pip&ws=nginx) are one option. This deployment uses `certonly`, not Certbot's automatic nginx configuration, because nginx runs inside Docker.
 
-Verify the tools before continuing:
+Verify the tools and the swap file before continuing:
 
 ```sh
 sudo docker compose version
 sudo certbot --version
 git --version
+aws --version
+swapon --show
 ```
 
 Clone the repository and check out the release you intend to deploy:
@@ -218,12 +218,13 @@ sudo chown "$(id -u):$(id -g)" /srv/beautycode
 git clone <REPOSITORY_URL> /srv/beautycode
 cd /srv/beautycode
 git checkout <RELEASE_TAG_OR_COMMIT>
-mkdir -p secrets data
+chmod +x scripts/*.sh
+mkdir -p secrets data/uploads
 htpasswd -B -c secrets/htpasswd admin
-sudo chown 1000:1000 data
+sudo chown -R 1000:1000 data
 ```
 
-Replace the angle-bracket placeholders before running these commands. The app container runs as UID 1000, which must be able to write the host data directory. Use `htpasswd -B secrets/htpasswd admin` to change the password later; omit `-c` so you do not recreate the password file.
+Replace the angle-bracket placeholders before running these commands. The app container runs as UID 1000, which must be able to write the host data directory and `data/uploads`. Create `data/uploads` yourself, as above: if Docker creates it, it is owned by root and uploads fail. Use `htpasswd -B secrets/htpasswd admin` to change the password later; omit `-c` so you do not recreate the password file.
 
 ### 4. Configure the application and DNS
 
@@ -236,19 +237,18 @@ chmod 600 .env
 
 Edit `.env` using the stack outputs. Preserve it when updating releases.
 
-| Variable | Example / source | Purpose |
-| --- | --- | --- |
-| `DOMAIN` | `beautycode.ge` | nginx server name and certificate directory |
-| `SITE_URL` | `https://beautycode.ge` | Allowed admin origin and Docker build's canonical URL |
-| `AWS_REGION` | `eu-central-1` | Same region as the stack |
-| `S3_IMAGES_BUCKET` | `ImagesBucket` output | New product images |
-| `S3_BACKUPS_BUCKET` | `BackupsBucket` output | Database snapshots |
-| `IMAGES_BASE_URL` | `ImagesBaseUrl` output | CloudFront HTTPS URL, without trailing slash |
-| `MIGRATIONS_DIR` | `/app/migrations` in Docker | SQL directory inside the container |
+| Variable            | Example / source            | Purpose                                                |
+| ------------------- | --------------------------- | ------------------------------------------------------ |
+| `DOMAIN`            | `beautycode.ge`             | nginx hostname; Compose derives the app's HTTPS origin |
+| `AWS_REGION`        | `eu-central-1`              | Same region as the stack                               |
+| `S3_BACKUPS_BUCKET` | `BackupsBucket` output      | Database snapshots and image backups                   |
+| `DB_PATH`           | `/data/beautycode.db`       | SQLite file; set by Compose                            |
+| `UPLOADS_DIR`       | `/data/uploads`             | Uploaded images; set by Compose                        |
+| `MIGRATIONS_DIR`    | `/app/migrations` in Docker | SQL directory inside the container                     |
 
-The example's relative `MIGRATIONS_DIR=./migrations` also resolves correctly from Docker's `/app` working directory. Compose sets `NODE_ENV`, `HOST`, `PORT`, and `DB_PATH`. It passes `SITE_URL` to the Docker build as `VITE_SITE_URL`; rebuild after changing the origin. `VITE_SITE_URL` in `.env.example` is for builds outside Docker.
+The server parses environment variables with Zod on the first request and reports invalid values. Production requires `SITE_URL`, `AWS_REGION`, `S3_BACKUPS_BUCKET`, `DB_PATH`, and `UPLOADS_DIR`; Compose derives `SITE_URL` and the build's `VITE_SITE_URL` from `DOMAIN`. The example's relative `MIGRATIONS_DIR=./migrations` also resolves correctly from Docker's `/app` working directory. Compose sets `NODE_ENV`, `HOST`, `PORT`, `DB_PATH`, and `UPLOADS_DIR`. Changing `DOMAIN` updates nginx and the app's canonical origin on the next build and restart.
 
-Use the instance role rather than adding AWS access keys to `.env`. Set the domain's A record to `PublicIp`. `SiteOrigin`, `SITE_URL`, and the actual browser origin must agree for admin writes and S3 CORS. Configure only DNS records for addresses this host actually serves; a stale AAAA record can send clients and certificate validation to another host.
+Use the instance role rather than adding AWS access keys to `.env`. Set the domain's A record to `PublicIp`. The browser origin must match the origin derived from `DOMAIN` for admin writes. Configure only DNS records for addresses this host actually serves; a stale AAAA record can send clients and certificate validation to another host.
 
 ### 5. Issue the first certificate and start containers
 
@@ -288,7 +288,7 @@ sequenceDiagram
 
 The nginx container renders `nginx.conf` with `DOMAIN` on startup. `NGINX_ENVSUBST_FILTER` preserves nginx's own `$host` and `$request_uri` variables. The app health check exercises the database before nginx starts.
 
-Verify storefront browsing, `/admin` authentication, a product edit, and an image upload. Confirm uploaded images load from CloudFront. A successful health check does not validate S3 permissions or image delivery.
+Verify storefront browsing, `/admin` authentication, a product edit, and an image upload. Confirm the uploaded image loads from `https://beautycode.ge/uploads/...` and that the file exists under `data/uploads/`. A successful health check does not validate uploads or backups, so also run `./scripts/backup.sh` once by hand.
 
 ### 6. Configure certificate renewal
 
@@ -316,36 +316,40 @@ Enable the renewal timer or scheduled job provided by your Certbot installation.
 
 Use one renewal schedule. Mounting the entire `/etc/letsencrypt` directory makes renewed certificate files available in nginx; the deploy hook reloads them into the running process.
 
+### 7. Schedule backups
+
+Add the daily backup to root's crontab (`sudo crontab -e`). The schedule uses the host timezone:
+
+```cron
+0 3 * * * /srv/beautycode/scripts/backup.sh >> /var/log/beautycode-backup.log 2>&1
+```
+
+Check the log after the first run and rotate it. See [Backups and recovery](#backups-and-recovery).
+
 ## Releases and infrastructure updates
 
-For an application release, run from the EC2 checkout. Back up the current app **before** changing the checkout:
+For an application release, run from the EC2 checkout:
 
 ```sh
 cd /srv/beautycode
-sudo docker compose exec -T app node scripts/backup.ts
-# Continue only after the backup succeeds; retain its returned S3 key.
-git fetch --tags
-git checkout <RELEASE_TAG_OR_COMMIT>
-sudo docker compose build app
-sudo docker compose up -d
-sudo docker compose ps
-curl --fail https://beautycode.ge/healthz
+./scripts/deploy.sh <RELEASE_TAG_OR_COMMIT>
 ```
 
-Building first avoids replacing the running app if the build fails. This deployment does not guarantee zero downtime. Review schema migrations before release; rolling back code alone may not work after a schema change. Restore a snapshot compatible with the rollback release if needed.
+The script backs up the database and images, checks out the release, builds the image, restarts the app, and polls `/healthz`. It stops at the first failure, and a failed build leaves the running app and the previous checkout in place. The build happens on the host; the swap file created by the template keeps it from running out of memory on `t3.small`. This deployment does not guarantee zero downtime.
 
-Review CloudFormation change sets before infrastructure updates. AMI and root-volume changes can replace the instance. The template retains the root EBS disk on termination, but a replacement instance receives a **new disk**, not the retained catalog. Recover the old data or restore S3 snapshots before serving traffic from the replacement. Retained disks and buckets continue to incur charges until explicitly removed.
+To roll back, run the script with the previous tag or commit, which it prints when it finishes or fails. Review schema migrations before release; rolling back code alone may not work after a schema change. Restore a snapshot compatible with the rollback release if needed.
 
-When adding EC2 to an older storage-only stack, migrate the previous host's configuration, data, and certificates before changing DNS. Do not run independent writable copies of the same catalog behind the same domain.
+Review CloudFormation change sets before infrastructure updates. AMI and root-volume changes can replace the instance. The template retains the root EBS disk on termination, but a replacement instance receives a **new disk**, not the retained catalog. Recover the old data and images from S3 backups before serving traffic from the replacement. Retained disks and buckets continue to incur charges until explicitly removed.
+
+Do not run independent writable copies of the same catalog behind the same domain.
 
 ## Backups and recovery
 
-### Create a snapshot
-
-The admin backup button and CLI use the same SQLite snapshot service:
+Two things need backing up: the **database** (snapshotted by the app) and the **uploaded product images** (synced to S3 by the host script). `scripts/backup.sh` does both:
 
 ```sh
-sudo docker compose exec -T app node scripts/backup.ts
+cd /srv/beautycode
+./scripts/backup.sh
 ```
 
 ```mermaid
@@ -355,66 +359,73 @@ flowchart LR
     Upload -->|"Success"| S3[("backups/unique-name.db")]
     S3 --> Cleanup["Remove local snapshot"]
     Upload -->|"Failure"| Keep["Keep local snapshot for recovery"]
+    Images[("data/uploads")] -->|"aws s3 sync, no delete"| S3Img[("uploads/")]
 ```
 
-Snapshots include schema, catalog, galleries, search data, and audit history. They do not contain image objects, `.env`, admin passwords, or certificates. S3 lifecycle rules expire current backup objects after 30 days and noncurrent versions after 30 noncurrent days. Development snapshots remain local until manually removed.
+Snapshots include schema, catalog, galleries, search data, and audit history. They do not contain image files, `.env`, admin passwords, or certificates. S3 lifecycle rules expire database snapshots (`backups/`) after 30 days and noncurrent versions after 30 noncurrent days. Images under `uploads/` are never expired, and images removed in the admin stay in the backup. Development snapshots remain local until manually removed.
 
-To write an explicit local export without uploading it:
+To write only an explicit local database export without uploading it:
 
 ```sh
 sudo docker compose exec -T app node scripts/backup.ts /data/export.db
 ```
 
-Existing output files are never overwritten. To automate daily snapshots, add this to root's crontab; cron must be installed and enabled on the host, and the schedule uses the host timezone:
-
-```cron
-0 3 * * * cd /srv/beautycode && /usr/bin/docker compose exec -T app node scripts/backup.ts >> /var/log/beautycode-backup.log 2>&1
-```
-
-Monitor failures and rotate that log. Scheduling and monitoring are not created by CloudFormation.
+Existing output files are never overwritten. Monitor `/var/log/beautycode-backup.log` for failures. Scheduling and monitoring are not created by CloudFormation. Because uploaded images exist only on the host disk and in this S3 copy, a silently failing backup is the main risk of this setup.
 
 ### Restore a snapshot
 
-Choose the actual S3 key printed by a successful backup or view it in the S3 console. The app role can get and put backup objects but does not have bucket-list permission.
+Choose the actual S3 key printed by a successful backup or view it in the S3 console. The app role can read and write backup objects, and can list only the `uploads/` prefix.
 
-Stop the app to prevent concurrent writes, then run the restore using the built app image:
+Stop the app to prevent concurrent writes, restore the database using the built app image, then restore the images:
 
 ```sh
 cd /srv/beautycode
 sudo docker compose stop app
 sudo docker compose run --rm --no-deps app \
   node scripts/restore.ts s3:backups/beautycode-TIMESTAMP-ID.db --replace
-# Restart only after restore succeeds.
+mkdir -p data/uploads
+aws s3 sync s3://beautycode-ge-backups/uploads/ ./data/uploads --region eu-central-1
+sudo chown -R 1000:1000 data/uploads
+# Restart only after both steps succeed.
 sudo docker compose up -d app
 curl --fail https://beautycode.ge/healthz
 ```
 
 For a local export, replace the `s3:...` source with `/data/export.db`. Restore validates integrity, foreign keys, required tables, and schema version before touching the destination. It saves an existing database as `*.before-restore-*.db` before replacement. SQLite handles WAL files; do not manually copy or delete live database sidecars during recovery.
 
-For a lost or replacement host, repeat host setup, restore `.env` and admin credentials, obtain certificates, and build the app image. Restore the compatible snapshot into its data mount before starting the stack. Confirm images still resolve from the retained image bucket through CloudFront.
+For a lost or replacement host, repeat host setup, restore `.env` and admin credentials, obtain certificates, and build the app image. Restore the compatible snapshot and images into the data mount before starting the stack. Do a restore drill once in a while: restore the latest snapshot into an isolated `DB_PATH` and open it.
 
 ### Image storage
 
-Bundled images ship with the app. New admin images are resized and encoded in the browser, then uploaded directly to S3; they do not pass through nginx's request-body limit.
+Bundled images ship with the app. Images added in the admin are resized and encoded in the browser, then uploaded to the app through nginx. The app validates the file and writes it to `data/uploads/`; nginx serves it from disk at `/uploads/<name>`.
 
 ```mermaid
 sequenceDiagram
     participant Admin as Admin browser
-    participant API as Authenticated admin API
-    participant S3 as Private images bucket
-    participant CDN as CloudFront
+    participant Nginx
+    participant App
+    participant Disk as data/uploads
+    participant Customer
     Admin->>Admin: Resize and encode image
-    Admin->>API: Request signed upload policy
-    API-->>Admin: S3 URL, fields, and public image URL
-    Admin->>S3: POST image with signed policy
-    S3-->>Admin: Upload accepted
-    Admin->>API: Save product with image reference
-    Admin->>CDN: Request saved image URL
-    CDN->>S3: Read using origin access control
-    CDN-->>Admin: Image
+    Admin->>Nginx: POST image (Basic Auth, 6 MB limit)
+    Nginx->>App: Forward with trusted admin identity
+    App->>App: Validate type, size, and dimensions
+    App->>Disk: Write under a new unique name
+    App-->>Admin: Public path /uploads/name
+    Admin->>App: Save product with image reference
+    Customer->>Nginx: GET /uploads/name
+    Nginx->>Disk: Read file
+    Nginx-->>Customer: Image, cached for 30 days
 ```
 
-Removing a gallery image removes its database reference, not the S3 object. There is no separate bundled-image publishing command.
+Rules the upload code must follow, because files are served from the same origin as the site:
+
+- Check the real file type from its contents, not the filename or client-supplied type, and accept only raster images (JPEG, PNG, WebP, AVIF). Do not accept SVG.
+- Enforce a size limit in the app (smaller than nginx's 6 MB).
+- Generate the filename on the server (random, with a fixed extension). Never reuse a name or use any part of the client's filename or path.
+- Write to a temporary name, then rename, so nginx never serves a partial file.
+
+nginx caches `/uploads/` as `immutable` for 30 days, which is safe only because a name is never reused. Removing a gallery image removes its database reference, not the file. There is no separate bundled-image publishing command.
 
 ## Troubleshooting
 
@@ -426,18 +437,20 @@ sudo docker compose logs --tail=100 app nginx
 sudo docker compose exec -T nginx nginx -t
 ```
 
-| Symptom | Check |
-| --- | --- |
-| `/healthz` returns 503 or app is unhealthy | App logs, `data/` ownership (UID 1000), migration directory, and database version |
-| New baseline rejects the local database | Stop the local app and reset the disposable old database; do not relabel its schema version |
-| nginx cannot start | Certificate paths, `DOMAIN`, `secrets/htpasswd`, and whether ports 80/443 are already occupied |
-| 502 after restarting the app | App health and logs; nginx resolves the Compose service name periodically |
-| Session Manager cannot connect | Instance profile, SSM agent, subnet route, and outbound access to SSM endpoints |
-| Admin loads but cannot save locally | Expected: development admin is read-only |
-| Production admin returns 403 on save | Browser origin must match `SITE_URL`; access through authenticated nginx |
-| Upload fails with CORS or 403 | `SiteOrigin`, bucket name, instance role, and signed POST fields |
-| Uploaded image does not load | `IMAGES_BASE_URL` must be the CloudFront output, and the distribution must be deployed |
-| Backup fails | S3 bucket/region, role credentials, and free disk space; failed uploads leave local snapshots |
-| Build is killed on `t3.small` | Check host memory and disk; build elsewhere or review a larger instance type |
-| Certificate renewal fails | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook |
-| Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile |
+| Symptom                                           | Check                                                                                                            |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `/healthz` returns 503 or app is unhealthy        | App logs, `data/` ownership (UID 1000), migration directory, and database version                                |
+| New baseline rejects the local database           | Stop the local app and reset the disposable old database; do not relabel its schema version                      |
+| nginx cannot start                                | Certificate paths, `DOMAIN`, `secrets/htpasswd`, and whether ports 80/443 are already occupied                   |
+| 502 after restarting the app                      | App health and logs; nginx resolves the Compose service name periodically                                        |
+| Session Manager cannot connect                    | Instance profile, SSM agent, subnet route, and outbound access to SSM endpoints                                  |
+| Admin loads but cannot save locally               | Expected: development admin is read-only                                                                         |
+| Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx             |
+| Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                           |
+| Upload fails with a permission error              | `data/uploads` must exist and be owned by UID 1000 (`sudo chown -R 1000:1000 data`)                              |
+| Uploaded image returns 404                        | File exists in `data/uploads`; nginx mounts `./data/uploads` at `/srv/uploads`; path starts with `/uploads/`     |
+| Uploaded image returns 403                        | File permissions: files must be world-readable (mode 644) so the nginx container can read them                   |
+| Backup fails                                      | S3 bucket/region, role credentials, `aws` on the host, and free disk space; failed uploads leave local snapshots |
+| Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                |
+| Certificate renewal fails                         | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook                                           |
+| Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile                                  |
