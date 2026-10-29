@@ -11,28 +11,32 @@ export const catalogSearchSchema = z.object({
 
 export type CatalogSearch = z.infer<typeof catalogSearchSchema>;
 
-const newestFirst = (a: PublicProduct, b: PublicProduct) =>
-	(b.created_at ?? "").localeCompare(a.created_at ?? "") || b.id - a.id;
+type Compare = (a: PublicProduct, b: PublicProduct) => number;
 
-const productSorters = {
-	newest: newestFirst,
-	"price-asc": (a: PublicProduct, b: PublicProduct) =>
-		finalPrice(a) - finalPrice(b),
-	"price-desc": (a: PublicProduct, b: PublicProduct) =>
-		finalPrice(b) - finalPrice(a),
+const byPrice: Compare = (a, b) => finalPrice(a) - finalPrice(b);
+
+const sorters: Record<NonNullable<CatalogSearch["sort"]>, Compare> = {
+	newest: (a, b) =>
+		(b.created_at ?? "").localeCompare(a.created_at ?? "") || b.id - a.id,
+	"price-asc": byPrice,
+	"price-desc": (a, b) => byPrice(b, a),
 };
 
 /** Client-side filters. The text query `q` is applied in SQL by the server. */
 export function filterProducts(
 	products: readonly PublicProduct[],
-	search: CatalogSearch,
+	{ category, discount, max, sort = "newest" }: CatalogSearch,
 ): PublicProduct[] {
+	const maxMinor = max === undefined ? Infinity : Math.round(max * 100);
+
 	return products
-		.filter(
-			(product) =>
-				(!search.category || product.category_slug === search.category) &&
-				(!search.discount || finalPrice(product) < product.price_minor) &&
-				(search.max === undefined || finalPrice(product) <= search.max * 100),
-		)
-		.sort(productSorters[search.sort ?? "newest"]);
+		.filter((product) => {
+			const price = finalPrice(product);
+			return (
+				(!category || product.category_slug === category) &&
+				(!discount || price < product.price_minor) &&
+				price <= maxMinor
+			);
+		})
+		.sort(sorters[sort]);
 }

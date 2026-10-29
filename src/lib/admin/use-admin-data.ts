@@ -2,22 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 import type { AuditEntry } from "../../data/audit.ts";
 import type { AdminProduct, Category } from "../../data/catalog.ts";
 import { adminApi } from "./api.ts";
+
+const useAdminQuery = <T>(resource: string, enabled = true) =>
+	useQuery({
+		queryKey: ["admin", resource],
+		queryFn: () => adminApi<T>(resource),
+		enabled,
+		retry: false,
+	});
+
 export function useAdminData(tab: string) {
-	const products = useQuery({
-		queryKey: ["admin", "products"],
-		queryFn: () => adminApi<AdminProduct[]>("products"),
-		retry: false,
-	});
-	const categories = useQuery({
-		queryKey: ["admin", "categories"],
-		queryFn: () => adminApi<Category[]>("categories"),
-		retry: false,
-	});
-	const audit = useQuery({
-		queryKey: ["admin", "audit"],
-		queryFn: () => adminApi<AuditEntry[]>("audit"),
-		enabled: tab === "audit",
-		retry: false,
-	});
-	return { products, categories, audit };
+	return {
+		products: useAdminQuery<AdminProduct[]>("products"),
+		categories: useAdminQuery<Category[]>("categories"),
+		audit: useAdminQuery<AuditEntry[]>("audit", tab === "audit"),
+	};
 }

@@ -14,15 +14,16 @@ export function useImageUpload(
 ) {
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState("");
+
 	async function upload(files: File[]) {
 		if (!files.length || busy) return;
-		if (imageCount + files.length > maxImagesPerProduct) {
-			setError("მაქსიმუმ 12 სურათი");
-			return;
-		}
+		if (imageCount + files.length > maxImagesPerProduct)
+			return setError(`მაქსიმუმ ${maxImagesPerProduct} სურათი`);
+
 		setBusy(true);
 		onBusy(true);
 		setError("");
+
 		const added: EditableImage[] = [];
 		try {
 			for (const file of files)
@@ -31,15 +32,15 @@ export function useImageUpload(
 					url: await uploadImage(file),
 					alt: "",
 				});
-		} catch (error) {
-			setError(
-				error instanceof Error ? error.message : "ატვირთვა ვერ შესრულდა",
-			);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "ატვირთვა ვერ შესრულდა");
 		} finally {
-			onChange((current) => [...current, ...added]);
+			// Keep images that uploaded before a later file failed.
+			if (added.length) onChange((current) => [...current, ...added]);
 			setBusy(false);
 			onBusy(false);
 		}
 	}
+
 	return { busy, error, upload };
 }
