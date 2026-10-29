@@ -16,9 +16,9 @@ export function ServiceBenefits() {
 			>
 				<Truck className="size-6.5 stroke-[1.2] max-[560px]:w-6.25" />
 				<div>
-					<h3 className="mb-1.25 text-[0.9375rem] max-[800px]:text-[0.8125rem] max-[560px]:text-[0.9375rem]">
+					<p className="mb-1.25 text-[0.9375rem] max-[800px]:text-[0.8125rem] max-[560px]:text-[0.9375rem]">
 						უფასო მიწოდება
-					</h3>
+					</p>
 					<p className="m-0 text-[0.8125rem] text-muted-foreground max-[800px]:text-xs max-[560px]:text-[0.8125rem]">
 						მთელ საქართველოში
 					</p>
@@ -30,9 +30,9 @@ export function ServiceBenefits() {
 			>
 				<RotateCcw className="size-6.5 stroke-[1.2] max-[560px]:w-6.25" />
 				<div>
-					<h3 className="mb-1.25 text-[0.9375rem] max-[800px]:text-[0.8125rem] max-[560px]:text-[0.9375rem]">
+					<p className="mb-1.25 text-[0.9375rem] max-[800px]:text-[0.8125rem] max-[560px]:text-[0.9375rem]">
 						დაბრუნების შესაძლებლობა
-					</h3>
+					</p>
 					<p className="m-0 text-[0.8125rem] text-muted-foreground max-[800px]:text-xs max-[560px]:text-[0.8125rem]">
 						გაეცანი დაბრუნების პირობებს
 					</p>
@@ -45,9 +45,9 @@ export function ServiceBenefits() {
 			>
 				<MessageCircle className="size-6.5 stroke-[1.2] max-[560px]:w-6.25" />
 				<div>
-					<h3 className="mb-1.25 text-[0.9375rem] max-[800px]:text-[0.8125rem] max-[560px]:text-[0.9375rem]">
+					<p className="mb-1.25 text-[0.9375rem] max-[800px]:text-[0.8125rem] max-[560px]:text-[0.9375rem]">
 						შენ გვერდით ვართ
-					</h3>
+					</p>
 					<p className="m-0 text-[0.8125rem] text-muted-foreground max-[800px]:text-xs max-[560px]:text-[0.8125rem]">
 						დაგეხმარებით არჩევანში
 					</p>

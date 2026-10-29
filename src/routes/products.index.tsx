@@ -74,7 +74,10 @@ function Catalog() {
 					<p>სცადე სხვა სიტყვა ან შეცვალე ფილტრები.</p>
 				</Card>
 			) : (
-				<ProductGrid products={products} />
+				<div>
+					<h2 className="sr-only">პროდუქტების სია</h2>
+					<ProductGrid products={products} />
+				</div>
 			)}
 		</section>
 	);

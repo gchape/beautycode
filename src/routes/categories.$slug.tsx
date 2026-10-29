@@ -43,6 +43,7 @@ export const Route = createFileRoute("/categories/$slug")({
 				</span>
 				<h1>{category.name}</h1>
 				<p className="mb-8.75 text-muted-foreground">{category.description}</p>
+				<h2 className="sr-only">პროდუქტების სია</h2>
 				<ProductGrid products={products} />
 			</section>
 		);
