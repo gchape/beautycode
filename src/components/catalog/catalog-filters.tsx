@@ -14,14 +14,14 @@ export function CatalogFilters({
 }) {
 	const categories = useCategories();
 	return (
-		<div className="flex flex-wrap items-end gap-5 max-[560px]:grid max-[560px]:grid-cols-2 max-[560px]:gap-x-3 max-[560px]:gap-y-[18px]">
+		<div className="flex flex-wrap items-end gap-5 max-[560px]:grid max-[560px]:grid-cols-2 max-[560px]:gap-x-3 max-[560px]:gap-y-4.5">
 			<Label
-				className="flex flex-col items-stretch gap-[9px] text-sm font-normal"
+				className="flex flex-col items-stretch gap-2.25 text-sm font-normal"
 				htmlFor="category"
 			>
 				კატეგორია
 				<Select
-					className="h-auto min-h-[42px] max-w-[200px] rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm pr-9"
+					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm pr-9"
 					id="category"
 					value={search.category || "all"}
 					onValueChange={(value) =>
@@ -37,12 +37,12 @@ export function CatalogFilters({
 				</Select>
 			</Label>
 			<Label
-				className="flex flex-col items-stretch gap-[9px] text-sm font-normal"
+				className="flex flex-col items-stretch gap-2.25 text-sm font-normal"
 				htmlFor="max-price"
 			>
 				მაქს. ფასი (₾)
 				<Input
-					className="h-auto min-h-[42px] max-w-[200px] rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm md:text-[length:inherit]"
+					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm md:text-[length:inherit]"
 					id="max-price"
 					type="number"
 					min="0"
@@ -55,12 +55,12 @@ export function CatalogFilters({
 				/>
 			</Label>
 			<Label
-				className="flex flex-col items-stretch gap-[9px] text-sm font-normal"
+				className="flex flex-col items-stretch gap-2.25 text-sm font-normal"
 				htmlFor="sort"
 			>
 				დალაგება
 				<Select
-					className="h-auto min-h-[42px] max-w-[200px] rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm pr-9"
+					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm pr-9"
 					id="sort"
 					value={search.sort || "newest"}
 					onValueChange={(value) =>
@@ -76,7 +76,7 @@ export function CatalogFilters({
 			</Label>
 			<Label
 				htmlFor="discount"
-				className="flex gap-[9px] text-sm font-normal min-h-[42px] flex-row items-center self-end max-[560px]:text-[0.8125rem]"
+				className="flex gap-2.25 text-sm font-normal min-h-10.5 flex-row items-center self-end max-[560px]:text-[0.8125rem]"
 			>
 				<Checkbox
 					className="size-4 border border-input data-[state=checked]:border-primary"

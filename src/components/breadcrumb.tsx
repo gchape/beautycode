@@ -12,9 +12,9 @@ export function Breadcrumb({ title }: { title: string }) {
 	return (
 		<BreadcrumbRoot
 			aria-label="გვერდის მდებარეობა"
-			className="mb-[45px] flex flex-wrap gap-[13px] text-sm text-[#846d75] max-[560px]:mb-[30px]"
+			className="mb-11.25 flex flex-wrap gap-3.25 text-sm text-[#846d75] max-[560px]:mb-7.5"
 		>
-			<BreadcrumbList className="gap-[13px] text-inherit sm:gap-[13px]">
+			<BreadcrumbList className="gap-3.25 text-inherit sm:gap-3.25">
 				<BreadcrumbItem>
 					<BreadcrumbLink asChild>
 						<Link to="/">მთავარი</Link>

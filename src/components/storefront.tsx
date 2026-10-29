@@ -7,7 +7,7 @@ import { SiteHeader } from "./layout/site-header.tsx";
 export function Storefront({ children }: { children: ReactNode }) {
 	return (
 		<ChatProvider>
-			<div className="flex min-h-[34px] flex-wrap items-center justify-center gap-[15px] bg-secondary px-4 py-[7px] text-sm tracking-[0.025em] max-[560px]:gap-[7px] max-[560px]:text-xs max-[560px]:[&>span]:hidden">
+			<div className="flex min-h-8.5 flex-wrap items-center justify-center gap-3.75 bg-secondary px-4 py-1.75 text-sm tracking-wide max-[560px]:gap-1.75 max-[560px]:text-xs max-[560px]:[&>span]:hidden">
 				უფასო მიწოდება მთელ საქართველოში
 				<ArrowUpRight size={13} />
 			</div>

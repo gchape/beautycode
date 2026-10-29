@@ -35,7 +35,7 @@ export function MobileMenu() {
 			</SheetTrigger>
 			<SheetContent
 				side="right"
-				className="w-[min(380px,calc(100vw-28px))] max-w-none gap-0 overflow-y-auto px-6 py-[30px] sm:max-w-none"
+				className="w-[min(380px,calc(100vw-28px))] max-w-none gap-0 overflow-y-auto px-6 py-7.5 sm:max-w-none"
 			>
 				<div className="pr-7">
 					<span className="mb-4 block text-[0.6875rem] font-medium tracking-[0.16em] text-muted-foreground">
@@ -74,7 +74,7 @@ function MobileNavigation({ onNavigate }: { onNavigate: () => void }) {
 			aria-label="მობილური ნავიგაცია"
 		>
 			<Link to="/products" search={{}} onClick={onNavigate}>
-				<span className="grid size-[38px] shrink-0 place-items-center rounded-[10px] bg-muted text-primary">
+				<span className="grid size-9.5 shrink-0 place-items-center rounded-[10px] bg-muted text-primary">
 					<Grid2X2 size={20} />
 				</span>
 				<span>ყველა პროდუქტი</span>
@@ -92,7 +92,7 @@ function MobileNavigation({ onNavigate }: { onNavigate: () => void }) {
 						params={{ slug: c.slug }}
 						onClick={onNavigate}
 					>
-						<span className="grid size-[38px] shrink-0 place-items-center rounded-[10px] bg-muted text-primary">
+						<span className="grid size-9.5 shrink-0 place-items-center rounded-[10px] bg-muted text-primary">
 							<Icon size={20} />
 						</span>
 						<span>{c.name}</span>

@@ -41,7 +41,7 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 			</Link>
 			<Button
 				variant="outline"
-				className="mt-[18px] w-full"
+				className="mt-4.5 w-full"
 				onClick={() => openChat(product)}
 				disabled={product.stock_status === "out_of_stock"}
 			>
