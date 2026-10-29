@@ -41,7 +41,7 @@ function Catalog() {
 		search.q || search.category || search.discount || search.max !== undefined,
 	);
 	return (
-		<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-[25px] pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
+		<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
 			<Breadcrumb title="ყველა პროდუქტი" />
 			<span className="block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
 				იპოვე შენი სილამაზის კოდი
@@ -68,7 +68,7 @@ function Catalog() {
 				</Button>
 			</div>
 			{!products.length && hasFilters ? (
-				<Card className="block rounded-lg border border-border bg-[#faf6f6] px-[22px] py-[55px] text-center shadow-none [&>svg]:mx-auto [&>svg]:mb-5 [&>svg]:text-[#a77a8a] [&_h2]:text-[1.375rem] [&_p]:text-[0.9375rem] [&_p]:text-muted-foreground max-[560px]:px-[18px] max-[560px]:py-10 max-[560px]:[&_h2]:text-[1.1875rem]">
+				<Card className="block rounded-lg border border-border bg-[#faf6f6] px-5.5 py-13.75 text-center shadow-none [&>svg]:mx-auto [&>svg]:mb-5 [&>svg]:text-[#a77a8a] [&_h2]:text-[1.375rem] [&_p]:text-[0.9375rem] [&_p]:text-muted-foreground max-[560px]:px-[18px] max-[560px]:py-10 max-[560px]:[&_h2]:text-[1.1875rem]">
 					<Search size={32} />
 					<h2>პროდუქტი ვერ მოიძებნა</h2>
 					<p>სცადე სხვა სიტყვა ან შეცვალე ფილტრები.</p>
