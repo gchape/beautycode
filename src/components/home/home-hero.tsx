@@ -4,12 +4,12 @@ import { Button } from "../ui/button.tsx";
 
 export function HomeHero() {
 	return (
-		<section className="grid min-h-138.75 grid-cols-2 overflow-hidden rounded-xl bg-rose-surface max-[800px]:min-h-117.5 max-[560px]:flex max-[560px]:flex-col mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)]">
-			<div className="relative z-1 pt-16.5 pb-13.75 pl-15 max-[1100px]:pl-9.5 max-[800px]:pt-11.25 max-[800px]:pb-8.75 max-[800px]:pl-1.75 max-[560px]:px-6.25 max-[560px]:pt-8.75 max-[560px]:pb-0">
+		<section className="grid min-h-138.75 grid-cols-2 overflow-hidden rounded-xl bg-rose-surface max-[800px]:min-h-117.5 max-[800px]:flex max-[800px]:flex-col mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)]">
+			<div className="relative z-1 pt-16.5 pb-13.75 pl-15 max-[1100px]:pl-9.5 max-[800px]:pt-11.25 max-[800px]:pb-8.75 max-[800px]:px-8 max-[560px]:px-6.25 max-[560px]:pt-8.75 max-[560px]:pb-0">
 				<span className="flex items-center gap-3 text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
 					<span className="h-px w-6.5 bg-[#985f70]" /> შენი ყოველდღიური რიტუალი
 				</span>
-				<h1 className="mt-7.5 mb-5.5 text-[clamp(36px,4vw,57px)] leading-normal tracking-[-0.04em] max-[1100px]:text-[2.75rem] max-[800px]:text-4xl max-[560px]:mt-5.75 max-[560px]:mb-4.5 max-[560px]:text-[2.625rem]">
+				<h1 className="mt-7.5 mb-5.5 text-[clamp(36px,4vw,57px)] leading-normal tracking-[-0.04em] max-[1100px]:text-[2.75rem] max-[800px]:text-4xl max-[560px]:mt-5.75 max-[560px]:mb-4.5 max-[560px]:text-[clamp(1.75rem,8vw,2.625rem)]">
 					სილამაზე იწყება
 					<br />
 					<em className="text-[#9e627b] not-italic">შენით.</em>
@@ -28,7 +28,7 @@ export function HomeHero() {
 					შერჩეული შენთვის · ზრუნვით გამოგზავნილი
 				</span>
 			</div>
-			<div className="relative isolate min-h-138.75 bg-[radial-gradient(ellipse_at_60%_45%,#fff9f7_0%,transparent_65%)] max-[800px]:min-h-117.5 max-[600px]:min-h-90">
+			<div className="relative isolate min-h-138.75 bg-[radial-gradient(ellipse_at_60%_45%,#fff9f7_0%,transparent_65%)] max-[800px]:min-h-100 max-[600px]:min-h-80">
 				<span
 					className="absolute top-11.25 right-8.75 bottom-16.25 left-8.75 -rotate-20 rounded-full border border-[#d8b8c6]"
 					aria-hidden="true"

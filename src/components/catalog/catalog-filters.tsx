@@ -14,14 +14,14 @@ export function CatalogFilters({
 }) {
 	const categories = useCategories();
 	return (
-		<div className="flex flex-wrap items-end gap-5 max-[560px]:grid max-[560px]:grid-cols-2 max-[560px]:gap-x-3 max-[560px]:gap-y-4.5">
+		<div className="flex flex-wrap items-end gap-5 max-[560px]:grid max-[560px]:grid-cols-2 max-[400px]:grid-cols-1 max-[560px]:gap-x-3 max-[560px]:gap-y-4.5">
 			<Label
-				className="flex flex-col items-stretch gap-2.25 text-sm font-normal"
+				className="flex min-w-0 flex-col items-stretch gap-2.25 text-sm font-normal"
 				htmlFor="category"
 			>
 				კატეგორია
 				<Select
-					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm pr-9"
+					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-base pr-9"
 					id="category"
 					value={search.category || "all"}
 					onValueChange={(value) =>
@@ -37,12 +37,12 @@ export function CatalogFilters({
 				</Select>
 			</Label>
 			<Label
-				className="flex flex-col items-stretch gap-2.25 text-sm font-normal"
+				className="flex min-w-0 flex-col items-stretch gap-2.25 text-sm font-normal"
 				htmlFor="max-price"
 			>
 				მაქს. ფასი (₾)
 				<Input
-					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm md:text-[length:inherit]"
+					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-base md:text-[length:inherit]"
 					id="max-price"
 					type="number"
 					min="0"
@@ -55,12 +55,12 @@ export function CatalogFilters({
 				/>
 			</Label>
 			<Label
-				className="flex flex-col items-stretch gap-2.25 text-sm font-normal"
+				className="flex min-w-0 flex-col items-stretch gap-2.25 text-sm font-normal"
 				htmlFor="sort"
 			>
 				დალაგება
 				<Select
-					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-sm pr-9"
+					className="h-auto min-h-10.5 max-w-50 rounded-[5px] border border-input bg-background px-3 py-2 text-[length:inherit] text-foreground shadow-none max-[560px]:w-full max-[560px]:min-w-0 max-[560px]:max-w-none max-[560px]:text-base pr-9"
 					id="sort"
 					value={search.sort || "newest"}
 					onValueChange={(value) =>

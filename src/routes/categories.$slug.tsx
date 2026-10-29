@@ -36,15 +36,13 @@ export const Route = createFileRoute("/categories/$slug")({
 	component: () => {
 		const { category, products } = Route.useLoaderData();
 		return (
-			<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-[25px] pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
+			<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
 				<Breadcrumb title={category.name} />
 				<span className="block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
 					BEAUTY CODE-ის კოლექცია
 				</span>
 				<h1>{category.name}</h1>
-				<p className="mb-[35px] text-muted-foreground">
-					{category.description}
-				</p>
+				<p className="mb-8.75 text-muted-foreground">{category.description}</p>
 				<ProductGrid products={products} />
 			</section>
 		);

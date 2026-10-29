@@ -27,7 +27,7 @@ export function MobileMenu() {
 				<Button
 					variant="ghost"
 					size="icon"
-					className="size-9 min-h-9 items-center justify-center gap-0 bg-transparent p-0 hidden max-[1100px]:inline-flex"
+					className="size-11 min-h-11 items-center justify-center gap-0 bg-transparent p-0 hidden max-[1100px]:inline-flex"
 					aria-label="მენიუ"
 				>
 					<Menu />

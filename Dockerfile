@@ -5,8 +5,9 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
 ARG SITE_URL
+ARG VITE_CRISP_WEBSITE_ID
 RUN test -n "$SITE_URL"
-ENV VITE_SITE_URL=$SITE_URL
+ENV VITE_SITE_URL=$SITE_URL VITE_CRISP_WEBSITE_ID=$VITE_CRISP_WEBSITE_ID
 RUN pnpm build && pnpm prune --prod
 
 FROM node:26.13-alpine

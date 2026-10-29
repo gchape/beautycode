@@ -20,13 +20,13 @@ pnpm dev
 
 Open <http://localhost:3000> or <http://localhost:3000/admin>. Development admin has no login prompt and allows product/category edits, image uploads, and local backups. Keep the dev server on localhost: these changes are temporary and are not production data.
 
-| Behavior             | Development                     | Production with Docker Compose                                  |
-| -------------------- | ------------------------------- | --------------------------------------------------------------- |
-| Admin authentication | No login; localhost only        | nginx Basic Auth                                                |
-| Database             | `data-dev/beautycode.db`        | Host `./data/beautycode.db`, mounted as `/data/beautycode.db`   |
-| Admin writes         | Temporary local changes         | Authenticated, same-origin requests                             |
-| Image uploads        | `data-dev/uploads/`              | `./data/uploads/`, served by nginx at `/uploads/`               |
-| Backup               | Local `data-dev/backups/*.db`   | Upload to S3; local snapshot removed after success              |
+| Behavior             | Development                   | Production with Docker Compose                                |
+| -------------------- | ----------------------------- | ------------------------------------------------------------- |
+| Admin authentication | No login; localhost only      | nginx Basic Auth                                              |
+| Database             | `data-dev/beautycode.db`      | Host `./data/beautycode.db`, mounted as `/data/beautycode.db` |
+| Admin writes         | Temporary local changes       | Authenticated, same-origin requests                           |
+| Image uploads        | `data-dev/uploads/`           | `./data/uploads/`, served by nginx at `/uploads/`             |
+| Backup               | Local `data-dev/backups/*.db` | Upload to S3; local snapshot removed after success            |
 
 Vite sets `NODE_ENV=development`. Development writes need no AWS credentials. The default database, uploaded images, and local backups are kept under the ignored `data-dev/` directory. Set `DB_PATH` or `UPLOADS_DIR` to override either path. To discard development changes, stop the dev server and run:
 
@@ -218,12 +218,14 @@ Edit `.env` with your real `DOMAIN` and the Terraform outputs recorded in step 2
 
 | Variable            | Example / source            | Purpose                                                |
 | ------------------- | --------------------------- | ------------------------------------------------------ |
-| `DOMAIN`            | `beautycode.ge`             | nginx hostname; Compose derives the app's HTTPS origin |
+| `DOMAIN`            | `beautycode.com.ge`         | nginx hostname; Compose derives the app's HTTPS origin |
 | `AWS_REGION`        | Terraform `aws_region`      | Same region as the infrastructure                      |
 | `S3_BACKUPS_BUCKET` | Terraform `backups_bucket`  | Database snapshots and image backups                   |
 | `DB_PATH`           | `/data/beautycode.db`       | SQLite file; set by Compose                            |
 | `UPLOADS_DIR`       | `/data/uploads`             | Uploaded images; set by Compose                        |
 | `MIGRATIONS_DIR`    | `/app/migrations` in Docker | SQL directory inside the container                     |
+
+Set `VITE_CRISP_WEBSITE_ID=58954312-2322-4477-a9b3-21af29c98ff1` in `.env` for the Crisp chat widget. This is a public website identifier, not a secret. The official `crisp-sdk-web` package loads the widget; product chat buttons send the product name, current price, and URL into the conversation. General contact buttons only open chat. Compose passes the identifier into the frontend build, so rebuild the image after changing it. No private Crisp API key is needed or exposed.
 
 The server parses environment variables with Zod on the first request and reports invalid values. Production requires `SITE_URL`, `AWS_REGION`, `S3_BACKUPS_BUCKET`, `DB_PATH`, and `UPLOADS_DIR`; Compose derives `SITE_URL` and the build's `VITE_SITE_URL` from `DOMAIN`. Compose overrides `MIGRATIONS_DIR` with `/app/migrations` inside the container. It also sets `NODE_ENV`, `HOST`, `PORT`, `DB_PATH`, and `UPLOADS_DIR`. Changing `DOMAIN` updates nginx and the app's canonical origin on the next build and restart.
 
@@ -235,13 +237,13 @@ Wait for DNS to point to the Elastic IP. With port 80 free, run on EC2:
 
 ```sh
 cd /srv/beautycode
-sudo certbot certonly --standalone -d beautycode.ge
+sudo certbot certonly --standalone -d beautycode.com.ge
 sudo mkdir -p /var/www/html
 sudo docker compose config --quiet
 sudo docker compose up -d --build
 sudo docker compose ps
 sudo docker compose exec -T nginx nginx -t
-curl --fail https://beautycode.ge/healthz
+curl --fail https://beautycode.com.ge/healthz
 ```
 
 Use your actual domain throughout. The certificate must exist before nginx starts because its configuration references `/etc/letsencrypt/live/DOMAIN/`. Expected health response: `{"status":"ok"}`.
@@ -267,14 +269,14 @@ sequenceDiagram
 
 The nginx container renders `nginx.conf` with `DOMAIN` on startup. `NGINX_ENVSUBST_FILTER` preserves nginx's own `$host` and `$request_uri` variables. The app health check exercises the database before nginx starts.
 
-Verify storefront browsing, `/admin` authentication, a product edit, and an image upload. Confirm the uploaded image loads from `https://beautycode.ge/uploads/...` and that the file exists under `data/uploads/`. A successful health check does not validate uploads or backups, so also run `./scripts/backup.sh` once by hand.
+Verify storefront browsing, `/admin` authentication, a product edit, and an image upload. Confirm the uploaded image loads from `https://beautycode.com.ge/uploads/...` and that the file exists under `data/uploads/`. A successful health check does not validate uploads or backups, so also run `./scripts/backup.sh` once by hand.
 
 ### 6. Configure certificate renewal
 
 After nginx starts, use its shared ACME webroot for future renewals:
 
 ```sh
-sudo certbot reconfigure --cert-name beautycode.ge --webroot -w /var/www/html
+sudo certbot reconfigure --cert-name beautycode.com.ge --webroot -w /var/www/html
 sudo certbot renew --dry-run
 ```
 
@@ -368,7 +370,7 @@ aws s3 sync "s3://${S3_BACKUPS_BUCKET}/uploads/" ./data/uploads --region "$AWS_R
 sudo chown -R 1000:1000 data/uploads
 # Restart only after both steps succeed.
 sudo docker compose up -d app
-curl --fail https://beautycode.ge/healthz
+curl --fail https://beautycode.com.ge/healthz
 ```
 
 For a local export, replace the `s3:...` source with `/data/export.db`. Restore validates integrity, foreign keys, required tables, and schema version before touching the destination. It saves an existing database as `*.before-restore-*.db` before replacement. SQLite handles WAL files; do not manually copy or delete live database sidecars during recovery.
@@ -417,20 +419,20 @@ sudo docker compose logs --tail=100 app nginx
 sudo docker compose exec -T nginx nginx -t
 ```
 
-| Symptom                                           | Check                                                                                                            |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `/healthz` returns 503 or app is unhealthy        | App logs, `data/` ownership (UID 1000), migration directory, and database version                                |
-| New baseline rejects the local database           | Stop the local app and reset the disposable old database; do not relabel its schema version                      |
-| nginx cannot start                                | Certificate paths, `DOMAIN`, `secrets/htpasswd`, and whether ports 80/443 are already occupied                   |
-| 502 after restarting the app                      | App health and logs; nginx resolves the Compose service name periodically                                        |
-| Session Manager cannot connect                    | Instance profile, SSM agent, subnet route, and outbound access to SSM endpoints                                  |
+| Symptom                                           | Check                                                                                                                 |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `/healthz` returns 503 or app is unhealthy        | App logs, `data/` ownership (UID 1000), migration directory, and database version                                     |
+| New baseline rejects the local database           | Stop the local app and reset the disposable old database; do not relabel its schema version                           |
+| nginx cannot start                                | Certificate paths, `DOMAIN`, `secrets/htpasswd`, and whether ports 80/443 are already occupied                        |
+| 502 after restarting the app                      | App health and logs; nginx resolves the Compose service name periodically                                             |
+| Session Manager cannot connect                    | Instance profile, SSM agent, subnet route, and outbound access to SSM endpoints                                       |
 | Admin write fails in development                  | Use `pnpm dev` on localhost so the request has a same-origin `Origin` header; dev writes require same-origin requests |
-| Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx             |
-| Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                           |
-| Upload fails with a permission error              | `data/uploads` must exist and be owned by UID 1000 (`sudo chown -R 1000:1000 data`)                              |
-| Uploaded image returns 404                        | File exists in `data/uploads`; nginx mounts `./data/uploads` at `/srv/uploads`; path starts with `/uploads/`     |
-| Uploaded image returns 403                        | File permissions: files must be world-readable (mode 644) so the nginx container can read them                   |
-| Backup fails                                      | S3 bucket/region, role credentials, `aws` on the host, and free disk space; failed uploads leave local snapshots |
-| Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                |
-| Certificate renewal fails                         | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook                                           |
-| Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile                                  |
+| Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx                  |
+| Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                                |
+| Upload fails with a permission error              | `data/uploads` must exist and be owned by UID 1000 (`sudo chown -R 1000:1000 data`)                                   |
+| Uploaded image returns 404                        | File exists in `data/uploads`; nginx mounts `./data/uploads` at `/srv/uploads`; path starts with `/uploads/`          |
+| Uploaded image returns 403                        | File permissions: files must be world-readable (mode 644) so the nginx container can read them                        |
+| Backup fails                                      | S3 bucket/region, role credentials, `aws` on the host, and free disk space; failed uploads leave local snapshots      |
+| Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                     |
+| Certificate renewal fails                         | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook                                                |
+| Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile                                       |

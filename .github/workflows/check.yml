@@ -33,4 +33,5 @@ jobs:
       - run: pnpm check
       - run: pnpm build
         env:
-          DOMAIN: beautycode.ge
+          DOMAIN: beautycode.com.ge
+          VITE_CRISP_WEBSITE_ID: 58954312-2322-4477-a9b3-21af29c98ff1

@@ -33,19 +33,19 @@ export function CategoryShowcase() {
 						<Card
 							asChild
 							key={c.slug}
-							className={`group relative flex min-h-70 flex-col items-start gap-0 overflow-hidden rounded-lg border-0 px-5.5 py-6.25 shadow-none max-[800px]:min-h-65 max-[800px]:p-5 max-[560px]:min-h-10 max-[560px]:justify-end max-[560px]:p-6.25 ${categoryColors[i % categoryColors.length]}`}
+							className={`group grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_1fr_auto] items-start gap-x-4 gap-y-5 rounded-lg border-0 p-6 shadow-none transition-shadow hover:shadow-md max-[800px]:p-5 ${categoryColors[i % categoryColors.length]}`}
 						>
 							<Link to="/categories/$slug" params={{ slug: c.slug }}>
-								<span className="font-[Georgia,serif] text-[0.9375rem] text-[#987783] max-[560px]:absolute max-[560px]:top-5 max-[560px]:left-6.25">
+								<span className="self-center font-[Georgia,serif] text-[0.9375rem] text-[#987783]">
 									{String(i + 1).padStart(2, "0")}
 								</span>
 								<Icon
-									className="my-3.75 mb-6 self-center text-[#84616a] transition-transform duration-300 group-hover:-rotate-8 group-hover:scale-[1.08] max-[560px]:absolute max-[560px]:top-6.25 max-[560px]:right-6.25 max-[560px]:m-0 max-[560px]:size-16.25"
+									className="size-16 text-[#84616a] max-[560px]:size-12"
 									size={75}
 									strokeWidth={0.8}
 								/>
-								<div>
-									<h3 className="mb-2 text-[1.3125rem] max-[800px]:text-lg max-[560px]:text-[1.3125rem]">
+								<div className="col-span-2 min-w-0">
+									<h3 className="mb-2 text-xl leading-relaxed wrap-anywhere max-[800px]:text-lg">
 										{c.name}
 									</h3>
 									<p className="m-0 text-[0.8125rem] text-[#79656a]">
@@ -53,7 +53,7 @@ export function CategoryShowcase() {
 									</p>
 								</div>
 								<ArrowUpRight
-									className="absolute right-6.25 bottom-8 max-[800px]:right-3.75 max-[800px]:bottom-17.5 max-[560px]:right-6.25 max-[560px]:bottom-5.5 max-[560px]:w-4.5"
+									className="col-start-2 self-end justify-self-end"
 									size={22}
 								/>
 							</Link>

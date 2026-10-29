@@ -9,20 +9,20 @@ export function SiteHeader() {
 	const categories = useCategories();
 	const openChat = useOpenChat();
 	return (
-		<header className="flex h-28 items-center justify-between gap-6 max-[1100px]:gap-3.75 max-[560px]:h-21.75 max-[560px]:gap-2 mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)]">
+		<header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0 py-5 max-[560px]:gap-x-2 max-[560px]:py-3 mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)]">
 			<Link
 				to="/"
-				className="flex shrink-0 items-center gap-2.25"
+				className="flex min-w-0 w-fit items-center gap-2.25"
 				aria-label="Beauty Code, მთავარი"
 			>
 				<img
-					className="size-17 object-cover mix-blend-multiply max-[1100px]:size-13.75 max-[560px]:size-11.75"
+					className="size-17 shrink-0 object-cover mix-blend-multiply max-[1100px]:size-13.75 max-[560px]:size-10"
 					src="/logo.jpg"
 					alt="Beauty Code"
 					width="82"
 					height="82"
 				/>
-				<span className="text-[1.0625rem] font-semibold tracking-[0.17em] max-[1100px]:text-[0.9375rem] max-[560px]:text-sm">
+				<span className="min-w-0 text-[1.0625rem] font-semibold tracking-[0.17em] max-[1100px]:text-[0.9375rem] max-[560px]:text-xs max-[560px]:tracking-[0.12em]">
 					BEAUTY CODE
 					<small className="mt-1.75 block text-xs font-normal tracking-[0.06em] max-[560px]:text-[0.6875rem]">
 						სილამაზე შენებურად
@@ -30,7 +30,7 @@ export function SiteHeader() {
 				</span>
 			</Link>
 			<nav
-				className="flex items-center gap-1.5 text-sm leading-[1.6] max-[1100px]:hidden [&_a]:rounded-md [&_a]:px-2.25 [&_a]:py-2 [&_a:hover]:bg-muted [&_a:hover]:text-[#975c70] [&_a[aria-current=page]]:bg-muted [&_a[aria-current=page]]:text-primary"
+				className="site-navigation col-span-2 row-start-2 mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border pt-3 text-sm leading-relaxed max-[1100px]:hidden"
 				aria-label="მთავარი ნავიგაცია"
 			>
 				<Link to="/products" search={{}}>
@@ -42,11 +42,11 @@ export function SiteHeader() {
 					</Link>
 				))}
 			</nav>
-			<div className="flex items-center gap-3.75 max-[1100px]:gap-2 max-[560px]:gap-1">
+			<div className="col-start-2 row-start-1 flex shrink-0 items-center gap-3 max-[560px]:gap-0">
 				<Link
 					to="/products"
 					search={{}}
-					className="inline-flex size-9 min-h-9 items-center justify-center gap-0 bg-transparent p-0"
+					className="inline-flex size-11 items-center justify-center rounded-md hover:bg-muted"
 					aria-label="პროდუქტის ძებნა"
 				>
 					<Search size={21} />

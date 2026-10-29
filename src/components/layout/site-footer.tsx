@@ -7,7 +7,7 @@ export function SiteFooter() {
 	const categories = useCategories();
 	return (
 		<footer className="border-t border-border bg-[#f8f3f4] pt-12.5">
-			<div className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] grid grid-cols-[1.2fr_0.9fr_0.9fr_1.3fr] gap-8.75 [&_h3]:mb-5 [&_h3]:text-[0.9375rem] [&_p]:mt-4.5 [&_p]:text-[0.8125rem] [&_p]:leading-8 [&_p]:text-muted-foreground max-[800px]:grid-cols-2 max-[560px]:gap-x-3.75 max-[560px]:gap-y-7.5 max-[560px]:[&>div:first-child]:col-span-full max-[560px]:[&>div:last-child]:col-span-full">
+			<div className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] grid grid-cols-[1.2fr_0.9fr_0.9fr_1.3fr] gap-8.75 [&_h3]:mb-5 [&_h3]:text-[0.9375rem] [&_p]:mt-4.5 [&_p]:text-[0.8125rem] [&_p]:leading-8 [&_p]:text-muted-foreground max-[1100px]:grid-cols-2 max-[560px]:gap-x-3.75 max-[560px]:gap-y-7.5 max-[560px]:[&>div:first-child]:col-span-full max-[560px]:[&>div:last-child]:col-span-full">
 				<div>
 					<Link
 						to="/"

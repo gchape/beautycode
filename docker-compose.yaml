@@ -4,6 +4,7 @@ services:
       context: .
       args:
         SITE_URL: https://${DOMAIN:?Set DOMAIN in .env}
+        VITE_CRISP_WEBSITE_ID: ${VITE_CRISP_WEBSITE_ID:?Set VITE_CRISP_WEBSITE_ID in .env}
     restart: unless-stopped
     env_file: .env
     environment:

@@ -14,7 +14,7 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 	const image = coverImage(product);
 	const discount = discountPercent(product);
 	return (
-		<Card className="block border-0 bg-transparent p-0 shadow-none">
+		<Card className="block min-w-0 wrap-anywhere border-0 bg-transparent p-0 shadow-none">
 			<Link to="/products/$slug" params={{ slug: product.slug }}>
 				<div className="relative grid aspect-square place-items-center overflow-hidden rounded-[9px] bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-6">
 					{image ? (
@@ -41,7 +41,7 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 			</Link>
 			<Button
 				variant="outline"
-				className="mt-4.5 w-full"
+				className="mt-4.5 w-full gap-2 px-3 max-[560px]:text-xs"
 				onClick={() => openChat(product)}
 				disabled={product.stock_status === "out_of_stock"}
 			>

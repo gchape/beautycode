@@ -7,6 +7,7 @@ import { ServiceBenefits } from "../components/home/service-benefits.tsx";
 import { site } from "../data/site.ts";
 import { absoluteUrl, seoHead } from "../lib/seo.ts";
 import { getFeaturedProducts } from "../server/catalog.ts";
+
 export const Route = createFileRoute("/")({
 	loader: () => getFeaturedProducts(),
 	component: Home,
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/")({
 			},
 		}),
 });
+
 function Home() {
 	const products = Route.useLoaderData();
 	return (

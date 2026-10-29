@@ -13,6 +13,7 @@ import {
 } from "../lib/catalog-search.ts";
 import { seoHead } from "../lib/seo.ts";
 import { getProducts } from "../server/catalog.ts";
+
 export const Route = createFileRoute("/products/")({
 	validateSearch: catalogSearchSchema,
 	loaderDeps: ({ search }) => ({ q: search.q }),
@@ -54,7 +55,7 @@ function Catalog() {
 				}}
 			/>
 			<CatalogFilters search={search} onChange={update} />
-			<div className="my-[30px] flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+			<div className="my-7.5 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
 				<span>{products.length} პროდუქტი</span>
 				<Button
 					className="min-h-0 bg-transparent p-0 text-[length:inherit] underline hover:bg-transparent"
