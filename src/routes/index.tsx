@@ -44,8 +44,8 @@ function Home() {
 		<>
 			<HomeHero />
 			<ServiceBenefits />
-			<CategoryShowcase />
 			<FeaturedProducts products={products} />
+			<CategoryShowcase />
 			<BrandStory />
 			<HomeFaq />
 		</>

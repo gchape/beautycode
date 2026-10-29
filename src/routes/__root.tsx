@@ -74,7 +74,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<a
 					href="#main"
-					className="fixed -top-[100px] left-[15px] z-10 bg-white p-3 focus:top-2.5"
+					className="fixed -top-25 left-3.75 z-10 bg-white p-3 focus:top-2.5"
 				>
 					მთავარ შინაარსზე გადასვლა
 				</a>
