@@ -7,6 +7,7 @@ Georgian product storefront and catalog admin built with React, TanStack Start, 
 - [Production deployment](#production-deployment)
 - [Releases and infrastructure updates](#releases-and-infrastructure-updates)
 - [Backups and recovery](#backups-and-recovery)
+- [Image storage and Cloudinary](#image-storage-and-cloudinary)
 - [Troubleshooting](#troubleshooting)
 
 ## Local development
@@ -18,27 +19,27 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open <http://localhost:3000> or <http://localhost:3000/admin>. Development admin has no login prompt and allows product/category edits, image uploads, and local backups. Keep the dev server on localhost: these changes are temporary and are not production data.
+Open <http://localhost:3000> or <http://localhost:3000/admin>. Development admin has no login prompt and allows product/category edits and local backups. Image uploads require Cloudinary credentials and create real remote assets, even in development. Keep the dev server on localhost and use a separate Cloudinary environment for development uploads.
 
 | Behavior             | Development                   | Production with Docker Compose                                |
 | -------------------- | ----------------------------- | ------------------------------------------------------------- |
 | Admin authentication | No login; localhost only      | nginx Basic Auth                                              |
 | Database             | `data-dev/beautycode.db`      | Host `./data/beautycode.db`, mounted as `/data/beautycode.db` |
 | Admin writes         | Temporary local changes       | Authenticated, same-origin requests                           |
-| Image uploads        | Cloudinary | Cloudinary |
+| Image uploads        | Cloudinary                    | Cloudinary                                                    |
 | Backup               | Local `data-dev/backups/*.db` | Upload to S3; local snapshot removed after success            |
 
-Vite sets `NODE_ENV=development`. Development writes need no AWS credentials. The default database, uploaded images, and local backups are kept under the ignored `data-dev/` directory. Set `DB_PATH` or `UPLOADS_DIR` to override either path. To discard development changes, stop the dev server and run:
+Vite sets `NODE_ENV=development`. Local catalog writes and backups need no AWS credentials. The default database and local backups are kept under the ignored `data-dev/` directory; set `DB_PATH` to override the database location. New images are stored in Cloudinary. To discard development catalog changes, stop the dev server and run:
 
 ```sh
 pnpm clean:dev
 ```
 
-This removes the default dev database, uploaded images, and backups; it does not touch production's `data/` directory. If you override `DB_PATH` or `UPLOADS_DIR` to a location outside `data-dev/`, remove those custom dev files separately. Use the same `DB_PATH` for dev, backup, and restore commands if you override the default. Never point development at the production database or uploads directory.
+This removes `data-dev/`, including its database, backups, and any legacy local uploads. It does not touch production's `data/` directory or Cloudinary assets. Remove custom development files outside `data-dev/` separately. Use the same `DB_PATH` for dev, backup, and restore commands; never point development at the production database.
 
 ### Schema and reset
 
-[`migrations/0001_init.sql`](migrations/0001_init.sql) creates the complete schema and seeds six products and four categories. Migrations run when the database is first opened; applied migrations never run again. For future schema changes, add a numbered migration instead of editing an applied one.
+[`migrations/0001_init.sql`](migrations/0001_init.sql) creates the complete schema and seeds six products and four categories. The seed currently contains placeholder Cloudinary URLs: replace them before initializing a fresh database. For an existing database, update `product_images.url` directly or upload replacements in the admin editor. Migrations run when the database is first opened; applied migrations never run again. For future schema changes, add a numbered migration instead of editing an applied one.
 
 This repository now uses a **fresh schema-version-1 baseline**. Databases and snapshots from the previous three-migration history must not be reused. To reset the disposable development catalog, stop the dev server and remove all development data:
 
@@ -46,7 +47,7 @@ This repository now uses a **fresh schema-version-1 baseline**. Databases and sn
 pnpm clean:dev
 ```
 
-This removes the dev database, its SQLite sidecars, uploaded images, and local backups. It does not touch production data or bundled images. Do not use it for production recovery; use [snapshot restore](#restore-a-snapshot).
+This removes the dev database, its SQLite sidecars, local backups, and any legacy files under `data-dev/`. It does not touch production data or Cloudinary assets. Do not use it for production recovery; use [snapshot restore](#restore-a-snapshot).
 
 ### Local backup and restore
 
@@ -102,27 +103,27 @@ Public queries return only published products in active categories. Draft and ar
 
 Product saves validate input, update product fields and gallery references, and record an audit entry in one transaction. Search triggers keep SQLite FTS synchronized. Existing product slugs remain stable when names change.
 
-| Location                            | Responsibility                                                          |
-| ----------------------------------- | ----------------------------------------------------------------------- |
-| `src/routes/`                       | Pages, loaders, and HTTP endpoints                                      |
-| `src/components/admin/`             | Admin overview, filters, tables, and editors                            |
-| `src/components/ui/`                | Shared Tailwind-styled primitives, including Radix dropdowns            |
-| `src/lib/admin/`                    | Browser API calls, image optimization, form conversion, validation      |
-| `src/server/admin/`                 | Authentication, error responses, persistence, and audit                 |
-| `src/server/`                       | Database reads, migrations, snapshots, upload storage, and S3 backups   |
-| `src/styles.css`                    | Theme tokens, base styles, and reduced-motion defaults                  |
-| `migrations/`                       | Versioned SQL schema and initial catalog                                |
-| `scripts/`                          | SQLite backup and restore CLI; `backup.sh` and `deploy.sh` for the host |
-| `infra/terraform/`                  | VPC, EC2 host, instance role, Elastic IP, and S3 backups bucket         |
-| `docker-compose.yaml`, `Dockerfile` | Production containers and app build                                     |
-| `nginx.conf`                        | TLS, proxying, admin authentication, and `/uploads/`                    |
-| `tests/`                            | Catalog, authorization, backup, search, and SEO checks                  |
+| Location                            | Responsibility                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| `src/routes/`                       | Pages, loaders, and HTTP endpoints                                        |
+| `src/components/admin/`             | Admin overview, filters, tables, and editors                              |
+| `src/components/ui/`                | Shared Tailwind-styled primitives, including Radix dropdowns              |
+| `src/lib/admin/`                    | Browser API calls, original-file uploads, form conversion, validation     |
+| `src/server/admin/`                 | Authentication, error responses, persistence, and audit                   |
+| `src/server/`                       | Database reads, migrations, snapshots, Cloudinary uploads, and S3 backups |
+| `src/styles.css`                    | Theme tokens, base styles, and reduced-motion defaults                    |
+| `migrations/`                       | Versioned SQL schema and initial catalog                                  |
+| `scripts/`                          | SQLite backup and restore CLI; `backup.sh` and `deploy.sh` for the host   |
+| `infra/terraform/`                  | VPC, EC2 host, instance role, Elastic IP, and S3 backups bucket           |
+| `docker-compose.yaml`, `Dockerfile` | Production containers and app build                                       |
+| `nginx.conf`                        | TLS, proxying, admin authentication, and `/uploads/`                      |
+| `tests/`                            | Catalog, authorization, backup, search, and SEO checks                    |
 
 Component styling lives in Tailwind classes. Edit route files rather than generated `src/routeTree.gen.ts`.
 
 ## Production deployment
 
-The deployment uses one EC2 host and one app process. SQLite and uploaded product images live on the host disk, outside the containers. Recreating containers preserves them; replacing the EC2 instance requires data recovery. This is a single-host deployment, without a load balancer, CDN, or automatic failover.
+The deployment uses one EC2 host and one app process. SQLite and legacy uploads live on the host disk, outside the containers. New product images are stored and delivered by Cloudinary. Recreating containers preserves the local data; replacing the EC2 instance requires database recovery. The app is a single-host deployment without a load balancer or automatic failover; Cloudinary handles image delivery separately.
 
 ```mermaid
 flowchart LR
@@ -131,16 +132,18 @@ flowchart LR
     subgraph Host["EC2: Amazon Linux 2023 / t3.small"]
         Proxy["nginx: public ports 80 and 443"] -->|"Private Compose network: app:3000"| App["Node 26 / TanStack Start"]
         Proxy -->|"/uploads/ read-only"| Disk
-        App -->|"/data bind mount"| Disk[("Encrypted EBS: ./data database and uploads")]
+        App -->|"/data bind mount"| Disk[("Encrypted EBS: database and legacy uploads")]
         Role["EC2 instance role / IMDSv2"] -.->|"Temporary AWS credentials"| App
         Cron["Daily backup script"] --> Disk
     end
-    Cron -->|"DB snapshots and image sync"| Backups[("Private S3 backups bucket")]
+    Cron -->|"DB snapshots and legacy image sync"| Backups[("Private S3 backups bucket")]
+    App -->|"Image uploads"| Cloudinary["Cloudinary storage and delivery"]
+    Customer -->|"Optimized images"| Cloudinary
     App -->|"Admin backup button"| Backups
     Operator["Operator / Session Manager"] -.-> Host
 ```
 
-nginx serves the website through the app, and serves uploaded product images directly from disk. The app's port 3000 is not published on the host. nginx sets the trusted admin identity header only after authentication; do not expose the app directly.
+nginx serves the website through the app and legacy `/uploads/` files from disk. Cloudinary serves new product images. The app's port 3000 is not published on the host. nginx sets the trusted admin identity header only after authentication; do not expose the app directly.
 
 ### 1. Prepare AWS and DNS inputs
 
@@ -203,7 +206,7 @@ htpasswd -B -c secrets/htpasswd admin
 sudo chown -R 1000:1000 data
 ```
 
-Replace the angle-bracket placeholders before running these commands. The app container runs as UID 1000, which must be able to write the host data directory and `data/uploads`. Create `data/uploads` yourself, as above: if Docker creates it, it is owned by root and uploads fail. Use `htpasswd -B secrets/htpasswd admin` to change the password later; omit `-c` so you do not recreate the password file.
+Replace the angle-bracket placeholders before running these commands. The app container runs as UID 1000, which must be able to write the host data directory. Create `data/uploads` for the legacy nginx mount and backup script; new uploads do not write there. Use `htpasswd -B secrets/htpasswd admin` to change the password later; omit `-c` so you do not recreate the password file.
 
 ### 4. Configure the application and DNS
 
@@ -214,20 +217,22 @@ cp .env.example .env
 chmod 600 .env
 ```
 
-Edit `.env` with your real `DOMAIN` and the Terraform outputs recorded in step 2. Replace the `S3_BACKUPS_BUCKET` placeholder with the recorded `backups_bucket` value. Preserve `.env` when updating releases.
+Edit `.env` with your real `DOMAIN` and the Terraform outputs recorded in step 2. Replace the `S3_BACKUPS_BUCKET` placeholder with the recorded `backups_bucket` value. Set all three Cloudinary credentials described below before starting production. Preserve `.env` when updating releases.
 
-| Variable            | Example / source            | Purpose                                                |
-| ------------------- | --------------------------- | ------------------------------------------------------ |
-| `DOMAIN`            | `beautycode.com.ge`         | nginx hostname; Compose derives the app's HTTPS origin |
-| `AWS_REGION`        | Terraform `aws_region`      | Same region as the infrastructure                      |
-| `S3_BACKUPS_BUCKET` | Terraform `backups_bucket`  | Database snapshots and image backups                   |
-| `DB_PATH`           | `/data/beautycode.db`       | SQLite file; set by Compose                            |
-| `UPLOADS_DIR`       | `/data/uploads`             | Uploaded images; set by Compose                        |
-| `MIGRATIONS_DIR`    | `/app/migrations` in Docker | SQL directory inside the container                     |
+| Variable                | Example / source            | Purpose                                                |
+| ----------------------- | --------------------------- | ------------------------------------------------------ |
+| `DOMAIN`                | `beautycode.com.ge`         | nginx hostname; Compose derives the app's HTTPS origin |
+| `AWS_REGION`            | Terraform `aws_region`      | Same region as the infrastructure                      |
+| `S3_BACKUPS_BUCKET`     | Terraform `backups_bucket`  | Database snapshots and legacy image backups            |
+| `DB_PATH`               | `/data/beautycode.db`       | SQLite file; set by Compose                            |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary environment      | Image upload destination                               |
+| `CLOUDINARY_API_KEY`    | Cloudinary API credentials  | Server-side upload authentication                      |
+| `CLOUDINARY_API_SECRET` | Cloudinary API credentials  | Server-only secret; never use a `VITE_` prefix         |
+| `MIGRATIONS_DIR`        | `/app/migrations` in Docker | SQL directory inside the container                     |
 
 Set `VITE_CRISP_WEBSITE_ID=58954312-2322-4477-a9b3-21af29c98ff1` in `.env` for the Crisp chat widget. This is a public website identifier, not a secret. The official `crisp-sdk-web` package loads the widget only when a visitor opens chat; product chat buttons send the product name, current price, and URL into the conversation. General contact buttons only open chat. Compose passes the identifier into the frontend build, so rebuild the image after changing it. No private Crisp API key is needed or exposed.
 
-The server parses environment variables with Zod on the first request and reports invalid values. Production requires `SITE_URL`, `AWS_REGION`, `S3_BACKUPS_BUCKET`, `DB_PATH`, and `UPLOADS_DIR`; Compose derives `SITE_URL` and the build's `VITE_SITE_URL` from `DOMAIN`. Compose overrides `MIGRATIONS_DIR` with `/app/migrations` inside the container. It also sets `NODE_ENV`, `HOST`, `PORT`, `DB_PATH`, and `UPLOADS_DIR`. Changing `DOMAIN` updates nginx and the app's canonical origin on the next build and restart.
+The server parses environment variables with Zod on the first request and reports invalid values. Production requires `SITE_URL`, `AWS_REGION`, `S3_BACKUPS_BUCKET`, `DB_PATH`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`; Compose derives `SITE_URL` and the build's `VITE_SITE_URL` from `DOMAIN`. Compose overrides `MIGRATIONS_DIR` with `/app/migrations` inside the container. It also sets `NODE_ENV`, `HOST`, `PORT`, and `DB_PATH`. Compose still supplies `UPLOADS_DIR` for historical compatibility, but the application upload service no longer uses it. Changing `DOMAIN` updates nginx and the app's canonical origin on the next build and restart.
 
 Use the instance role rather than adding AWS access keys to `.env`. Set the domain's A record to `terraform output -raw public_ip`. The browser origin must match the origin derived from `DOMAIN` for admin writes. Configure only DNS records for addresses this host actually serves; a stale AAAA record can send clients and certificate validation to another host.
 
@@ -316,17 +321,17 @@ cd /srv/beautycode
 ./scripts/deploy.sh <RELEASE_TAG_OR_COMMIT>
 ```
 
-The script backs up the database and images, checks out the release, builds the image, restarts the app, and polls `/healthz`. It stops at the first failure, and a failed build leaves the running app and the previous checkout in place. The build happens on the host; Terraform creates a 2 GiB swap file to reduce the chance of running out of memory on `t3.small`. This deployment does not guarantee zero downtime.
+The script backs up the database and legacy local images, checks out the release, builds the image, restarts the app, and polls `/healthz`. It stops at the first failure, and a failed build leaves the running app and the previous checkout in place. The build happens on the host; Terraform creates a 2 GiB swap file to reduce the chance of running out of memory on `t3.small`. This deployment does not guarantee zero downtime.
 
 To roll back, run the script with the previous tag or commit, which it prints when it finishes or fails. Review schema migrations before release; rolling back code alone may not work after a schema change. Restore a snapshot compatible with the rollback release if needed.
 
-Review `terraform plan` before infrastructure updates. The configuration ignores changes to the AMI and user data, so it will not automatically replace the host when the latest AMI changes. If you intentionally replace the instance, Terraform retains its root EBS disk but does not attach that disk to the replacement. The new host starts with an empty data directory; restore the database and images from S3 before serving traffic. Retained disks and buckets continue to incur charges until explicitly removed.
+Review `terraform plan` before infrastructure updates. The configuration ignores changes to the AMI and user data, so it will not automatically replace the host when the latest AMI changes. If you intentionally replace the instance, Terraform retains its root EBS disk but does not attach that disk to the replacement. The new host starts with an empty data directory; restore the database and any legacy images from S3 before serving traffic. Cloudinary assets remain remote. Retained disks and buckets continue to incur charges until explicitly removed.
 
 Do not run independent writable copies of the same catalog behind the same domain.
 
 ## Backups and recovery
 
-Two things need backing up: the **database** (snapshotted by the app) and the **uploaded product images** (synced to S3 by the host script). `scripts/backup.sh` does both:
+`scripts/backup.sh` snapshots the **database** to S3 and syncs **legacy local images** from `data/uploads/`. It does not back up Cloudinary assets. Cloudinary asset retention and recovery must be managed separately from these database backups:
 
 ```sh
 cd /srv/beautycode
@@ -343,7 +348,7 @@ flowchart LR
     Images[("data/uploads")] -->|"aws s3 sync, no delete"| S3Img[("uploads/")]
 ```
 
-Snapshots include schema, catalog, galleries, search data, and audit history. They do not contain image files, `.env`, admin passwords, or certificates. S3 lifecycle rules expire database snapshots (`backups/`) after 30 days and noncurrent versions after 30 noncurrent days. Images under `uploads/` are never expired, and images removed in the admin stay in the backup. Development snapshots remain local until manually removed.
+Snapshots include schema, catalog, galleries, search data, and audit history. They do not contain image files, `.env`, admin passwords, or certificates. S3 lifecycle rules expire database snapshots (`backups/`) after 30 days and noncurrent versions after 30 noncurrent days. Legacy images under `uploads/` are never expired. Removing an image reference in admin does not delete the corresponding stored asset. Development snapshots remain local until manually removed.
 
 To write only an explicit local database export without uploading it:
 
@@ -351,13 +356,13 @@ To write only an explicit local database export without uploading it:
 sudo docker compose exec -T app node scripts/backup.ts /data/export.db
 ```
 
-Existing output files are never overwritten. Monitor `/var/log/beautycode-backup.log` for failures. Scheduling and monitoring are not created by Terraform. Because uploaded images exist only on the host disk and in this S3 copy, a silently failing backup is the main risk of this setup.
+Existing output files are never overwritten. Monitor `/var/log/beautycode-backup.log` for failures. Scheduling and monitoring are not created by Terraform. Database backups preserve Cloudinary URLs, but cannot recover a deleted Cloudinary asset.
 
 ### Restore a snapshot
 
 Choose the actual S3 key printed by a successful backup or view it in the S3 console. The app role can read and write backup objects, and can list only the `uploads/` prefix.
 
-Stop the app to prevent concurrent writes, restore the database using the built app image, then restore the images:
+Stop the app to prevent concurrent writes, restore the database using the built app image, then restore legacy local images if your catalog still uses them:
 
 ```sh
 cd /srv/beautycode
@@ -365,19 +370,21 @@ set -a; . ./.env; set +a
 sudo docker compose stop app
 sudo docker compose run --rm --no-deps app \
   node scripts/restore.ts s3:backups/beautycode-TIMESTAMP-ID.db --replace
+
+# Only needed for legacy /uploads/ images.
 mkdir -p data/uploads
 aws s3 sync "s3://${S3_BACKUPS_BUCKET}/uploads/" ./data/uploads --region "$AWS_REGION"
 sudo chown -R 1000:1000 data/uploads
-# Restart only after both steps succeed.
+# Restart after the database and any required legacy images are restored.
 sudo docker compose up -d app
 curl --fail https://beautycode.com.ge/healthz
 ```
 
 For a local export, replace the `s3:...` source with `/data/export.db`. Restore validates integrity, foreign keys, required tables, and schema version before touching the destination. It saves an existing database as `*.before-restore-*.db` before replacement. SQLite handles WAL files; do not manually copy or delete live database sidecars during recovery.
 
-For a lost or replacement host, repeat host setup, restore `.env` and admin credentials, obtain certificates, and build the app image. Restore the compatible snapshot and images into the data mount before starting the stack. Do a restore drill once in a while: restore the latest snapshot into an isolated `DB_PATH` and open it.
+For a lost or replacement host, repeat host setup, restore `.env` and admin credentials, obtain certificates, and build the app image. Restore the compatible snapshot and any legacy images into the data mount before starting the stack. Do a restore drill once in a while: restore the latest snapshot into an isolated `DB_PATH` and open it.
 
-### Image storage
+## Image storage and Cloudinary
 
 Admin uploads send the original file through the authenticated application endpoint
 to Cloudinary. The server enforces a 5 MB limit and validates PNG/JPEG/WebP/AVIF
@@ -399,6 +406,33 @@ sequenceDiagram
     Admin->>App: Save product with URL
     Customer->>Cloudinary: Request optimized image
 ```
+
+
+Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`
+in the server environment. Docker Compose reads them from `.env`; recreate the
+app container after changing them. Never prefix credentials with `VITE_`.
+All three are required in production. In development, omit them entirely if you
+only need catalog editing; empty values are rejected by environment validation.
+When copying `.env.example`, fill in the credentials or comment out those lines.
+
+To explicitly load a configured `.env` for local development:
+
+```sh
+node --env-file=.env node_modules/vite/bin/vite.js --port 3000
+```
+
+The admin editor uploads files and lets you reorder, remove, and describe images;
+it does not have a field for pasting URLs. For console-uploaded assets, update
+`product_images.url` in SQL. Use original unsigned delivery URLs such as
+`https://res.cloudinary.com/<cloud>/image/upload/v<version>/<public-id>.webp`.
+PNG, JPEG, and AVIF originals work too; WebP is not required. Keep the version
+when replacing assets to avoid stale cached images.
+
+Uploads use unique IDs under `beautycode/products`. Saving the product persists
+the returned HTTPS URL. The shared delivery helper generates responsive sizes
+with automatic format and quality for cards, galleries, and admin thumbnails;
+social previews request JPEG. Other HTTPS URLs remain unchanged. The homepage
+hero uses category links and does not require product artwork.
 
 Existing `/uploads/` files remain served by nginx for compatibility. Removing an
 image from a product removes its database reference, not the Cloudinary asset.
@@ -423,36 +457,10 @@ sudo docker compose exec -T nginx nginx -t
 | Admin write fails in development                  | Use `pnpm dev` on localhost so the request has a same-origin `Origin` header; dev writes require same-origin requests |
 | Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx                  |
 | Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                                |
-| Upload fails with a permission error              | `data/uploads` must exist and be owned by UID 1000 (`sudo chown -R 1000:1000 data`)                                   |
-| Uploaded image returns 404                        | File exists in `data/uploads`; nginx mounts `./data/uploads` at `/srv/uploads`; path starts with `/uploads/`          |
-| Uploaded image returns 403                        | File permissions: files must be world-readable (mode 644) so the nginx container can read them                        |
+| Upload unavailable or server rejects environment  | Configure all three Cloudinary variables; omit rather than leave blank in development                                 |
+| Cloudinary image fails to load                    | Replace seed placeholders; check the cloud name, public ID, asset version, and delivery access                        |
+| Legacy `/uploads/` image returns 403 or 404       | Check the file, nginx mount, and read permissions in `data/uploads/`                                                  |
 | Backup fails                                      | S3 bucket/region, role credentials, `aws` on the host, and free disk space; failed uploads leave local snapshots      |
 | Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                     |
 | Certificate renewal fails                         | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook                                                |
 | Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile                                       |
-
-### Cloudinary product images
-
-Upload product originals in the Cloudinary console, then paste each original HTTPS
-image delivery URL into the product's image URL field in the admin editor.
-Use `https://res.cloudinary.com/<cloud>/image/upload/v<version>/<public-id>.webp`
-(or the unversioned upload URL). Folder paths are supported. Keep the version in
-the URL when replacing an asset to avoid stale cached images.
-
-The Cloudinary JavaScript SDK generates responsive widths for cards, galleries,
-and thumbnails, with automatic format and quality selection. Image delivery does not require an API secret.
-Existing non-Cloudinary URLs continue to work. Replace retired bundled image URLs in the catalog with Cloudinary URLs. Homepage artwork was removed
-and is not automatically restored by updating product images.
-
-Admin image uploads now go through the authenticated server endpoint to Cloudinary
-using its Node SDK. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and
-`CLOUDINARY_API_SECRET` in the server `.env` (never prefix these with `VITE_`).
-Docker Compose already loads this file at runtime; recreate the app container after
-changing credentials. For local development, restart the dev server.
-
-Uploads retain the 5 MB limit and PNG/JPEG/WebP/AVIF validation, use unique public
-IDs under `beautycode/products`, and return the HTTPS URL to the editor. Saving the
-product persists that URL. No new files are written to local upload storage.
-Removing an image from a product does not delete its Cloudinary asset; unused
-assets can be removed in the Cloudinary console. Existing local uploads are still
-served for compatibility. Uploads return 503 until credentials are configured.
