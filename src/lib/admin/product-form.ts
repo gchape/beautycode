@@ -7,7 +7,11 @@ export function readProductForm(
 	id?: number,
 ) {
 	const value = (key: string) => String(form.get(key) ?? "").trim();
-	const salePrice = value("sale_price");
+	const optionalPrice = (key: string) => {
+		const raw = value(key);
+		return raw ? gelToMinor(raw) : null;
+	};
+
 	return productInput.parse({
 		id,
 		name: value("name"),
@@ -15,14 +19,14 @@ export function readProductForm(
 		category_slug: value("category_slug"),
 		description: value("description"),
 		price_minor: gelToMinor(value("price")),
-		sale_price_minor: salePrice ? gelToMinor(salePrice) : null,
+		sale_price_minor: optionalPrice("sale_price"),
 		sku: value("sku") || null,
 		stock_status: value("stock_status"),
 		status: value("status"),
 		meta_description: value("meta_description"),
 		is_featured: form.has("is_featured"),
 		features: value("features")
-			.split("\n")
+			.split(/\r?\n/)
 			.map((line) => line.trim())
 			.filter(Boolean),
 		images,

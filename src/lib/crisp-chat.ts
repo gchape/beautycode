@@ -2,42 +2,47 @@ import { Crisp, type CrispClass } from "crisp-sdk-web";
 import { useCallback } from "react";
 import { finalPrice, type PublicProduct } from "../data/catalog.ts";
 
+const connectTimeoutMs = 20_000;
+
+const productMessage = (product: PublicProduct) =>
+	[
+		`გამარჯობა! მაინტერესებს პროდუქტი: ${product.name}`,
+		`ფასი: ${(finalPrice(product) / 100).toFixed(2)} ₾`,
+		`${window.location.origin}/products/${encodeURIComponent(product.slug)}`,
+	].join("\n");
+
 export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 	let loading: Promise<void> | undefined;
 
-	function load() {
-		loading ??= new Promise<void>((resolve, reject) => {
-			if (!websiteId) throw new Error("Crisp website ID is missing");
-			const timeout = setTimeout(
+	async function connect() {
+		if (!websiteId) throw new Error("Crisp website ID is missing");
+		await new Promise<void>((resolve, reject) => {
+			const timer = setTimeout(
 				() =>
 					reject(
 						new Error("Crisp could not connect. Reload the page to retry."),
 					),
-				20_000,
+				connectTimeoutMs,
 			);
 			sdk.session.onLoaded(() => {
-				clearTimeout(timeout);
+				clearTimeout(timer);
 				resolve();
 			});
 			sdk.configure(websiteId);
-		}).catch((error: unknown) => {
+		});
+	}
+
+	const load = () =>
+		(loading ??= connect().catch((error: unknown) => {
 			loading = undefined; // allow retry after failure
 			throw error;
-		});
-		return loading;
-	}
+		}));
 
 	async function open(product?: PublicProduct) {
 		await load();
 		sdk.chat.show();
 		sdk.chat.open();
-		if (!product) return;
-
-		const url = `${window.location.origin}/products/${encodeURIComponent(product.slug)}`;
-		const price = (finalPrice(product) / 100).toFixed(2);
-		sdk.message.sendText(
-			`გამარჯობა! მაინტერესებს პროდუქტი: ${product.name}\nფასი: ${price} ₾\n${url}`,
-		);
+		if (product) sdk.message.sendText(productMessage(product));
 	}
 
 	return { load, open };
