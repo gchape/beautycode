@@ -1,12 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import {
-	DatabaseBackup,
-	Eye,
-	History,
-	LayoutGrid,
-	Package,
-} from "lucide-react";
+import { DatabaseBackup, History, LayoutGrid, Package } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useState } from "react";
 import { adminApi } from "../../lib/admin/api.ts";
@@ -23,7 +17,7 @@ const tabs = [
 	["audit", "ისტორია", History],
 ] as const;
 
-const readOnly = import.meta.env.DEV;
+const isDevelopment = import.meta.env.DEV;
 
 export function AdminPanel() {
 	const client = useQueryClient();
@@ -66,7 +60,7 @@ export function AdminPanel() {
 				<Button
 					variant="outline"
 					size="sm"
-					disabled={readOnly || backup.isPending}
+					disabled={backup.isPending}
 					onClick={() => backup.mutate()}
 				>
 					<DatabaseBackup size={16} />
@@ -77,13 +71,14 @@ export function AdminPanel() {
 				products={products.data || []}
 				pending={products.isPending}
 			/>
-			{readOnly && (
+			{isDevelopment && (
 				<p
-					className="mb-6 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900"
+					className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900"
 					role="status"
 				>
-					<Eye size={16} className="shrink-0" /> მხოლოდ დათვალიერება —
-					დეველოპმენტში ცვლილებების შენახვა გამორთულია.
+					დეველოპმენტის მონაცემები დროებითია — ნაგულისხმევად ინახება data-dev/
+					საქაღალდეში და production-ზე არ აისახება. წასაშლელად გამოიყენეთ pnpm
+					clean:dev.
 				</p>
 			)}
 			<Tabs.Root
@@ -122,12 +117,10 @@ export function AdminPanel() {
 				<ProductSection
 					products={products.data || []}
 					categories={categories.data || []}
-					readOnly={readOnly}
 					onSaved={handleSaved}
 				/>
 				<CategorySection
 					categories={categories.data || []}
-					readOnly={readOnly}
 					onSaved={handleSaved}
 				/>
 				<Tabs.Content value="audit">

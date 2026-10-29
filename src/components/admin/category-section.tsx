@@ -8,11 +8,9 @@ import { CategoryList } from "./category-list.tsx";
 
 export function CategorySection({
 	categories,
-	readOnly,
 	onSaved,
 }: {
 	categories: Category[];
-	readOnly: boolean;
 	onSaved: () => void;
 }) {
 	const [editingCategory, setEditingCategory] = useState<
@@ -40,18 +38,11 @@ export function CategorySection({
 								დაალაგეთ კატეგორიები და მართეთ მათი ხილვადობა.
 							</p>
 						</div>
-						<Button
-							size="sm"
-							disabled={readOnly}
-							onClick={() => setEditingCategory("new")}
-						>
+						<Button size="sm" onClick={() => setEditingCategory("new")}>
 							<Plus size={16} /> კატეგორიის დამატება
 						</Button>
 					</div>
-					<CategoryList
-						categories={categories}
-						onEdit={readOnly ? undefined : setEditingCategory}
-					/>
+					<CategoryList categories={categories} onEdit={setEditingCategory} />
 				</>
 			)}
 		</Tabs.Content>

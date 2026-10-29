@@ -19,6 +19,7 @@
 		"restore": "node scripts/restore.ts",
 		"backup:dev": "NODE_ENV=development node scripts/backup.ts",
 		"restore:dev": "NODE_ENV=development node scripts/restore.ts",
+		"clean:dev": "node scripts/clean-dev.ts",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
