@@ -1,16 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { requireAdmin } from "../src/server/admin/auth.ts";
-import { databasePath, uploadsDirectory } from "../src/server/config.ts";
+import { databasePath } from "../src/server/config.ts";
 
 test("development admin can write to an isolated local database", async () => {
 	const env = { ...process.env };
 	try {
 		process.env.NODE_ENV = "development";
 		delete process.env.DB_PATH;
-		delete process.env.UPLOADS_DIR;
 		assert.equal(databasePath(), "data-dev/beautycode.db");
-		assert.equal(uploadsDirectory(), "data-dev/uploads");
 		const url = "http://localhost:3000/admin/api/products";
 		assert.equal(requireAdmin(new Request(url)), "dev");
 		assert.equal(

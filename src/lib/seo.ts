@@ -1,4 +1,6 @@
 import { finalPrice, type PublicProduct } from "../data/catalog.ts";
+import { cloudinaryUrl } from "./product-images.ts";
+
 export const siteOrigin = (
 	import.meta.env?.VITE_SITE_URL || "http://localhost:3000"
 ).replace(/\/$/, "");
@@ -26,6 +28,8 @@ export function seoHead({
 	noindex?: boolean;
 }) {
 	const url = absoluteUrl(path);
+	// JPEG rather than f_auto: some social crawlers mishandle AVIF/WebP.
+	const shareImage = absoluteUrl(cloudinaryUrl(image, 1200, "jpg"));
 	return {
 		meta: [
 			{ title: `${title} | Beauty Code` },
@@ -33,14 +37,14 @@ export function seoHead({
 			{ property: "og:title", content: `${title} | Beauty Code` },
 			{ property: "og:description", content: description },
 			{ property: "og:url", content: url },
-			{ property: "og:image", content: absoluteUrl(image) },
+			{ property: "og:image", content: shareImage },
 			{ property: "og:type", content: "website" },
 			{ property: "og:locale", content: "ka_GE" },
 			{ property: "og:site_name", content: "Beauty Code" },
 			{ name: "twitter:card", content: "summary_large_image" },
 			{ name: "twitter:title", content: `${title} | Beauty Code` },
 			{ name: "twitter:description", content: description },
-			{ name: "twitter:image", content: absoluteUrl(image) },
+			{ name: "twitter:image", content: shareImage },
 			...(noindex ? [{ name: "robots", content: "noindex, follow" }] : []),
 		],
 		links: [{ rel: "canonical", href: url }],

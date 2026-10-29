@@ -82,7 +82,7 @@ test("initial schema provides timestamps and galleries without derived columns",
 	const db = database(t);
 	const product = getAdminProduct(db, 1);
 	assert.equal(product.sale_price_minor, 14900);
-	assert.equal(product.images[0].url, "/images/ipl-colors-cutout.png");
+	assert.match(product.images[0].url, /^https:\/\/res\.cloudinary\.com\//);
 	assert.ok(product.created_at);
 	const columns = db.prepare("PRAGMA table_info(products)").all();
 	assert.ok(

@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { test } from "node:test";
 import { coverImage, finalPrice } from "../src/data/catalog.ts";
@@ -29,7 +28,7 @@ test("catalog migration initializes a fresh database and runs only once", () => 
 			assert.ok(categories.some((c) => c.slug === product.category_slug));
 			assert.ok(product.description.length > 30);
 			assert.ok(product.features.length >= 3);
-			assert.ok(existsSync(`public${coverImage(product)}`));
+			assert.ok(coverImage(product)?.startsWith("https://"));
 		}
 		assert.equal(
 			filterProducts(products, { category: "კანის-მოვლა" }).length,

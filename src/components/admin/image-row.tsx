@@ -1,4 +1,5 @@
 import type { ProductImage } from "../../data/catalog.ts";
+import { productImageProps } from "../../lib/product-images.ts";
 import { Button } from "../ui/button.tsx";
 import { Input } from "../ui/input.tsx";
 
@@ -20,7 +21,7 @@ export function ImageRow({
 	return (
 		<div className="my-3.75 flex items-center gap-2.5 [&_img]:size-20 [&_img]:shrink-0 [&_img]:object-contain max-[600px]:flex-wrap max-[600px]:[&_input]:min-w-40 max-[600px]:[&_input]:flex-1">
 			<img
-				src={image.url}
+				{...productImageProps(image.url, "80px", "thumbnail")}
 				alt={image.alt || `სურათი ${index + 1}`}
 				width="80"
 				height="80"

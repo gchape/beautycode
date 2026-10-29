@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { AdminProduct, Category } from "../../data/catalog.ts";
 import { coverImage, finalPrice, money } from "../../data/catalog.ts";
 import { statusLabels, stockLabels } from "../../data/labels.ts";
+import { productImageProps } from "../../lib/product-images.ts";
 import { Button } from "../ui/button.tsx";
 import { Input } from "../ui/input.tsx";
 import { Select, SelectItem } from "../ui/select.tsx";
@@ -82,57 +83,63 @@ export function ProductList({
 						</tr>
 					</thead>
 					<tbody>
-						{rows.map((p) => (
-							<tr key={p.id}>
-								<td>
-									<div className="flex min-w-55 items-center gap-3">
-										<div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted">
-											{coverImage(p) ? (
-												<img
-													src={coverImage(p)}
-													alt=""
-													className="size-full object-contain p-1"
-													loading="lazy"
-												/>
-											) : (
-												<Package size={20} className="text-muted-foreground" />
-											)}
-										</div>
-										<div>
-											<span className="font-medium">{p.name}</span>
-											{p.is_featured && (
-												<Star
-													size={12}
-													className="ml-2 inline text-amber-600"
-													aria-label="მთავარ გვერდზე"
-												/>
-											)}
-											<p className="mt-1 mb-0 text-xs text-muted-foreground">
-												{p.sku || "კოდის გარეშე"} ·{" "}
-												{stockLabels[p.stock_status]}
-											</p>
-										</div>
-									</div>
-								</td>
-								<td className="font-medium whitespace-nowrap tabular-nums">
-									{money(finalPrice(p))}
-								</td>
-								<td>
-									<ProductStatusBadge status={p.status} />
-								</td>
-								{onEdit && (
+						{rows.map((p) => {
+							const cover = coverImage(p);
+							return (
+								<tr key={p.id}>
 									<td>
-										<Button
-											size="sm"
-											variant="outline"
-											onClick={() => onEdit(p)}
-										>
-											რედაქტირება
-										</Button>
+										<div className="flex min-w-55 items-center gap-3">
+											<div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted">
+												{cover ? (
+													<img
+														{...productImageProps(cover, "80px", "thumbnail")}
+														alt=""
+														className="size-full object-contain p-1"
+														loading="lazy"
+													/>
+												) : (
+													<Package
+														size={20}
+														className="text-muted-foreground"
+													/>
+												)}
+											</div>
+											<div>
+												<span className="font-medium">{p.name}</span>
+												{p.is_featured && (
+													<Star
+														size={12}
+														className="ml-2 inline text-amber-600"
+														aria-label="მთავარ გვერდზე"
+													/>
+												)}
+												<p className="mt-1 mb-0 text-xs text-muted-foreground">
+													{p.sku || "კოდის გარეშე"} ·{" "}
+													{stockLabels[p.stock_status]}
+												</p>
+											</div>
+										</div>
 									</td>
-								)}
-							</tr>
-						))}
+									<td className="font-medium whitespace-nowrap tabular-nums">
+										{money(finalPrice(p))}
+									</td>
+									<td>
+										<ProductStatusBadge status={p.status} />
+									</td>
+									{onEdit && (
+										<td>
+											<Button
+												size="sm"
+												variant="outline"
+												onClick={() => onEdit(p)}
+											>
+												რედაქტირება
+											</Button>
+										</td>
+									)}
+								</tr>
+							);
+						})}
 					</tbody>
 				</table>
 				{!rows.length && (
