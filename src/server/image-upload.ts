@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { imageTypes, maxImageUploadBytes } from "../data/image-types.ts";
-import { readServerEnvironment } from "./config.ts";
+import { uploadsDirectory } from "./config.ts";
 
 const signatures: Record<keyof typeof imageTypes, (bytes: Buffer) => boolean> =
 	{
@@ -34,9 +34,7 @@ export async function saveUploadedImage(bytes: Buffer, contentType: string) {
 	const type = detectImageType(bytes);
 	if (!type || type !== contentType)
 		throw new Response("Unsupported or invalid image file", { status: 400 });
-	const directory = resolve(
-		readServerEnvironment().UPLOADS_DIR || "data/uploads",
-	);
+	const directory = resolve(uploadsDirectory());
 	await mkdir(directory, { recursive: true });
 	const name = `${randomUUID()}.${imageTypes[type]}`;
 	const temporary = join(directory, `.${name}.tmp`);

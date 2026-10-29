@@ -18,37 +18,35 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open <http://localhost:3000> or <http://localhost:3000/admin>. Development admin has no login prompt and is **read-only**: browsing, searching, and filtering work; saves, uploads, and admin backup requests are disabled. Keep the development server on localhost.
+Open <http://localhost:3000> or <http://localhost:3000/admin>. Development admin has no login prompt and allows product/category edits, image uploads, and local backups. Keep the dev server on localhost: these changes are temporary and are not production data.
 
 | Behavior             | Development                     | Production with Docker Compose                                  |
 | -------------------- | ------------------------------- | --------------------------------------------------------------- |
-| Admin authentication | No login; reads only            | nginx Basic Auth                                                |
-| Database             | `data/beautycode.db` by default | Host `./data/beautycode.db`, mounted as `/data/beautycode.db`   |
-| Admin writes         | Rejected by the API             | Authenticated, same-origin requests                             |
-| Image uploads        | Disabled                        | Written to `./data/uploads/` and served by nginx at `/uploads/` |
-| CLI backup           | Local `data/backups/*.db`       | Upload to S3; local snapshot removed after success              |
+| Admin authentication | No login; localhost only        | nginx Basic Auth                                                |
+| Database             | `data-dev/beautycode.db`        | Host `./data/beautycode.db`, mounted as `/data/beautycode.db`   |
+| Admin writes         | Temporary local changes         | Authenticated, same-origin requests                             |
+| Image uploads        | `data-dev/uploads/`              | `./data/uploads/`, served by nginx at `/uploads/`               |
+| Backup               | Local `data-dev/backups/*.db`   | Upload to S3; local snapshot removed after success              |
 
-Vite sets `NODE_ENV=development`. Development browsing needs no AWS credentials. `DB_PATH` overrides the native database path. Development and production **do not automatically use separate databases**. To use an isolated development catalog:
+Vite sets `NODE_ENV=development`. Development writes need no AWS credentials. The default database, uploaded images, and local backups are kept under the ignored `data-dev/` directory. Set `DB_PATH` or `UPLOADS_DIR` to override either path. To discard development changes, stop the dev server and run:
 
 ```sh
-DB_PATH=data-dev/beautycode.db pnpm dev
+pnpm clean:dev
 ```
 
-Use that same `DB_PATH` for backup and restore commands. Do not run development and production against the same live file.
+This removes the default dev database, uploaded images, and backups; it does not touch production's `data/` directory. If you override `DB_PATH` or `UPLOADS_DIR` to a location outside `data-dev/`, remove those custom dev files separately. Use the same `DB_PATH` for dev, backup, and restore commands if you override the default. Never point development at the production database or uploads directory.
 
 ### Schema and reset
 
 [`migrations/0001_init.sql`](migrations/0001_init.sql) creates the complete schema and seeds six products and four categories. Migrations run when the database is first opened; applied migrations never run again. For future schema changes, add a numbered migration instead of editing an applied one.
 
-This repository now uses a **fresh schema-version-1 baseline**. Databases and snapshots from the previous three-migration history must not be reused. For a disposable local database, stop every process using it, then reset it:
+This repository now uses a **fresh schema-version-1 baseline**. Databases and snapshots from the previous three-migration history must not be reused. To reset the disposable development catalog, stop the dev server and remove all development data:
 
 ```sh
-# Deletes the default local catalog and its SQLite sidecars.
-rm -f data/beautycode.db data/beautycode.db-wal data/beautycode.db-shm
-pnpm dev
+pnpm clean:dev
 ```
 
-Adjust these paths if you set `DB_PATH`. This loses local catalog edits. Do not use this reset procedure for production recovery; use [snapshot restore](#restore-a-snapshot). Bundled images and existing backup files remain intact.
+This removes the dev database, its SQLite sidecars, uploaded images, and local backups. It does not touch production data or bundled images. Do not use it for production recovery; use [snapshot restore](#restore-a-snapshot).
 
 ### Local backup and restore
 
@@ -61,10 +59,10 @@ pnpm backup:dev
 Stop the app before restoring. Substitute the actual filename printed by the backup command:
 
 ```sh
-pnpm restore:dev data/backups/beautycode-TIMESTAMP-ID.db --replace
+pnpm restore:dev data-dev/backups/beautycode-TIMESTAMP-ID.db --replace
 ```
 
-For an isolated database, prefix both commands with `DB_PATH=data-dev/beautycode.db`. The CLI creates a safety copy before replacing an existing database. Snapshots contain catalog data and image references, not image files.
+For a custom development database, prefix `pnpm dev`, `pnpm backup:dev`, and `pnpm restore:dev` with the same `DB_PATH=...`. The CLI creates a safety copy before replacing an existing database. Snapshots contain catalog data and image references, not image files.
 
 ### Checks
 
@@ -426,7 +424,7 @@ sudo docker compose exec -T nginx nginx -t
 | nginx cannot start                                | Certificate paths, `DOMAIN`, `secrets/htpasswd`, and whether ports 80/443 are already occupied                   |
 | 502 after restarting the app                      | App health and logs; nginx resolves the Compose service name periodically                                        |
 | Session Manager cannot connect                    | Instance profile, SSM agent, subnet route, and outbound access to SSM endpoints                                  |
-| Admin loads but cannot save locally               | Expected: development admin is read-only                                                                         |
+| Admin write fails in development                  | Use `pnpm dev` on localhost so the request has a same-origin `Origin` header; dev writes require same-origin requests |
 | Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx             |
 | Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                           |
 | Upload fails with a permission error              | `data/uploads` must exist and be owned by UID 1000 (`sudo chown -R 1000:1000 data`)                              |

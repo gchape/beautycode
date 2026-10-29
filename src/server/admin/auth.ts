@@ -9,14 +9,10 @@ export function requireAdmin(request: Request): string {
 	if (!user || user.length > 100)
 		throw new Response("Unauthorized", { status: 401 });
 	if (!["GET", "HEAD", "OPTIONS"].includes(request.method)) {
-		if (isDevelopment())
-			throw Response.json(
-				{ error: "დეველოპმენტში ადმინისტრირება მხოლოდ წასაკითხია" },
-				{ status: 403 },
-			);
 		const origin = request.headers.get("origin");
-		const allowed =
-			readServerEnvironment().SITE_URL || new URL(request.url).origin;
+		const allowed = isDevelopment()
+			? new URL(request.url).origin
+			: (readServerEnvironment().SITE_URL ?? new URL(request.url).origin);
 		if (!origin || origin !== new URL(allowed).origin)
 			throw new Response("Forbidden origin", { status: 403 });
 	}

@@ -71,5 +71,20 @@ export function validateProductionEnvironment(
 export const isDevelopment = () =>
 	readServerEnvironment().NODE_ENV === "development";
 
-export const databasePath = () =>
-	readServerEnvironment().DB_PATH || "data/beautycode.db";
+export const databasePath = () => {
+	const env = readServerEnvironment();
+	return (
+		env.DB_PATH ||
+		(env.NODE_ENV === "development"
+			? "data-dev/beautycode.db"
+			: "data/beautycode.db")
+	);
+};
+
+export const uploadsDirectory = () => {
+	const env = readServerEnvironment();
+	return (
+		env.UPLOADS_DIR ||
+		(env.NODE_ENV === "development" ? "data-dev/uploads" : "data/uploads")
+	);
+};

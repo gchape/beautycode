@@ -9,12 +9,10 @@ import { ProductList } from "./product-list.tsx";
 export function ProductSection({
 	products,
 	categories,
-	readOnly,
 	onSaved,
 }: {
 	products: AdminProduct[];
 	categories: Category[];
-	readOnly: boolean;
 	onSaved: () => void;
 }) {
 	const [editingProduct, setEditingProduct] = useState<
@@ -46,7 +44,7 @@ export function ProductSection({
 						<Button
 							size="sm"
 							onClick={() => setEditingProduct("new")}
-							disabled={readOnly || !categories.length}
+							disabled={!categories.length}
 						>
 							<Plus size={16} /> პროდუქტის დამატება
 						</Button>
@@ -54,7 +52,7 @@ export function ProductSection({
 					<ProductList
 						products={products}
 						categories={categories}
-						onEdit={readOnly ? undefined : setEditingProduct}
+						onEdit={setEditingProduct}
 					/>
 				</>
 			)}
