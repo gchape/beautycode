@@ -10,7 +10,12 @@ import { queryCategories } from "../categories.ts";
 import { queryAdminProducts } from "../products.ts";
 import { withTransaction } from "../transaction.ts";
 
+type SlugTable = "products" | "categories";
+
 const now = "strftime('%Y-%m-%dT%H:%M:%fZ','now')";
+
+const slugExists = (db: DatabaseSync, table: SlugTable, slug: string) =>
+	Boolean(db.prepare(`SELECT 1 FROM ${table} WHERE slug=?`).get(slug));
 
 export function recordAudit(
 	db: DatabaseSync,
@@ -24,7 +29,7 @@ export function recordAudit(
 	).run(user, action, entity, id);
 }
 
-export const listProducts = (db: DatabaseSync) => queryAdminProducts(db);
+export const listProducts = queryAdminProducts;
 
 export const listCategories = (db: DatabaseSync) =>
 	queryCategories(db, { includeInactive: true });
@@ -37,38 +42,31 @@ export function listAuditLog(db: DatabaseSync, limit = 100) {
 		.all(limit) as unknown as AuditEntry[];
 }
 
-function uniqueSlug(
-	db: DatabaseSync,
-	table: "products" | "categories",
-	name: string,
-) {
+function uniqueSlug(db: DatabaseSync, table: SlugTable, name: string) {
 	const base = slugify(name);
 	let slug = base;
-	let suffix = 2;
-	while (db.prepare(`SELECT 1 FROM ${table} WHERE slug=?`).get(slug))
-		slug = `${base}-${suffix++}`;
+	for (let n = 2; slugExists(db, table, slug); n++) slug = `${base}-${n}`;
 	return slug;
 }
 
 export function saveProduct(db: DatabaseSync, raw: unknown, user: string) {
 	const input = productInput.parse(raw);
 	return withTransaction(db, () => {
-		if (
-			!db
-				.prepare("SELECT 1 FROM categories WHERE slug=?")
-				.get(input.category_slug)
-		)
+		if (!slugExists(db, "categories", input.category_slug))
 			throw new Response("Unknown category", { status: 400 });
+
 		const existing = input.id
 			? (db.prepare("SELECT slug FROM products WHERE id=?").get(input.id) as
 					| { slug: string }
 					| undefined)
 			: undefined;
 		if (input.id && !existing) throw new Response("Not found", { status: 404 });
+
 		const slug = existing?.slug ?? uniqueSlug(db, "products", input.name);
 		const id = input.id
 			? updateProduct(db, input.id, input)
 			: insertProduct(db, input, slug);
+
 		replaceProductImages(db, id, input);
 		recordAudit(
 			db,
@@ -84,11 +82,9 @@ export function saveProduct(db: DatabaseSync, raw: unknown, user: string) {
 export function saveCategory(db: DatabaseSync, raw: unknown, user: string) {
 	const input = categoryInput.parse(raw);
 	return withTransaction(db, () => {
-		if (
-			input.slug &&
-			!db.prepare("SELECT 1 FROM categories WHERE slug=?").get(input.slug)
-		)
+		if (input.slug && !slugExists(db, "categories", input.slug))
 			throw new Response("Not found", { status: 404 });
+
 		const slug = input.slug || uniqueSlug(db, "categories", input.name);
 		db.prepare(
 			`INSERT INTO categories(slug,name,description,icon,sort_order,is_active)
@@ -125,26 +121,25 @@ function productFields(input: ProductInput) {
 	};
 }
 
+// Column names come from productFields above, never from user input.
 function insertProduct(db: DatabaseSync, input: ProductInput, slug: string) {
-	const result = db
+	const fields = { ...productFields(input), slug };
+	const columns = Object.keys(fields);
+	const { lastInsertRowid } = db
 		.prepare(
-			`INSERT INTO products(slug,name,brand,category_slug,description,price_minor,sale_price_minor,
-			   stock_status,status,sku,meta_description,is_featured,features_json,created_at)
-			 VALUES($slug,$name,$brand,$category_slug,$description,$price_minor,$sale_price_minor,
-			   $stock_status,$status,$sku,$meta_description,$is_featured,$features_json,${now})`,
+			`INSERT INTO products(${columns},created_at)
+			 VALUES(${columns.map((c) => `$${c}`)},${now})`,
 		)
-		.run({ ...productFields(input), slug });
-	return Number(result.lastInsertRowid);
+		.run(fields);
+	return Number(lastInsertRowid);
 }
 
 function updateProduct(db: DatabaseSync, id: number, input: ProductInput) {
+	const fields = productFields(input);
+	const assignments = Object.keys(fields).map((c) => `${c}=$${c}`);
 	db.prepare(
-		`UPDATE products SET name=$name,brand=$brand,category_slug=$category_slug,description=$description,
-		   price_minor=$price_minor,sale_price_minor=$sale_price_minor,stock_status=$stock_status,
-		   status=$status,sku=$sku,meta_description=$meta_description,is_featured=$is_featured,
-		   features_json=$features_json,updated_at=${now}
-		 WHERE id=$id`,
-	).run({ ...productFields(input), id });
+		`UPDATE products SET ${assignments},updated_at=${now} WHERE id=$id`,
+	).run({ ...fields, id });
 	return id;
 }
 

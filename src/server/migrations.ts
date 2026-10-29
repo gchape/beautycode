@@ -6,9 +6,9 @@ import { readServerEnvironment } from "./config.ts";
 import { withTransaction } from "./transaction.ts";
 
 // Native scripts resolve from this module; bundled deployments supply MIGRATIONS_DIR.
-const configuredMigrationsDir = readServerEnvironment().MIGRATIONS_DIR;
-const migrationsDir = configuredMigrationsDir
-	? resolve(configuredMigrationsDir)
+const { MIGRATIONS_DIR } = readServerEnvironment();
+const migrationsDir = MIGRATIONS_DIR
+	? resolve(MIGRATIONS_DIR)
 	: fileURLToPath(new URL("../../migrations/", import.meta.url));
 
 const migrations = readdirSync(migrationsDir)
@@ -19,16 +19,18 @@ export const latestSchemaVersion = migrations.length;
 
 export function migrateDatabase(db: DatabaseSync) {
 	withTransaction(db, () => {
-		const { user_version } = db.prepare("PRAGMA user_version").get() as {
-			user_version: number;
-		};
-		if (user_version > latestSchemaVersion)
+		const { user_version: current } = db
+			.prepare("PRAGMA user_version")
+			.get() as { user_version: number };
+
+		if (current > latestSchemaVersion)
 			throw new Error(
 				"Database schema is newer than the migration baseline. Use a fresh database for the consolidated schema.",
 			);
-		migrations.slice(user_version).forEach((file, index) => {
-			db.exec(readFileSync(join(migrationsDir, file), "utf8"));
-			db.exec(`PRAGMA user_version=${user_version + index + 1}`);
-		});
+
+		for (let version = current; version < latestSchemaVersion; version++) {
+			db.exec(readFileSync(join(migrationsDir, migrations[version]), "utf8"));
+			db.exec(`PRAGMA user_version = ${version + 1}`);
+		}
 	});
 }
