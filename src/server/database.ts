@@ -6,21 +6,27 @@ import { migrateDatabase } from "./migrations.ts";
 
 let database: DatabaseSync | undefined;
 
-export function getDatabase() {
-	if (database) return database;
+function openDatabase() {
 	const path = resolve(databasePath());
 	mkdirSync(dirname(path), { recursive: true });
+
 	const db = new DatabaseSync(path);
 	try {
-		db.exec(
-			"PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; PRAGMA synchronous=NORMAL; PRAGMA foreign_keys=ON;",
-		);
+		db.exec(`
+			PRAGMA busy_timeout = 5000;
+			PRAGMA journal_mode = WAL;
+			PRAGMA synchronous = NORMAL;
+		`);
 		migrateDatabase(db);
-		db.prepare("SELECT count(*) FROM products_fts").get();
-		database = db;
+		db.prepare("SELECT 1 FROM products_fts LIMIT 1").get(); // fail fast if FTS is broken
 		return db;
 	} catch (error) {
 		db.close();
 		throw error;
 	}
+}
+
+export function getDatabase() {
+	database ??= openDatabase();
+	return database;
 }

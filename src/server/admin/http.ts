@@ -2,19 +2,22 @@ import { z } from "zod";
 import { validationDetails } from "../../lib/admin/errors.ts";
 import { requireAdmin } from "./auth.ts";
 
+const maxJsonLength = 128_000;
+
+const privateHeaders = {
+	"Cache-Control": "no-store",
+	"X-Robots-Tag": "noindex, nofollow",
+};
+
+const json = (body: unknown, status = 200) =>
+	Response.json(body, { status, headers: privateHeaders });
+
 export async function adminRequest(
 	request: Request,
-	handler: (user: string) => unknown | Promise<unknown>,
+	handler: (user: string) => unknown,
 ) {
 	try {
-		const user = requireAdmin(request);
-		const result = await handler(user);
-		return Response.json(result, {
-			headers: {
-				"Cache-Control": "no-store",
-				"X-Robots-Tag": "noindex, nofollow",
-			},
-		});
+		return json(await handler(requireAdmin(request)));
 	} catch (error) {
 		return adminErrorResponse(error);
 	}
@@ -22,28 +25,23 @@ export async function adminRequest(
 
 function adminErrorResponse(error: unknown) {
 	if (error instanceof Response) return error;
+
 	if (error instanceof z.ZodError) {
 		const { message, fieldErrors } = validationDetails(error);
-		return Response.json({ error: message, fieldErrors }, { status: 400 });
+		return json({ error: message, fieldErrors }, 400);
 	}
-
 	if (error instanceof SyntaxError)
-		return Response.json({ error: "არასწორი მონაცემები" }, { status: 400 });
-	if (error instanceof Error && /UNIQUE constraint/.test(error.message))
-		return Response.json(
-			{ error: "ეს კოდი უკვე გამოყენებულია" },
-			{ status: 409 },
-		);
+		return json({ error: "არასწორი მონაცემები" }, 400);
+	if (error instanceof Error && error.message.includes("UNIQUE constraint"))
+		return json({ error: "ეს კოდი უკვე გამოყენებულია" }, 409);
+
 	console.error("Admin request failed", error);
-	return Response.json(
-		{ error: "ოპერაცია ვერ შესრულდა. სცადეთ ხელახლა." },
-		{ status: 500 },
-	);
+	return json({ error: "ოპერაცია ვერ შესრულდა. სცადეთ ხელახლა." }, 500);
 }
 
 export async function readJson(request: Request): Promise<unknown> {
 	const raw = await request.text();
-	if (raw.length > 128000)
+	if (raw.length > maxJsonLength)
 		throw new Response("Payload too large", { status: 413 });
 	return JSON.parse(raw);
 }
