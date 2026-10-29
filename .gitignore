@@ -31,3 +31,13 @@ backups/
 /public/images/dev-*
 
 *.before-restore-*.db
+
+# Terraform local state, provider cache, and override files
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+*.tfplan
+override.tf
+override.tf.json

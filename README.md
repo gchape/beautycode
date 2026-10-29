@@ -107,7 +107,7 @@ Product saves validate input, update product fields and gallery references, and 
 | `src/styles.css`                    | Theme tokens, base styles, and reduced-motion defaults                  |
 | `migrations/`                       | Versioned SQL schema and initial catalog                                |
 | `scripts/`                          | SQLite backup and restore CLI; `backup.sh` and `deploy.sh` for the host |
-| `cloudformation.yml`                | EC2 host, instance role, Elastic IP, and S3 backups bucket              |
+| `infra/terraform/`                  | VPC, EC2 host, instance role, Elastic IP, and S3 backups bucket         |
 | `docker-compose.yaml`, `Dockerfile` | Production containers and app build                                     |
 | `nginx.conf`                        | TLS, proxying, admin authentication, and `/uploads/`                    |
 | `tests/`                            | Catalog, authorization, backup, search, and SEO checks                  |
@@ -138,64 +138,34 @@ nginx serves the website through the app, and serves uploaded product images dir
 
 ### 1. Prepare AWS and DNS inputs
 
-Use an AWS account on the **Paid plan**. New accounts can receive promotional credits on either plan, but the Free plan closes the account after six months or when credits run out, which would take down a live site. Create an AWS Budgets alert before deploying.
+Use an AWS account with permission to create VPC, EC2, IAM, and S3 resources. Set a budget alert before deploying. You need AWS credentials and control of the website domain's DNS records. Terraform creates the VPC and subnet, so you do not need to find or supply VPC, subnet, or instance IP IDs.
 
-Run AWS commands from a workstation or CloudShell with permission to manage the resources in the template. You need:
+### 2. Create the infrastructure with Terraform
 
-- An existing VPC and a **public subnet in that VPC**, with a route to an internet gateway and outbound connectivity for SSM, S3, package installation, and image pulls.
-- Control of the website domain's DNS records.
-- Availability of the template's fixed bucket name: `beautycode-ge-backups`. It is globally unique; change the template if necessary before deploying.
-
-| Parameter        | Default / required input                                  |
-| ---------------- | --------------------------------------------------------- |
-| `VpcId`          | Required existing VPC ID                                  |
-| `SubnetId`       | Required public subnet ID in that VPC                     |
-| `InstanceType`   | `t3.small`; also supports `t3.medium` and `t3.large`      |
-| `RootVolumeSize` | 30 GiB encrypted gp3                                      |
-| `AmiId`          | SSM parameter for the latest Amazon Linux 2023 x86_64 AMI |
-
-### 2. Create the infrastructure
-
-From the repository checkout on your workstation or CloudShell:
+Install Terraform 1.17 or newer and configure AWS credentials using the AWS CLI profile, environment, or another standard provider method. From the repository root:
 
 ```sh
-aws cloudformation validate-template \
-  --template-body file://cloudformation.yml --region eu-central-1
-
-aws cloudformation deploy \
-  --template-file cloudformation.yml \
-  --stack-name beautycode-prod \
-  --parameter-overrides \
-    VpcId=vpc-REPLACE \
-    SubnetId=subnet-REPLACE \
-  --capabilities CAPABILITY_IAM \
-  --region eu-central-1
-
-aws cloudformation describe-stacks \
-  --stack-name beautycode-prod \
-  --region eu-central-1 \
-  --query 'Stacks[0].Outputs' \
-  --output table
+cd infra/terraform
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars and set the real domain.
+terraform init
+terraform fmt -check
+terraform validate
+terraform plan -out=beautycode.tfplan
+terraform apply beautycode.tfplan
+terraform output
 ```
 
-Use the same stack name (`beautycode-prod`) for every later update. A different name creates a second stack, which fails on the fixed bucket name.
+Terraform provisions its own public VPC, subnet, internet gateway, route, security group, EC2 host, Elastic IP, Session Manager role, and encrypted/versioned S3 backup bucket. It installs Docker, Git, host utilities, and swap on Amazon Linux 2023. It does not deploy application code or create DNS records because DNS may be hosted outside AWS. Add an A record for the domain to `public_ip`. Set `.env`'s `S3_BACKUPS_BUCKET` to `backups_bucket` and `AWS_REGION` to the configured region. `instance_id` is the Session Manager connection target.
 
-| Stack output      | Use                                                 |
-| ----------------- | --------------------------------------------------- |
-| `InstanceId`      | Connect through AWS Systems Manager Session Manager |
-| `PublicIp`        | Domain's DNS A record                               |
-| `BackupsBucket`   | `.env`: `S3_BACKUPS_BUCKET`                         |
-| `InstanceProfile` | Already attached to the new EC2 instance            |
-
-The template creates the host, role, security group, Elastic IP, a 2 GiB swap file, and the backups bucket. **It does not install the application, configure DNS, issue certificates, or schedule backups.** Only ports 80 and 443 are open inbound; use Session Manager instead of SSH. The template requires IMDSv2 with hop limit 2 so containers can obtain role credentials. See [AWS metadata guidance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html).
+The bucket name includes the AWS account and region to avoid the old fixed global name. Terraform state is required for future updates; keep it backed up and private. Do not delete the state or run `terraform destroy` against a live site. This setup creates new infrastructure; it does not adopt or migrate resources from an existing CloudFormation stack. Import/migrate existing resources deliberately before applying to avoid duplicate resources or interruption. Only ports 80 and 443 are open inbound; administer through Session Manager. IMDSv2 is required.
 
 ### 3. Prepare the EC2 host
 
-Connect using the EC2 console's **Connect → Session Manager**. Use a host account with sudo access. Install Docker, Git, and `htpasswd` on Amazon Linux 2023. The AWS CLI is preinstalled.
+Connect using the EC2 console's **Connect → Session Manager**. Terraform installs Docker, Git, `htpasswd`, cron, and the AWS CLI on Amazon Linux 2023.
 
 ```sh
-sudo dnf install -y docker git httpd-tools cronie
-sudo systemctl enable --now docker crond
+sudo systemctl status docker crond
 ```
 
 The Docker package follows [AWS's Amazon Linux installation guidance](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-docker.html). Install the Compose CLI plugin for all users using [Docker's installation instructions](https://docs.docker.com/compose/install/linux/), so `sudo docker compose` works too. Install Certbot using a method appropriate for the host; the [Certbot Python virtual-environment instructions](https://certbot.eff.org/instructions?os=pip&ws=nginx) are one option. This deployment uses `certonly`, not Certbot's automatic nginx configuration, because nginx runs inside Docker.
@@ -240,15 +210,15 @@ Edit `.env` using the stack outputs. Preserve it when updating releases.
 | Variable            | Example / source            | Purpose                                                |
 | ------------------- | --------------------------- | ------------------------------------------------------ |
 | `DOMAIN`            | `beautycode.ge`             | nginx hostname; Compose derives the app's HTTPS origin |
-| `AWS_REGION`        | `eu-central-1`              | Same region as the stack                               |
-| `S3_BACKUPS_BUCKET` | `BackupsBucket` output      | Database snapshots and image backups                   |
+| `AWS_REGION`        | Terraform `aws_region`      | Same region as the infrastructure                      |
+| `S3_BACKUPS_BUCKET` | Terraform `backups_bucket`  | Database snapshots and image backups                   |
 | `DB_PATH`           | `/data/beautycode.db`       | SQLite file; set by Compose                            |
 | `UPLOADS_DIR`       | `/data/uploads`             | Uploaded images; set by Compose                        |
 | `MIGRATIONS_DIR`    | `/app/migrations` in Docker | SQL directory inside the container                     |
 
 The server parses environment variables with Zod on the first request and reports invalid values. Production requires `SITE_URL`, `AWS_REGION`, `S3_BACKUPS_BUCKET`, `DB_PATH`, and `UPLOADS_DIR`; Compose derives `SITE_URL` and the build's `VITE_SITE_URL` from `DOMAIN`. The example's relative `MIGRATIONS_DIR=./migrations` also resolves correctly from Docker's `/app` working directory. Compose sets `NODE_ENV`, `HOST`, `PORT`, `DB_PATH`, and `UPLOADS_DIR`. Changing `DOMAIN` updates nginx and the app's canonical origin on the next build and restart.
 
-Use the instance role rather than adding AWS access keys to `.env`. Set the domain's A record to `PublicIp`. The browser origin must match the origin derived from `DOMAIN` for admin writes. Configure only DNS records for addresses this host actually serves; a stale AAAA record can send clients and certificate validation to another host.
+Use the instance role rather than adding AWS access keys to `.env`. Set the domain's A record to `terraform output -raw public_ip`. The browser origin must match the origin derived from `DOMAIN` for admin writes. Configure only DNS records for addresses this host actually serves; a stale AAAA record can send clients and certificate validation to another host.
 
 ### 5. Issue the first certificate and start containers
 
@@ -339,7 +309,7 @@ The script backs up the database and images, checks out the release, builds the 
 
 To roll back, run the script with the previous tag or commit, which it prints when it finishes or fails. Review schema migrations before release; rolling back code alone may not work after a schema change. Restore a snapshot compatible with the rollback release if needed.
 
-Review CloudFormation change sets before infrastructure updates. AMI and root-volume changes can replace the instance. The template retains the root EBS disk on termination, but a replacement instance receives a **new disk**, not the retained catalog. Recover the old data and images from S3 backups before serving traffic from the replacement. Retained disks and buckets continue to incur charges until explicitly removed.
+Review `terraform plan` before infrastructure updates. AMI and root-volume changes can replace the instance. The configuration retains the root EBS disk on termination, but a replacement instance receives a **new disk**, not the retained catalog. Recover the old data and images from S3 backups before serving traffic from the replacement. Retained disks and buckets continue to incur charges until explicitly removed.
 
 Do not run independent writable copies of the same catalog behind the same domain.
 
@@ -370,7 +340,7 @@ To write only an explicit local database export without uploading it:
 sudo docker compose exec -T app node scripts/backup.ts /data/export.db
 ```
 
-Existing output files are never overwritten. Monitor `/var/log/beautycode-backup.log` for failures. Scheduling and monitoring are not created by CloudFormation. Because uploaded images exist only on the host disk and in this S3 copy, a silently failing backup is the main risk of this setup.
+Existing output files are never overwritten. Monitor `/var/log/beautycode-backup.log` for failures. Scheduling and monitoring are not created by Terraform. Because uploaded images exist only on the host disk and in this S3 copy, a silently failing backup is the main risk of this setup.
 
 ### Restore a snapshot
 
@@ -384,7 +354,8 @@ sudo docker compose stop app
 sudo docker compose run --rm --no-deps app \
   node scripts/restore.ts s3:backups/beautycode-TIMESTAMP-ID.db --replace
 mkdir -p data/uploads
-aws s3 sync s3://beautycode-ge-backups/uploads/ ./data/uploads --region eu-central-1
+# Replace BACKUPS_BUCKET_OUTPUT with the backups_bucket Terraform output.
+aws s3 sync s3://BACKUPS_BUCKET_OUTPUT/uploads/ ./data/uploads --region eu-central-1
 sudo chown -R 1000:1000 data/uploads
 # Restart only after both steps succeed.
 sudo docker compose up -d app
