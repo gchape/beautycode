@@ -24,18 +24,20 @@ test("rejects invalid URLs and non-numeric ports with readable variable names", 
 	);
 });
 
-test("requires runtime storage and backup settings in production", () => {
+test("requires runtime storage, backup and image settings in production", () => {
 	assert.throws(
 		() => validateProductionEnvironment({ NODE_ENV: "production" }),
-		/DB_PATH, UPLOADS_DIR, SITE_URL, AWS_REGION, S3_BACKUPS_BUCKET/,
+		/DB_PATH, SITE_URL, AWS_REGION, S3_BACKUPS_BUCKET, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET/,
 	);
 	const env = validateProductionEnvironment({
 		NODE_ENV: "production",
 		DB_PATH: "/data/beautycode.db",
-		UPLOADS_DIR: "/data/uploads",
 		SITE_URL: "https://beautycode.com.ge",
 		AWS_REGION: "eu-central-1",
 		S3_BACKUPS_BUCKET: "beautycode-ge-backups",
+		CLOUDINARY_CLOUD_NAME: "demo",
+		CLOUDINARY_API_KEY: "key",
+		CLOUDINARY_API_SECRET: "secret",
 	});
 	assert.equal(env.NODE_ENV, "production");
 	assert.equal(env.PORT, 3000);

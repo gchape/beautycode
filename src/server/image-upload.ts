@@ -1,50 +1,67 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, rename, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { v2 as cloudinary } from "cloudinary";
 import { imageTypes, maxImageUploadBytes } from "../data/image-types.ts";
-import { uploadsDirectory } from "./config.ts";
+import { readServerEnvironment } from "./config.ts";
 
-const signatures: Record<keyof typeof imageTypes, (bytes: Buffer) => boolean> =
-	{
-		"image/webp": (b) =>
-			b.toString("ascii", 0, 4) === "RIFF" &&
-			b.toString("ascii", 8, 12) === "WEBP",
-		"image/png": (b) =>
-			b.length >= 8 &&
-			b.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])),
-		"image/jpeg": (b) =>
-			b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
-		"image/avif": (b) =>
-			b.length >= 12 &&
-			b.toString("ascii", 4, 8) === "ftyp" &&
-			/^(avif|avis)$/.test(b.toString("ascii", 8, 12)),
-	};
+type ImageType = keyof typeof imageTypes;
 
-export function detectImageType(
-	bytes: Buffer,
-): keyof typeof imageTypes | undefined {
-	return (Object.keys(signatures) as (keyof typeof imageTypes)[]).find((type) =>
+const hasPrefix = (b: Buffer, prefix: number[], offset = 0) =>
+	prefix.every((byte, i) => b[offset + i] === byte);
+
+const ascii = (b: Buffer, start: number, end: number) =>
+	b.toString("ascii", start, end);
+
+const signatures: Record<ImageType, (b: Buffer) => boolean> = {
+	"image/png": (b) => hasPrefix(b, [137, 80, 78, 71, 13, 10, 26, 10]),
+	"image/jpeg": (b) => hasPrefix(b, [0xff, 0xd8, 0xff]),
+	"image/webp": (b) => ascii(b, 0, 4) === "RIFF" && ascii(b, 8, 12) === "WEBP",
+	"image/avif": (b) =>
+		ascii(b, 4, 8) === "ftyp" && ["avif", "avis"].includes(ascii(b, 8, 12)),
+};
+
+export function detectImageType(bytes: Buffer): ImageType | undefined {
+	return (Object.keys(signatures) as ImageType[]).find((type) =>
 		signatures[type](bytes),
 	);
 }
 
+const httpError = (message: string, status: number) =>
+	new Response(message, { status });
+
 export async function saveUploadedImage(bytes: Buffer, contentType: string) {
 	if (!bytes.length || bytes.length > maxImageUploadBytes)
-		throw new Response("Image exceeds the 5 MB upload limit", { status: 413 });
-	const type = detectImageType(bytes);
-	if (!type || type !== contentType)
-		throw new Response("Unsupported or invalid image file", { status: 400 });
-	const directory = resolve(uploadsDirectory());
-	await mkdir(directory, { recursive: true });
-	const name = `${randomUUID()}.${imageTypes[type]}`;
-	const temporary = join(directory, `.${name}.tmp`);
-	try {
-		await writeFile(temporary, bytes, { flag: "wx", mode: 0o644 });
-		await rename(temporary, join(directory, name));
-	} catch (error) {
-		const { unlink } = await import("node:fs/promises");
-		await unlink(temporary).catch(() => {});
-		throw error;
-	}
-	return `/uploads/${name}`;
+		throw httpError("Image exceeds the 5 MB upload limit", 413);
+
+	if (detectImageType(bytes) !== contentType)
+		throw httpError("Unsupported or invalid image file", 400);
+
+	const env = readServerEnvironment();
+	const cloudName = env.CLOUDINARY_CLOUD_NAME;
+	const apiKey = env.CLOUDINARY_API_KEY;
+	const apiSecret = env.CLOUDINARY_API_SECRET;
+	if (!cloudName || !apiKey || !apiSecret)
+		throw httpError("Image uploads are not configured", 503);
+
+	return new Promise<string>((resolve, reject) => {
+		const fail = () =>
+			reject(httpError("Image upload failed. Please try again.", 502));
+
+		cloudinary.uploader
+			.upload_stream(
+				{
+					cloud_name: cloudName,
+					api_key: apiKey,
+					api_secret: apiSecret,
+					resource_type: "image",
+					public_id: `beautycode/products/${randomUUID()}`,
+					overwrite: false,
+					allowed_formats: Object.values(imageTypes),
+					timeout: 60000,
+				},
+				(error, result) =>
+					error || !result?.secure_url ? fail() : resolve(result.secure_url),
+			)
+			.on("error", fail)
+			.end(bytes);
+	});
 }

@@ -8,6 +8,10 @@ import { saveCategory, saveProduct } from "../src/server/admin/repository.ts";
 import { migrateDatabase } from "../src/server/migrations.ts";
 import { getAdminProduct } from "../src/server/products.ts";
 
+const cleanser =
+	"https://res.cloudinary.com/test/image/upload/v1/face-cleanser.png";
+const kit = "https://res.cloudinary.com/test/image/upload/v1/ipl-kit.png";
+
 function database() {
 	const db = new DatabaseSync(":memory:");
 	db.exec("PRAGMA foreign_keys=ON");
@@ -27,7 +31,7 @@ const product = {
 	meta_description: "",
 	is_featured: true,
 	features: ["რეჟიმი"],
-	images: [{ url: "/images/face-cleanser-cutout.png", alt: "ვაკუუმი" }],
+	images: [{ url: cleanser, alt: "ვაკუუმი" }],
 };
 
 test("admin requires a proxy identity and same-origin writes", () => {
@@ -76,17 +80,14 @@ test("product edits preserve slugs, exact prices, gallery order and search synch
 				name: "შეცვლილი დასახელება",
 				status: "published",
 				sale_price_minor: 0,
-				images: [
-					{ url: "/images/ipl-kit-cutout.png", alt: "ნაკრები" },
-					...product.images,
-				],
+				images: [{ url: kit, alt: "ნაკრები" }, ...product.images],
 			},
 			"editor",
 		);
 		assert.equal(edited.slug, first.slug);
 		const rows = [getAdminProduct(db, first.id)];
 		assert.equal(rows[0].sale_price_minor, 0);
-		assert.equal(rows[0].images[0].url, "/images/ipl-kit-cutout.png");
+		assert.equal(rows[0].images[0].url, kit);
 		assert.equal(rows[0].images.length, 2);
 		assert.deepEqual(rows[0].features, ["რეჟიმი"]);
 		assert.equal(
@@ -126,27 +127,17 @@ test("product edits preserve slugs, exact prices, gallery order and search synch
 	}
 });
 
-test("product validation accepts generated upload paths and rejects unsafe upload paths", () => {
-	const uploaded = {
-		...product,
-		images: [
-			{
-				url: "/uploads/550e8400-e29b-41d4-a716-446655440000.webp",
-				alt: "ატვირთული სურათი",
-			},
-		],
-	};
-	assert.equal(
-		productInput.parse(uploaded).images[0].url,
-		uploaded.images[0].url,
-	);
-	assert.equal(
-		productInput.safeParse({
-			...uploaded,
-			images: [{ url: "/uploads/../private.webp", alt: "bad" }],
-		}).success,
-		false,
-	);
+test("image URLs must be HTTPS; local and unsafe paths are rejected", () => {
+	const accepts = (url) =>
+		productInput.safeParse({ ...product, images: [{ url, alt: "x" }] }).success;
+	assert.equal(accepts(cleanser), true);
+	for (const bad of [
+		"/uploads/550e8400-e29b-41d4-a716-446655440000.webp",
+		"/images/face-cleanser-cutout.png",
+		"http://example.com/a.png",
+		"javascript:alert(1)",
+	])
+		assert.equal(accepts(bad), false);
 });
 
 test("categories can be reordered, renamed and hidden without changing slugs", () => {

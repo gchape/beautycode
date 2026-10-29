@@ -7,7 +7,6 @@ export const serverEnvironmentSchema = z.object({
 	HOST: optionalNonEmpty,
 	PORT: z.coerce.number().int().min(1).max(65535).default(3000),
 	DB_PATH: optionalNonEmpty,
-	UPLOADS_DIR: optionalNonEmpty,
 	SITE_URL: z
 		.string()
 		.url()
@@ -21,6 +20,9 @@ export const serverEnvironmentSchema = z.object({
 		.optional(),
 	AWS_REGION: optionalNonEmpty,
 	S3_BACKUPS_BUCKET: optionalNonEmpty,
+	CLOUDINARY_CLOUD_NAME: optionalNonEmpty,
+	CLOUDINARY_API_KEY: optionalNonEmpty,
+	CLOUDINARY_API_SECRET: optionalNonEmpty,
 	MIGRATIONS_DIR: optionalNonEmpty,
 });
 
@@ -28,10 +30,12 @@ export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type ProductionServerEnvironment = ServerEnvironment & {
 	NODE_ENV: "production";
 	DB_PATH: string;
-	UPLOADS_DIR: string;
 	SITE_URL: string;
 	AWS_REGION: string;
 	S3_BACKUPS_BUCKET: string;
+	CLOUDINARY_CLOUD_NAME: string;
+	CLOUDINARY_API_KEY: string;
+	CLOUDINARY_API_SECRET: string;
 };
 
 export function readServerEnvironment(
@@ -55,10 +59,12 @@ export function validateProductionEnvironment(
 
 	const required = [
 		"DB_PATH",
-		"UPLOADS_DIR",
 		"SITE_URL",
 		"AWS_REGION",
 		"S3_BACKUPS_BUCKET",
+		"CLOUDINARY_CLOUD_NAME",
+		"CLOUDINARY_API_KEY",
+		"CLOUDINARY_API_SECRET",
 	] as const;
 	const missing = required.filter((key) => !env[key]);
 	if (missing.length)
@@ -78,13 +84,5 @@ export const databasePath = () => {
 		(env.NODE_ENV === "development"
 			? "data-dev/beautycode.db"
 			: "data/beautycode.db")
-	);
-};
-
-export const uploadsDirectory = () => {
-	const env = readServerEnvironment();
-	return (
-		env.UPLOADS_DIR ||
-		(env.NODE_ENV === "development" ? "data-dev/uploads" : "data/uploads")
 	);
 };

@@ -9,4 +9,4 @@ if (process.env.NODE_ENV === "production") {
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const developmentData = resolve(repositoryRoot, "data-dev");
 await rm(developmentData, { recursive: true, force: true });
-console.log("Removed the local development database, uploads, and backups.");
+console.log("Removed the local development database and backups.");

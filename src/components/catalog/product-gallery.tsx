@@ -5,7 +5,7 @@ import type { PublicProduct } from "../../data/catalog.ts";
 import { productImageProps } from "../../lib/product-images.ts";
 
 export function ProductGallery({ product }: { product: PublicProduct }) {
-	const images = product.images;
+	const { images } = product;
 	const [selected, setSelected] = useState(0);
 	const current = images[selected] ?? images[0];
 	return (
@@ -41,7 +41,7 @@ export function ProductGallery({ product }: { product: PublicProduct }) {
 							onClick={() => setSelected(index)}
 						>
 							<img
-								{...productImageProps(image.url, "80px")}
+								{...productImageProps(image.url, "80px", "thumbnail")}
 								alt={image.alt || product.name}
 								width="80"
 								height="80"

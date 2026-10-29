@@ -25,7 +25,7 @@ Open <http://localhost:3000> or <http://localhost:3000/admin>. Development admin
 | Admin authentication | No login; localhost only      | nginx Basic Auth                                              |
 | Database             | `data-dev/beautycode.db`      | Host `./data/beautycode.db`, mounted as `/data/beautycode.db` |
 | Admin writes         | Temporary local changes       | Authenticated, same-origin requests                           |
-| Image uploads        | `data-dev/uploads/`           | `./data/uploads/`, served by nginx at `/uploads/`             |
+| Image uploads        | Cloudinary | Cloudinary |
 | Backup               | Local `data-dev/backups/*.db` | Upload to S3; local snapshot removed after success            |
 
 Vite sets `NODE_ENV=development`. Development writes need no AWS credentials. The default database, uploaded images, and local backups are kept under the ignored `data-dev/` directory. Set `DB_PATH` or `UPLOADS_DIR` to override either path. To discard development changes, stop the dev server and run:
@@ -93,7 +93,7 @@ flowchart TD
     Admin --> Writes["Transactional writes and audit log"]
     Reads --> DB[("SQLite: catalog, images, audit, search")]
     Writes --> DB
-    Admin --> Uploads["Validated image writes to data/uploads"]
+    Admin --> Uploads["Validated image uploads to Cloudinary"]
     Admin --> Snapshot["SQLite snapshot service"]
     Snapshot --> BackupBucket[("S3 backups")]
 ```
@@ -269,7 +269,7 @@ sequenceDiagram
 
 The nginx container renders `nginx.conf` with `DOMAIN` on startup. `NGINX_ENVSUBST_FILTER` preserves nginx's own `$host` and `$request_uri` variables. The app health check exercises the database before nginx starts.
 
-Verify storefront browsing, `/admin` authentication, a product edit, and an image upload. Confirm the uploaded image loads from `https://beautycode.com.ge/uploads/...` and that the file exists under `data/uploads/`. A successful health check does not validate uploads or backups, so also run `./scripts/backup.sh` once by hand.
+Verify storefront browsing, `/admin` authentication, a product edit, and an image upload. Confirm the uploaded image loads from `https://res.cloudinary.com/...`. A successful health check does not validate uploads or backups, so also run `./scripts/backup.sh` once by hand.
 
 ### 6. Configure certificate renewal
 
@@ -379,35 +379,29 @@ For a lost or replacement host, repeat host setup, restore `.env` and admin cred
 
 ### Image storage
 
-Bundled images ship with the app. Images added in the admin are resized and encoded in the browser, then uploaded to the app through nginx. The app validates the file and writes it to `data/uploads/`; nginx serves it from disk at `/uploads/<name>`.
+Admin uploads send the original file through the authenticated application endpoint
+to Cloudinary. The server enforces a 5 MB limit and validates PNG/JPEG/WebP/AVIF
+signatures. Cloudinary stores the original; product cards and galleries request
+responsive sizes with automatic format and quality. There is no browser canvas
+conversion or local file write.
 
 ```mermaid
 sequenceDiagram
-    participant Admin as Admin browser
-    participant Nginx
+    participant Admin
     participant App
-    participant Disk as data/uploads
+    participant Cloudinary
     participant Customer
-    Admin->>Admin: Resize and encode image
-    Admin->>Nginx: POST image (Basic Auth, 6 MB limit)
-    Nginx->>App: Forward with trusted admin identity
-    App->>App: Validate type, size, and dimensions
-    App->>Disk: Write under a new unique name
-    App-->>Admin: Public path /uploads/name
-    Admin->>App: Save product with image reference
-    Customer->>Nginx: GET /uploads/name
-    Nginx->>Disk: Read file
-    Nginx-->>Customer: Image, cached for 30 days
+    Admin->>App: Upload original (authenticated)
+    App->>App: Validate size and file type
+    App->>Cloudinary: Upload using server credentials
+    Cloudinary-->>App: HTTPS delivery URL
+    App-->>Admin: Delivery URL
+    Admin->>App: Save product with URL
+    Customer->>Cloudinary: Request optimized image
 ```
 
-Rules the upload code must follow, because files are served from the same origin as the site:
-
-- Check the real file type from its contents, not the filename or client-supplied type, and accept only raster images (JPEG, PNG, WebP, AVIF). Do not accept SVG.
-- Enforce a size limit in the app (smaller than nginx's 6 MB).
-- Generate the filename on the server (random, with a fixed extension). Never reuse a name or use any part of the client's filename or path.
-- Write to a temporary name, then rename, so nginx never serves a partial file.
-
-nginx caches `/uploads/` as `immutable` for 30 days, which is safe only because a name is never reused. Removing a gallery image removes its database reference, not the file. There is no separate bundled-image publishing command.
+Existing `/uploads/` files remain served by nginx for compatibility. Removing an
+image from a product removes its database reference, not the Cloudinary asset.
 
 ## Troubleshooting
 
@@ -436,3 +430,29 @@ sudo docker compose exec -T nginx nginx -t
 | Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                     |
 | Certificate renewal fails                         | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook                                                |
 | Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile                                       |
+
+### Cloudinary product images
+
+Upload product originals in the Cloudinary console, then paste each original HTTPS
+image delivery URL into the product's image URL field in the admin editor.
+Use `https://res.cloudinary.com/<cloud>/image/upload/v<version>/<public-id>.webp`
+(or the unversioned upload URL). Folder paths are supported. Keep the version in
+the URL when replacing an asset to avoid stale cached images.
+
+The Cloudinary JavaScript SDK generates responsive widths for cards, galleries,
+and thumbnails, with automatic format and quality selection. Image delivery does not require an API secret.
+Existing non-Cloudinary URLs continue to work. Replace retired bundled image URLs in the catalog with Cloudinary URLs. Homepage artwork was removed
+and is not automatically restored by updating product images.
+
+Admin image uploads now go through the authenticated server endpoint to Cloudinary
+using its Node SDK. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and
+`CLOUDINARY_API_SECRET` in the server `.env` (never prefix these with `VITE_`).
+Docker Compose already loads this file at runtime; recreate the app container after
+changing credentials. For local development, restart the dev server.
+
+Uploads retain the 5 MB limit and PNG/JPEG/WebP/AVIF validation, use unique public
+IDs under `beautycode/products`, and return the HTTPS URL to the editor. Saving the
+product persists that URL. No new files are written to local upload storage.
+Removing an image from a product does not delete its Cloudinary asset; unused
+assets can be removed in the Cloudinary console. Existing local uploads are still
+served for compatibility. Uploads return 503 until credentials are configured.

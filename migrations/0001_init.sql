@@ -122,9 +122,6 @@ VALUES (
     '["1 მილიონი იმპულსი", "Smart სენსორი", "გაგრილების ფუნქცია", "ავტომატური რეჟიმი", "სიმძლავრის 5 დონე", "5-წლიანი გარანტია"]'
 );
 
-INSERT INTO product_images (product_id, url, alt)
-SELECT id, '/images/ipl-colors-cutout.png', name FROM products WHERE slug = 'ipl-epilator';
-
 INSERT INTO products (
     slug,
     name,
@@ -151,9 +148,6 @@ VALUES (
     1,
     '["1 მილიონი იმპულსი", "სიმძლავრის 9 დონე", "2 თავაკი და დამცავი სათვალე", "მოყინვის ფუნქცია", "HR — ეპილაციის რეჟიმი", "SC — კანის მოვლის რეჟიმი", "RA — აკნეს საწინააღმდეგო რეჟიმი", "5-წლიანი ოფიციალური გარანტია"]'
 );
-
-INSERT INTO product_images (product_id, url, alt)
-SELECT id, '/images/ipl-kit-cutout.png', name FROM products WHERE slug = 'premium-ipl-epilator';
 
 INSERT INTO products (
     slug,
@@ -182,9 +176,6 @@ VALUES (
     '["630 ნმ სინათლე", "სკალპის დამამშვიდებელი მასაჟი", "შრატის განაწილების 8-ბურთიანი სისტემა", "გამოიყენება შრატთან ან თხევად მოვლის საშუალებასთან ერთად", "5-წლიანი ოფიციალური გარანტია"]'
 );
 
-INSERT INTO product_images (product_id, url, alt)
-SELECT id, '/images/scalp-massager-cutout.png', name FROM products WHERE slug = 'scalp-massager';
-
 INSERT INTO products (
     slug,
     name,
@@ -212,9 +203,6 @@ VALUES (
     '["HOT — თბილი მასაჟი", "IR — 3 ფერის LED რეჟიმი", "EMS — მიკროდენების რეჟიმი", "9 რეგულირებადი დონე", "წითელი, მწვანე და ლურჯი სინათლე", "სახისა და ყელის მასაჟისთვის"]'
 );
 
-INSERT INTO product_images (product_id, url, alt)
-SELECT id, '/images/face-massager-cutout.png', name FROM products WHERE slug = 'face-massager';
-
 INSERT INTO products (
     slug,
     name,
@@ -241,9 +229,6 @@ VALUES (
     1,
     '["1200 პულსი წუთში", "IPX7 წყალგამძლეობა", "პორტატული მოწყობილობა მოგზაურობისთვის", "5-წლიანი ოფიციალური გარანტია", "უფასო საკურიერო მიწოდება"]'
 );
-
-INSERT INTO product_images (product_id, url, alt)
-SELECT id, '/images/oral-irrigator-cutout.png', name FROM products WHERE slug = 'oral-irrigator';
 
 INSERT INTO products (
     slug,
@@ -273,4 +258,19 @@ VALUES (
 );
 
 INSERT INTO product_images (product_id, url, alt)
-SELECT id, '/images/face-cleanser-cutout.png', name FROM products WHERE slug = 'face-cleanser';
+SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-1>.png', name FROM products WHERE slug = 'ipl-epilator';
+
+INSERT INTO product_images (product_id, url, alt)
+SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-2>.png', name FROM products WHERE slug = 'premium-ipl-epilator';
+
+INSERT INTO product_images (product_id, url, alt)
+SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-3>.png', name FROM products WHERE slug = 'scalp-massager';
+
+INSERT INTO product_images (product_id, url, alt)
+SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-4>.png', name FROM products WHERE slug = 'face-massager';
+
+INSERT INTO product_images (product_id, url, alt)
+SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-5>.png', name FROM products WHERE slug = 'oral-irrigator';
+
+INSERT INTO product_images (product_id, url, alt)
+SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-6>.png', name FROM products WHERE slug = 'face-cleanser';
