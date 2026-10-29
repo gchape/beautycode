@@ -22,7 +22,7 @@ export function ProductGallery({ product }: { product: PublicProduct }) {
 			</div>
 			{images.length > 1 && (
 				<fieldset
-					className="mt-4 flex flex-wrap gap-2.5 [&_button]:rounded-md [&_button]:border [&_button]:border-border [&_button]:p-[5px] [&_button[aria-pressed=true]]:border-primary [&_img]:size-[70px] [&_img]:object-contain"
+					className="mt-4 flex flex-wrap gap-2.5 [&_button]:rounded-md [&_button]:border [&_button]:border-border [&_button]:p-1.25 [&_button[aria-pressed=true]]:border-primary [&_img]:size-17.5 [&_img]:object-contain"
 					aria-label="პროდუქტის სურათები"
 				>
 					{images.map((image, index) => (

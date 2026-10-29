@@ -14,7 +14,7 @@ export function CatalogSearchForm({
 	const [query, setQuery] = useState(defaultValue);
 	return (
 		<form
-			className="mb-[25px] flex items-center gap-[15px] rounded-lg border border-border p-[7px] pl-5 max-[560px]:gap-2 max-[560px]:pl-3"
+			className="mb-6 flex items-center gap-3.75 rounded-lg border border-border p-1.75 pl-5 max-[560px]:gap-2 max-[560px]:pl-3"
 			onSubmit={(e) => {
 				e.preventDefault();
 				onSearch(query || undefined);
@@ -32,10 +32,7 @@ export function CatalogSearchForm({
 				maxLength={200}
 				onChange={(e) => setQuery(e.target.value)}
 			/>
-			<Button
-				className="max-[560px]:px-[15px] max-[560px]:py-2.5"
-				type="submit"
-			>
+			<Button className="max-[560px]:px-3.75 max-[560px]:py-2.5" type="submit">
 				ძებნა
 			</Button>
 		</form>

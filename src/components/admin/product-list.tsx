@@ -85,7 +85,7 @@ export function ProductList({
 						{rows.map((p) => (
 							<tr key={p.id}>
 								<td>
-									<div className="flex min-w-[220px] items-center gap-3">
+									<div className="flex min-w-55 items-center gap-3">
 										<div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted">
 											{coverImage(p) ? (
 												<img
