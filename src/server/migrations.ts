@@ -2,11 +2,13 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
+import { readServerEnvironment } from "./config.ts";
 import { withTransaction } from "./transaction.ts";
 
 // Native scripts resolve from this module; bundled deployments supply MIGRATIONS_DIR.
-const migrationsDir = process.env.MIGRATIONS_DIR
-	? resolve(process.env.MIGRATIONS_DIR)
+const configuredMigrationsDir = readServerEnvironment().MIGRATIONS_DIR;
+const migrationsDir = configuredMigrationsDir
+	? resolve(configuredMigrationsDir)
 	: fileURLToPath(new URL("../../migrations/", import.meta.url));
 
 const migrations = readdirSync(migrationsDir)

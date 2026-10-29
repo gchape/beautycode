@@ -1,4 +1,4 @@
-import { isDevelopment } from "../config.ts";
+import { isDevelopment, readServerEnvironment } from "../config.ts";
 
 export function requireAdmin(request: Request): string {
 	// The trusted proxy must strip client-supplied x-remote-user and set it only
@@ -15,7 +15,8 @@ export function requireAdmin(request: Request): string {
 				{ status: 403 },
 			);
 		const origin = request.headers.get("origin");
-		const allowed = process.env.SITE_URL || new URL(request.url).origin;
+		const allowed =
+			readServerEnvironment().SITE_URL || new URL(request.url).origin;
 		if (!origin || origin !== new URL(allowed).origin)
 			throw new Response("Forbidden origin", { status: 403 });
 	}
