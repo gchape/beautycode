@@ -4,12 +4,21 @@ export function HomeFaq() {
 	return (
 		<section
 			aria-labelledby="faq-title"
-			className="mx-auto mb-16 w-[min(900px,calc(100%-32px))]"
+			className="site-container home-section mb-16 grid gap-8 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
 		>
-			<h2 id="faq-title" className="mb-6 text-2xl">
-				ხშირად დასმული კითხვები
-			</h2>
-			<div className="divide-y divide-border [&_details]:py-5 [&_summary]:cursor-pointer [&_summary]:font-medium [&_p]:mt-3 [&_p]:leading-8 [&_p]:text-muted-foreground [&_a]:underline">
+			<div>
+				<p className="home-eyebrow mb-3">კარგია, რომ იკითხე</p>
+				<h2
+					id="faq-title"
+					className="mb-3 text-2xl leading-relaxed sm:text-3xl"
+				>
+					ხშირად დასმული კითხვები
+				</h2>
+				<p className="text-sm text-muted-foreground">
+					ყველაფერი, რაც შეკვეთამდე უნდა იცოდე.
+				</p>
+			</div>
+			<div className="divide-y divide-border border-t border-border [&_details]:py-5 [&_summary]:cursor-pointer [&_summary]:font-medium [&_p]:mt-3 [&_p]:leading-8 [&_p]:text-muted-foreground [&_a]:underline">
 				<details>
 					<summary>რა პროდუქტებია Beauty Code-ში?</summary>
 					<p>

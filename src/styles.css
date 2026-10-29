@@ -158,3 +158,58 @@
 		scroll-behavior: auto;
 	}
 }
+
+/* Shared storefront layout and homepage rhythm. */
+@utility site-container {
+	width: min(1240px, calc(100% - 32px));
+	margin-inline: auto;
+	@media (min-width: 640px) {
+		width: min(1240px, calc(100% - 48px));
+	}
+	@media (min-width: 1100px) {
+		width: min(1240px, calc(100% - 80px));
+	}
+}
+
+.home-section {
+	padding-top: clamp(3rem, 6vw, 5rem);
+}
+.home-eyebrow {
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+}
+.home-hero {
+	display: grid;
+	overflow: hidden;
+	border-radius: 1rem;
+	background: #f5eee8;
+}
+@media (min-width: 1024px) {
+	.home-hero {
+		grid-template-columns: 1.4fr 1fr;
+	}
+}
+.home-benefit {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	min-height: 44px;
+	text-align: left;
+	font-size: 0.8125rem;
+}
+.home-benefit > svg {
+	width: 24px;
+	height: 24px;
+	flex-shrink: 0;
+	stroke-width: 1.25;
+}
+.home-benefit small {
+	display: block;
+	margin-top: 0.25rem;
+	font-size: 0.75rem;
+	color: var(--muted-foreground);
+}
+.home-benefit:hover {
+	color: #986074;
+}
