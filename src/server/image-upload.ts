@@ -53,7 +53,7 @@ export async function saveUploadedImage(bytes: Buffer, contentType: string) {
 					api_key: apiKey,
 					api_secret: apiSecret,
 					resource_type: "image",
-					public_id: `beautycode/products/${randomUUID()}`,
+					public_id: randomUUID(),
 					overwrite: false,
 					allowed_formats: Object.values(imageTypes),
 					timeout: 60000,

@@ -39,7 +39,7 @@ This removes `data-dev/`, including its database, backups, and any legacy local 
 
 ### Schema and reset
 
-[`migrations/0001_init.sql`](migrations/0001_init.sql) creates the complete schema and seeds six products and four categories. The seed currently contains placeholder Cloudinary URLs: replace them before initializing a fresh database. For an existing database, update `product_images.url` directly or upload replacements in the admin editor. Migrations run when the database is first opened; applied migrations never run again. For future schema changes, add a numbered migration instead of editing an applied one.
+[`migrations/0001_init.sql`](migrations/0001_init.sql) creates the complete schema and seeds six products and four categories with Cloudinary image URLs. For an existing database, update `product_images.url` directly or upload replacements in the admin editor. Migrations run when the database is first opened; applied migrations never run again. For future schema changes, add a numbered migration instead of editing an applied one.
 
 This repository now uses a **fresh schema-version-1 baseline**. Databases and snapshots from the previous three-migration history must not be reused. To reset the disposable development catalog, stop the dev server and remove all development data:
 
@@ -428,7 +428,7 @@ it does not have a field for pasting URLs. For console-uploaded assets, update
 PNG, JPEG, and AVIF originals work too; WebP is not required. Keep the version
 when replacing assets to avoid stale cached images.
 
-Uploads use unique IDs under `beautycode/products`. Saving the product persists
+Uploads use unique IDs without a folder prefix. Saving the product persists
 the returned HTTPS URL. The shared delivery helper generates responsive sizes
 with automatic format and quality for cards, galleries, and admin thumbnails;
 social previews request JPEG. Other HTTPS URLs remain unchanged. The homepage
