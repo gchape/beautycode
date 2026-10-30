@@ -38,7 +38,7 @@ export function CatalogOverview({
 						<Icon size={17} aria-hidden="true" />
 					</dt>
 					<dd className="mt-3 text-3xl font-semibold tabular-nums">
-						{pending ? "—" : count}
+						{pending ? "…" : count}
 					</dd>
 				</div>
 			))}

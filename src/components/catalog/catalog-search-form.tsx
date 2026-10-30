@@ -27,6 +27,8 @@ export function CatalogSearchForm({
 			<Input
 				className="h-auto min-w-0 flex-1 border-0 bg-transparent p-2.5 text-[length:inherit] shadow-none outline-offset-0 md:text-[length:inherit]"
 				id="search"
+				type="search"
+				autoComplete="off"
 				placeholder="რას ეძებ?"
 				value={query}
 				maxLength={200}

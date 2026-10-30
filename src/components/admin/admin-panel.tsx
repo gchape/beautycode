@@ -54,7 +54,7 @@ export function AdminPanel() {
 						კატალოგის მართვა
 					</h1>
 					<p className="mt-2 mb-0 text-sm text-muted-foreground">
-						პროდუქტები, კატეგორიები და ცვლილებები — ერთ სივრცეში.
+						პროდუქტები, კატეგორიები და ცვლილებები. ერთ სივრცეში.
 					</p>
 				</div>
 				<Button
@@ -76,7 +76,7 @@ export function AdminPanel() {
 					className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900"
 					role="status"
 				>
-					დეველოპმენტის მონაცემები დროებითია — ნაგულისხმევად ინახება data-dev/
+					დეველოპმენტის მონაცემები დროებითია. ნაგულისხმევად ინახება data-dev/
 					საქაღალდეში და production-ზე არ აისახება. წასაშლელად გამოიყენეთ pnpm
 					clean:dev.
 				</p>

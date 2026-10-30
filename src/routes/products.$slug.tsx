@@ -48,7 +48,7 @@ function ProductPage() {
 	const product = Route.useLoaderData();
 	const openChat = useOpenChat();
 	return (
-		<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
+		<section className="site-container min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
 			<Breadcrumb title={product.name} />
 			<div className="grid grid-cols-2 gap-16.25 [&_h1]:my-5 [&_h1]:text-[2rem] max-[800px]:gap-7.5 max-[800px]:[&_h1]:text-[1.6875rem] max-[800px]:grid-cols-1 max-[560px]:gap-8.75">
 				<ProductGallery key={product.id} product={product} />

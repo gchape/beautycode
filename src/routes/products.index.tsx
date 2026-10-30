@@ -41,11 +41,8 @@ function Catalog() {
 		search.q || search.category || search.discount || search.max !== undefined,
 	);
 	return (
-		<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
+		<section className="site-container min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
 			<Breadcrumb title="ყველა პროდუქტი" />
-			<span className="block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
-				იპოვე შენი სილამაზის კოდი
-			</span>
 			<h1>ყველა პროდუქტი</h1>
 			<CatalogSearchForm
 				key={search.q || ""}
@@ -56,16 +53,20 @@ function Catalog() {
 			/>
 			<CatalogFilters search={search} onChange={update} />
 			<div className="my-7.5 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-				<span>{products.length} პროდუქტი</span>
-				<Button
-					className="min-h-0 bg-transparent p-0 text-[length:inherit] underline hover:bg-transparent"
-					variant="ghost"
-					onClick={() => {
-						void navigate({ search: {} });
-					}}
-				>
-					ფილტრების გასუფთავება
-				</Button>
+				<span role="status" aria-live="polite">
+					{products.length} პროდუქტი
+				</span>
+				{(hasFilters || search.sort) && (
+					<Button
+						className="min-h-11 bg-transparent px-2 text-[length:inherit] underline hover:bg-transparent"
+						variant="ghost"
+						onClick={() => {
+							void navigate({ search: {} });
+						}}
+					>
+						ფილტრების გასუფთავება
+					</Button>
+				)}
 			</div>
 			{!products.length && hasFilters ? (
 				<Card className="block rounded-lg border border-border bg-[#faf6f6] px-5.5 py-13.75 text-center shadow-none [&>svg]:mx-auto [&>svg]:mb-5 [&>svg]:text-[#a77a8a] [&_h2]:text-[1.375rem] [&_p]:text-[0.9375rem] [&_p]:text-muted-foreground max-[560px]:px-4.5 max-[560px]:py-10 max-[560px]:[&_h2]:text-[1.1875rem]">

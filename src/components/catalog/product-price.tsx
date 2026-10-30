@@ -10,9 +10,11 @@ export function ProductPrice({
 	const price = finalPrice(product);
 	return (
 		<p className={className}>
-			<span>{money(price)}</span>{" "}
+			<span className="font-semibold tabular-nums text-foreground">
+				{money(price)}
+			</span>{" "}
 			{price < product.price_minor && (
-				<del className="ml-3 text-base text-[#8b777d]">
+				<del className="ml-3 text-base font-medium tabular-nums text-ring decoration-1">
 					{money(product.price_minor)}
 				</del>
 			)}
