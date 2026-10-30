@@ -38,9 +38,6 @@ export function MobileMenu() {
 				className="w-[min(380px,calc(100vw-28px))] max-w-none gap-0 overflow-y-auto px-6 py-7.5 sm:max-w-none"
 			>
 				<div className="pr-7">
-					<span className="mb-4 block text-[0.6875rem] font-medium tracking-[0.16em] text-muted-foreground">
-						BEAUTY CODE
-					</span>
 					<SheetTitle className="m-0 text-xl leading-[1.6] font-medium">
 						აღმოაჩინე შენი რჩეული
 					</SheetTitle>

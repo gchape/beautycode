@@ -9,7 +9,7 @@ export function SiteHeader() {
 	const categories = useCategories();
 	const openChat = useOpenChat();
 	return (
-		<header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0 py-5 max-[560px]:gap-x-2 max-[560px]:py-3 mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)]">
+		<header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0 py-5 max-[560px]:gap-x-2 max-[560px]:py-3 site-container">
 			<Link
 				to="/"
 				className="flex min-w-0 w-fit items-center gap-2.25"

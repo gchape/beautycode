@@ -11,8 +11,7 @@ export function FeaturedProducts({ products }: { products: PublicProduct[] }) {
 			className="site-container home-section scroll-mt-8"
 		>
 			<SectionHeading
-				eyebrow="BEAUTY CODE-ის კოლექცია"
-				title="შერჩეული შენი ყოველდღიურობისთვის"
+				title="შერჩეული პროდუქტები"
 				action={
 					<Link
 						className="inline-flex min-h-11 items-center gap-3 border-b border-current text-sm"

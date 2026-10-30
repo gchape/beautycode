@@ -16,7 +16,7 @@ export function ProductDescriptionFields({
 					defaultValue={product?.description}
 				/>
 			</Field>
-			<Field label="მახასიათებლები — თითო ხაზზე ერთი">
+			<Field label="მახასიათებლები. თითო ხაზზე ერთი">
 				<textarea
 					name="features"
 					rows={5}

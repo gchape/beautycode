@@ -15,11 +15,16 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 	const image = coverImage(product);
 	const discount = discountPercent(product);
 	return (
-		<Card className="block min-w-0 wrap-anywhere border-0 bg-transparent p-0 shadow-none">
-			<Link to="/products/$slug" params={{ slug: product.slug }}>
-				<div className="relative grid aspect-square place-items-center overflow-hidden rounded-[9px] bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-6">
+		<Card className="group flex h-full min-w-0 flex-col gap-0 wrap-anywhere border-0 bg-transparent p-0 shadow-none">
+			<Link
+				className="flex flex-1 flex-col rounded-lg"
+				to="/products/$slug"
+				params={{ slug: product.slug }}
+			>
+				<div className="relative grid aspect-square place-items-center overflow-hidden rounded-xl bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-4 sm:[&_img]:p-6">
 					{image ? (
 						<img
+							className="transition-transform duration-300 motion-safe:group-hover:scale-105 motion-reduce:transition-none"
 							{...productImageProps(
 								image,
 								"(max-width: 400px) 100vw, (max-width: 800px) 50vw, 400px",
@@ -39,24 +44,21 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 						</Badge>
 					)}
 				</div>
-				<span className="mt-5 block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
-					{product.brand}
-				</span>
-				<h3 className="my-3 text-[1.0625rem] max-[560px]:text-base">
+				<h3 className="mt-4 mb-3 text-base leading-relaxed max-[560px]:text-sm">
 					{product.name}
 				</h3>
-				<ProductPrice className="text-[1.0625rem]" product={product} />
+				<ProductPrice className="mt-auto text-[1.0625rem]" product={product} />
 				{product.stock_status === "out_of_stock" && (
 					<small>{stockLabels[product.stock_status]}</small>
 				)}
 			</Link>
 			<Button
 				variant="outline"
-				className="mt-4.5 w-full gap-2 px-3 max-[560px]:text-xs"
+				className="mt-4 w-full gap-2 px-3 max-[560px]:text-xs"
 				onClick={() => openChat(product)}
 				disabled={product.stock_status === "out_of_stock"}
 			>
-				<MessageCircle size={17} /> ჩატში დამატება
+				<MessageCircle size={17} /> შეკვეთა ჩატში
 			</Button>
 		</Card>
 	);

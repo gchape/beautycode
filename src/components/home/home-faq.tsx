@@ -7,7 +7,6 @@ export function HomeFaq() {
 			className="site-container home-section mb-16 grid gap-8 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
 		>
 			<div>
-				<p className="home-eyebrow mb-3">კარგია, რომ იკითხე</p>
 				<h2
 					id="faq-title"
 					className="mb-3 text-2xl leading-relaxed sm:text-3xl"
@@ -35,7 +34,7 @@ export function HomeFaq() {
 				<details>
 					<summary>როგორ შევუკვეთო პროდუქტი?</summary>
 					<p>
-						აირჩიე სასურველი პროდუქტი და დააჭირე „ჩატში დამატებას“. ჩატში
+						აირჩიე სასურველი პროდუქტი და დააჭირე „შეკვეთა ჩატში“. ჩატში
 						გამოგზავნილ შეტყობინებას მოჰყვება პროდუქტის სახელი, ფასი და ბმული.
 						შეკვეთის დეტალებს ჩვენს გუნდთან მიმოწერით შეათანხმებ.
 					</p>

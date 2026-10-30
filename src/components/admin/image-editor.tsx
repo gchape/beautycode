@@ -38,7 +38,7 @@ export function ImageEditor({
 	}
 	return (
 		<fieldset disabled={busy} className="mt-6 border-t border-border pt-5">
-			<legend>სურათები — პირველი სურათი მთავარია</legend>
+			<legend>სურათები. პირველი სურათი მთავარია</legend>
 			<Input
 				type="file"
 				accept={imageTypeNames.join(",")}
