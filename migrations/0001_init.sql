@@ -258,19 +258,19 @@ VALUES (
 );
 
 INSERT INTO product_images (product_id, url, alt)
-SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-1>.png', name FROM products WHERE slug = 'ipl-epilator';
+SELECT id, 'https://res.cloudinary.com/pemxbahe/image/upload/v1793343459/tvpg4ioiamcof4eqgbnf.webp', name FROM products WHERE slug = 'ipl-epilator';
 
 INSERT INTO product_images (product_id, url, alt)
-SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-2>.png', name FROM products WHERE slug = 'premium-ipl-epilator';
+SELECT id, 'https://res.cloudinary.com/pemxbahe/image/upload/v1793343459/mxz2hoyzqo06lbsg3pjb.webp', name FROM products WHERE slug = 'premium-ipl-epilator';
 
 INSERT INTO product_images (product_id, url, alt)
-SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-3>.png', name FROM products WHERE slug = 'scalp-massager';
+SELECT id, 'https://res.cloudinary.com/pemxbahe/image/upload/v1793343460/erbbvana4u8afs7cpjar.webp', name FROM products WHERE slug = 'scalp-massager';
 
 INSERT INTO product_images (product_id, url, alt)
-SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-4>.png', name FROM products WHERE slug = 'face-massager';
+SELECT id, 'https://res.cloudinary.com/pemxbahe/image/upload/v1793343458/jm3lnsumnicrelz7oouz.webp', name FROM products WHERE slug = 'face-massager';
 
 INSERT INTO product_images (product_id, url, alt)
-SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-5>.png', name FROM products WHERE slug = 'oral-irrigator';
+SELECT id, 'https://res.cloudinary.com/pemxbahe/image/upload/v1793343458/dkfwzpxilookg17voy0e.webp', name FROM products WHERE slug = 'oral-irrigator';
 
 INSERT INTO product_images (product_id, url, alt)
-SELECT id, 'https://res.cloudinary.com/<CLOUD_NAME>/image/upload/v<VER>/beautycode/products/<ID-6>.png', name FROM products WHERE slug = 'face-cleanser';
+SELECT id, 'https://res.cloudinary.com/pemxbahe/image/upload/v1793343458/bic6popad0vdhncx7toe.webp', name FROM products WHERE slug = 'face-cleanser';
