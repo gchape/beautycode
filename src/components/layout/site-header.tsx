@@ -17,10 +17,12 @@ export function SiteHeader() {
 			>
 				<img
 					className="size-17 shrink-0 object-cover mix-blend-multiply max-[1100px]:size-13.75 max-[560px]:size-10"
-					src="/logo.jpg"
+					src="/logo-136.webp"
+					srcSet="/logo-68.webp 68w, /logo-136.webp 136w, /logo-204.webp 204w"
+					sizes="(max-width: 560px) 2.5rem, (max-width: 1100px) 3.4375rem, 4.25rem"
 					alt="Beauty Code"
-					width="82"
-					height="82"
+					width="68"
+					height="68"
 				/>
 				<span className="min-w-0 text-[1.0625rem] font-semibold tracking-[0.17em] max-[1100px]:text-[0.9375rem] max-[560px]:text-xs max-[560px]:tracking-[0.12em]">
 					BEAUTY CODE

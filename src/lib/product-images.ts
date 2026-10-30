@@ -48,7 +48,9 @@ export function productImageProps(
 	const image = parseCloudinaryImage(src);
 	if (!image) return { src };
 	const widths =
-		variant === "thumbnail" ? [80, 160] : [320, 400, 640, 800, 1200];
+		variant === "thumbnail"
+			? [80, 160]
+			: [160, 240, 320, 400, 480, 640, 800, 960, 1200];
 	return {
 		src: imageUrl(image, variant === "thumbnail" ? 160 : 800, "auto"),
 		srcSet: widths

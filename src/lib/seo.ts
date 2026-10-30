@@ -16,7 +16,7 @@ export function seoHead({
 	title,
 	description,
 	path,
-	image = "/logo.jpg",
+	image = "/logo.webp",
 	data,
 	noindex = false,
 }: {

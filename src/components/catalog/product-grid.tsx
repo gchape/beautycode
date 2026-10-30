@@ -1,5 +1,5 @@
 import { PackageOpen } from "lucide-react";
-import type { PublicProduct } from "../../data/catalog.ts";
+import { coverImage, type PublicProduct } from "../../data/catalog.ts";
 import { ContactButton } from "../contact/contact-button.tsx";
 import { Card } from "../ui/card.tsx";
 import { ProductCard } from "./product-card.tsx";
@@ -14,10 +14,15 @@ export function ProductGrid({ products }: { products: PublicProduct[] }) {
 				<ContactButton />
 			</Card>
 		);
+	const firstImageIndex = products.findIndex((product) => coverImage(product));
 	return (
 		<div className="grid grid-cols-3 gap-6 max-[800px]:grid-cols-2 max-[560px]:gap-3.75 max-[400px]:grid-cols-1">
-			{products.map((product) => (
-				<ProductCard key={product.id} product={product} />
+			{products.map((product, index) => (
+				<ProductCard
+					key={product.id}
+					product={product}
+					priority={index === firstImageIndex}
+				/>
 			))}
 		</div>
 	);
