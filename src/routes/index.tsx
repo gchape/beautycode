@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
 				"@type": "Organization",
 				name: "Beauty Code",
 				url: absoluteUrl("/"),
-				logo: absoluteUrl("/logo.jpg"),
+				logo: absoluteUrl("/logo.webp"),
 				telephone: site.phone.e164,
 				email: site.email,
 				legalName: site.company.name,

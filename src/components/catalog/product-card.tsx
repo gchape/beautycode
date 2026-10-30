@@ -10,7 +10,17 @@ import { Button } from "../ui/button.tsx";
 import { Card } from "../ui/card.tsx";
 import { ProductPrice } from "./product-price.tsx";
 
-export function ProductCard({ product }: { product: PublicProduct }) {
+// Match the container gutters, grid gaps, and image padding at each breakpoint.
+const cardImageSizes =
+	"(max-width: 400px) calc(100vw - 64px), (max-width: 560px) calc((100vw - 47px) / 2 - 32px), (width < 640px) calc((100vw - 56px) / 2 - 32px), (max-width: 800px) calc((100vw - 72px) / 2 - 48px), (width < 1100px) calc((100vw - 96px) / 3 - 48px), (width < 1320px) calc((100vw - 128px) / 3 - 48px), 350px";
+
+export function ProductCard({
+	product,
+	priority = false,
+}: {
+	product: PublicProduct;
+	priority?: boolean;
+}) {
 	const openChat = useOpenChat();
 	const image = coverImage(product);
 	const discount = discountPercent(product);
@@ -25,14 +35,12 @@ export function ProductCard({ product }: { product: PublicProduct }) {
 					{image ? (
 						<img
 							className="transition-transform duration-300 motion-safe:group-hover:scale-105 motion-reduce:transition-none"
-							{...productImageProps(
-								image,
-								"(max-width: 400px) 100vw, (max-width: 800px) 50vw, 400px",
-							)}
+							{...productImageProps(image, cardImageSizes)}
 							alt={product.name}
 							width="400"
 							height="400"
-							loading="lazy"
+							loading={priority ? "eager" : "lazy"}
+							fetchPriority={priority ? "high" : undefined}
 							decoding="async"
 						/>
 					) : (

@@ -15,14 +15,19 @@ test("delivery preserves asset version and requests Cloudinary optimization", ()
 test("responsive product and thumbnail variants are explicit", () => {
 	const product = productImageProps(original, "50vw");
 	assert.equal(product.sizes, "50vw");
-	assert.equal(product.srcSet.split(", ").length, 5);
+	assert.deepEqual(
+		product.srcSet
+			.split(", ")
+			.map((candidate) => Number(candidate.match(/ (\d+)w$/)[1])),
+		[160, 240, 320, 400, 480, 640, 800, 960, 1200],
+	);
 	const thumb = productImageProps(original, "72px", "thumbnail");
 	assert.equal(thumb.srcSet.split(", ").length, 2);
 	assert.match(thumb.src, /w_160/);
 });
 test("external, signed and already transformed URLs remain intact", () => {
 	for (const url of [
-		"/logo.jpg",
+		"/logo.webp",
 		"https://example.com/image.jpg",
 		original.replace("v123/", "s--signature--/v123/"),
 		original.replace("v123/", "w_400/v123/"),
