@@ -121,6 +121,14 @@ Product saves validate input, update product fields and gallery references, and 
 
 Component styling lives in Tailwind classes. Edit route files rather than generated `src/routeTree.gen.ts`.
 
+### Storefront and font loading
+
+The homepage has a text-only hero with catalog and chat actions, followed by service links, featured products, categories, guidance, and FAQs. Product cards show the current price prominently and strike through the original price when discounted. Card images zoom slightly on hover, respecting reduced-motion preferences. Header navigation retains an active-page indicator without a hover underline.
+
+Noto Sans Georgian is self-hosted through `@fontsource-variable/noto-sans-georgian`. `src/styles.css` declares Georgian, Latin, and extended Latin subsets (including the lari sign, `₾`) with `font-display: swap`. `src/routes/__root.tsx` preloads the same three WOFF2 files so font discovery does not wait for CSS. Keep the preload URLs aligned with the font-face declarations.
+
+Measure page performance against a production build using `pnpm build` followed by `pnpm preview`, rather than the Vite development server. Development serves unoptimized CSS and additional tooling; its transfer sizes and request timings do not represent production. When previewing outside Docker, set `MIGRATIONS_DIR` to the absolute path of the checkout's `migrations` directory.
+
 ## Production deployment
 
 The deployment uses one EC2 host and one app process. SQLite and legacy uploads live on the host disk, outside the containers. New product images are stored and delivered by Cloudinary. Recreating containers preserves the local data; replacing the EC2 instance requires database recovery. The app is a single-host deployment without a load balancer or automatic failover; Cloudinary handles image delivery separately.
@@ -428,11 +436,12 @@ it does not have a field for pasting URLs. For console-uploaded assets, update
 PNG, JPEG, and AVIF originals work too; WebP is not required. Keep the version
 when replacing assets to avoid stale cached images.
 
-Uploads use unique IDs without a folder prefix. Saving the product persists
-the returned HTTPS URL. The shared delivery helper generates responsive sizes
+Uploads use unique IDs without a folder prefix. Cloudinary returns the asset
+version in its HTTPS delivery URL; saving the product persists that URL unchanged.
+The shared delivery helper preserves the version and generates responsive sizes
 with automatic format and quality for cards, galleries, and admin thumbnails;
 social previews request JPEG. Other HTTPS URLs remain unchanged. The homepage
-hero uses category links and does not require product artwork.
+hero is text-only and does not require product artwork.
 
 Existing `/uploads/` files remain served by nginx for compatibility. Removing an
 image from a product removes its database reference, not the Cloudinary asset.
@@ -458,7 +467,7 @@ sudo docker compose exec -T nginx nginx -t
 | Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx                  |
 | Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                                |
 | Upload unavailable or server rejects environment  | Configure all three Cloudinary variables; omit rather than leave blank in development                                 |
-| Cloudinary image fails to load                    | Replace seed placeholders; check the cloud name, public ID, asset version, and delivery access                        |
+| Cloudinary image fails to load                    | Check the stored URL's cloud name, public ID, asset version, and delivery access; existing databases retain their saved URLs when seed SQL changes |
 | Legacy `/uploads/` image returns 403 or 404       | Check the file, nginx mount, and read permissions in `data/uploads/`                                                  |
 | Backup fails                                      | S3 bucket/region, role credentials, `aws` on the host, and free disk space; failed uploads leave local snapshots      |
 | Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                     |
