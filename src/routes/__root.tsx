@@ -1,3 +1,6 @@
+import georgianFont from "@fontsource-variable/noto-sans-georgian/files/noto-sans-georgian-georgian-wght-normal.woff2?url";
+import latinExtFont from "@fontsource-variable/noto-sans-georgian/files/noto-sans-georgian-latin-ext-wght-normal.woff2?url";
+import latinFont from "@fontsource-variable/noto-sans-georgian/files/noto-sans-georgian-latin-wght-normal.woff2?url";
 import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
@@ -26,6 +29,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 				},
 			],
 			links: [
+				...[georgianFont, latinFont, latinExtFont].map((href) => ({
+					rel: "preload",
+					href,
+					as: "font",
+					type: "font/woff2",
+					crossOrigin: "anonymous" as const,
+				})),
 				{ rel: "stylesheet", href: appCss },
 				{ rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
 				{
