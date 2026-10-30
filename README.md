@@ -456,20 +456,20 @@ sudo docker compose logs --tail=100 app nginx
 sudo docker compose exec -T nginx nginx -t
 ```
 
-| Symptom                                           | Check                                                                                                                 |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `/healthz` returns 503 or app is unhealthy        | App logs, `data/` ownership (UID 1000), migration directory, and database version                                     |
-| New baseline rejects the local database           | Stop the local app and reset the disposable old database; do not relabel its schema version                           |
-| nginx cannot start                                | Certificate paths, `DOMAIN`, `secrets/htpasswd`, and whether ports 80/443 are already occupied                        |
-| 502 after restarting the app                      | App health and logs; nginx resolves the Compose service name periodically                                             |
-| Session Manager cannot connect                    | Instance profile, SSM agent, subnet route, and outbound access to SSM endpoints                                       |
-| Admin write fails in development                  | Use `pnpm dev` on localhost so the request has a same-origin `Origin` header; dev writes require same-origin requests |
-| Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx                  |
-| Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                                |
-| Upload unavailable or server rejects environment  | Configure all three Cloudinary variables; omit rather than leave blank in development                                 |
+| Symptom                                           | Check                                                                                                                                              |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/healthz` returns 503 or app is unhealthy        | App logs, `data/` ownership (UID 1000), migration directory, and database version                                                                  |
+| New baseline rejects the local database           | Stop the local app and reset the disposable old database; do not relabel its schema version                                                        |
+| nginx cannot start                                | Certificate paths, `DOMAIN`, `secrets/htpasswd`, and whether ports 80/443 are already occupied                                                     |
+| 502 after restarting the app                      | App health and logs; nginx resolves the Compose service name periodically                                                                          |
+| Session Manager cannot connect                    | Instance profile, SSM agent, subnet route, and outbound access to SSM endpoints                                                                    |
+| Admin write fails in development                  | Use `pnpm dev` on localhost so the request has a same-origin `Origin` header; dev writes require same-origin requests                              |
+| Production admin returns 403 on save              | Browser origin must match the HTTPS origin derived from `DOMAIN`; access through authenticated nginx                                               |
+| Upload fails with 413                             | nginx's 6 MB admin limit or the app's own size limit; resize the image                                                                             |
+| Upload unavailable or server rejects environment  | Configure all three Cloudinary variables; omit rather than leave blank in development                                                              |
 | Cloudinary image fails to load                    | Check the stored URL's cloud name, public ID, asset version, and delivery access; existing databases retain their saved URLs when seed SQL changes |
-| Legacy `/uploads/` image returns 403 or 404       | Check the file, nginx mount, and read permissions in `data/uploads/`                                                  |
-| Backup fails                                      | S3 bucket/region, role credentials, `aws` on the host, and free disk space; failed uploads leave local snapshots      |
-| Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                     |
-| Certificate renewal fails                         | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook                                                |
-| Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile                                       |
+| Legacy `/uploads/` image returns 403 or 404       | Check the file, nginx mount, and read permissions in `data/uploads/`                                                                               |
+| Backup fails                                      | S3 bucket/region, role credentials, `aws` on the host, and free disk space; failed uploads leave local snapshots                                   |
+| Build is killed on `t3.small`                     | Confirm swap with `swapon --show`; if missing, review the instance's user data or use `t3.medium`                                                  |
+| Certificate renewal fails                         | DNS, port 80 access, shared webroot, renewal schedule, and deploy hook                                                                             |
+| Hydration warning mentions `data-protonpass-form` | Test with the password-manager extension disabled or in a clean browser profile                                                                    |

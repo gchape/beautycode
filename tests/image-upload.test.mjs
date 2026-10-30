@@ -35,8 +35,7 @@ test("uploads validated bytes to Cloudinary and returns its secure URL", async (
 			else process.env[key] = previous;
 		});
 	}
-	const url =
-		"https://res.cloudinary.com/test/image/upload/v1/test.png";
+	const url = "https://res.cloudinary.com/test/image/upload/v1/test.png";
 	t.mock.method(cloudinary.uploader, "upload_stream", (options, callback) => {
 		assert.equal(options.resource_type, "image");
 		assert.match(options.public_id, /^[0-9a-f-]{36}$/);
