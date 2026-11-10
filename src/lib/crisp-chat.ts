@@ -1,4 +1,4 @@
-import { Crisp, type CrispClass } from "crisp-sdk-web";
+import type { CrispClass } from "crisp-sdk-web";
 import { useCallback, useEffect } from "react";
 import { finalPrice, type PublicProduct } from "../data/catalog.ts";
 
@@ -12,12 +12,16 @@ const productMessage = (product: PublicProduct) =>
 		`${window.location.origin}/products/${encodeURIComponent(product.slug)}`,
 	].join("\n");
 
-export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
-	let loading: Promise<void> | undefined;
+export function createChatLauncher(
+	websiteId: string,
+	providedSdk?: CrispClass,
+) {
+	let loading: Promise<CrispClass> | undefined;
 	let opening: Promise<void> | undefined;
 
 	async function connect() {
 		if (!websiteId) throw new Error("Crisp website ID is missing");
+		const sdk = providedSdk ?? (await import("crisp-sdk-web")).Crisp;
 		await new Promise<void>((resolve, reject) => {
 			const timer = setTimeout(
 				() =>
@@ -32,6 +36,7 @@ export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 			});
 			sdk.configure(websiteId);
 		});
+		return sdk;
 	}
 
 	const load = () =>
@@ -43,7 +48,7 @@ export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 	function open(product?: PublicProduct) {
 		if (opening) return opening;
 		opening = load()
-			.then(() => {
+			.then((sdk) => {
 				sdk.chat.show();
 				sdk.chat.open();
 				if (product) sdk.message.sendText(productMessage(product));
