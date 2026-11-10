@@ -1,10 +1,16 @@
+import { LoaderCircle } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
-import { imageTypeNames } from "../../data/image-types.ts";
+import {
+	imageTypeNames,
+	maxImagesPerProduct,
+	maxImageUploadBytes,
+} from "../../data/image-types.ts";
 import {
 	type EditableImage,
 	useImageUpload,
 } from "../../lib/admin/use-image-upload.ts";
 import { Input } from "../ui/input.tsx";
+import { Field } from "./field.tsx";
 import { ImageRow } from "./image-row.tsx";
 
 export function ImageEditor({
@@ -21,6 +27,7 @@ export function ImageEditor({
 		onChange,
 		onBusy,
 	);
+	const full = images.length >= maxImagesPerProduct;
 	function move(index: number, delta: number) {
 		if (
 			index < 0 ||
@@ -37,35 +44,75 @@ export function ImageEditor({
 		onChange(result);
 	}
 	return (
-		<fieldset disabled={busy} className="mt-6 border-t border-border pt-5">
-			<legend>სურათები. პირველი სურათი მთავარია</legend>
-			<Input
-				type="file"
-				accept={imageTypeNames.join(",")}
-				multiple
-				aria-label="სურათების ატვირთვა"
-				onChange={(e) => {
-					void upload(Array.from(e.target.files ?? []));
-					e.target.value = "";
-				}}
-			/>
-			{busy && <p role="status">იტვირთება…</p>}
-			{error && <p role="alert">{error}</p>}
-			{images.map((image, index) => (
-				<ImageRow
-					key={image.key}
-					image={image}
-					index={index}
-					last={index === images.length - 1}
-					onAltChange={(alt) =>
-						onChange(
-							images.map((item, i) => (i === index ? { ...item, alt } : item)),
-						)
-					}
-					onMove={(delta) => move(index, delta)}
-					onRemove={() => onChange(images.filter((_, i) => i !== index))}
+		<fieldset disabled={busy} className="min-w-0">
+			<legend className="sr-only">პროდუქტის ფოტოების მართვა</legend>
+			<Field
+				label="ფოტოების დამატება"
+				hint={`JPG, PNG, WebP, AVIF · ${maxImageUploadBytes / 1024 / 1024} MB-მდე · მაქს. ${maxImagesPerProduct} ფოტო`}
+			>
+				<Input
+					type="file"
+					className="h-auto min-h-11 py-2"
+					accept={imageTypeNames.join(",")}
+					multiple
+					disabled={full}
+					onChange={(event) => {
+						void upload(Array.from(event.target.files ?? []));
+						event.target.value = "";
+					}}
 				/>
-			))}
+			</Field>
+			{full && (
+				<p role="status" className="mt-3 text-sm text-muted-foreground">
+					ფოტოების ლიმიტი შევსებულია.
+				</p>
+			)}
+			{busy && (
+				<p
+					role="status"
+					className="mt-4 flex items-center gap-2 text-sm text-muted-foreground"
+				>
+					<LoaderCircle
+						size={17}
+						className="motion-safe:animate-spin"
+						aria-hidden="true"
+					/>
+					ფოტოები იტვირთება…
+				</p>
+			)}
+			{error && (
+				<p
+					role="alert"
+					className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-800"
+				>
+					{error}
+				</p>
+			)}
+			{images.length > 0 && (
+				<p className="mt-5 mb-3 text-[0.8125rem] text-muted-foreground">
+					{images.length} / {maxImagesPerProduct} ფოტო · ისრებით შეცვალეთ
+					თანმიმდევრობა
+				</p>
+			)}
+			<div className="space-y-3">
+				{images.map((image, index) => (
+					<ImageRow
+						key={image.key}
+						image={image}
+						index={index}
+						last={index === images.length - 1}
+						onAltChange={(alt) =>
+							onChange(
+								images.map((item, i) =>
+									i === index ? { ...item, alt } : item,
+								),
+							)
+						}
+						onMove={(delta) => move(index, delta)}
+						onRemove={() => onChange(images.filter((_, i) => i !== index))}
+					/>
+				))}
+			</div>
 		</fieldset>
 	);
 }

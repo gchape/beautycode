@@ -6,6 +6,7 @@ import { Button } from "../ui/button.tsx";
 import { Checkbox } from "../ui/checkbox.tsx";
 import { Input } from "../ui/input.tsx";
 import { Label } from "../ui/label.tsx";
+import { Select } from "../ui/select.tsx";
 
 export function CatalogFilters({
 	search,
@@ -46,18 +47,17 @@ export function CatalogFilters({
 					className="flex min-w-0 flex-col items-stretch gap-2 text-sm font-normal sm:w-60"
 				>
 					დალაგება
-					<select
+					<Select
 						id="sort"
 						value={search.sort || "newest"}
 						onChange={(event) =>
 							onChange({ sort: event.target.value as CatalogSearch["sort"] })
 						}
-						className="min-h-11 w-full min-w-0 rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground"
 					>
 						<option value="newest">ახალი დამატებული</option>
 						<option value="price-asc">ფასი: ზრდადობით</option>
 						<option value="price-desc">ფასი: კლებადობით</option>
-					</select>
+					</Select>
 				</Label>
 				<Label
 					htmlFor="discount"

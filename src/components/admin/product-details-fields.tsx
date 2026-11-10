@@ -1,6 +1,6 @@
 import type { AdminProduct, Category } from "../../data/catalog.ts";
 import { Input } from "../ui/input.tsx";
-import { Select, SelectItem } from "../ui/select.tsx";
+import { Select } from "../ui/select.tsx";
 import { Field } from "./field.tsx";
 
 export function ProductDetailsFields({
@@ -12,7 +12,7 @@ export function ProductDetailsFields({
 }) {
 	return (
 		<>
-			<Field label="დასახელება">
+			<Field label="დასახელება" className="col-span-full">
 				<Input
 					name="name"
 					required
@@ -29,20 +29,22 @@ export function ProductDetailsFields({
 			</Field>
 			<Field label="კატეგორია">
 				<Select
-					placeholder="აირჩიეთ კატეგორია"
 					name="category_slug"
-					defaultValue={product?.category_slug}
+					defaultValue={product?.category_slug ?? ""}
 					required
 				>
+					<option value="" disabled>
+						აირჩიეთ კატეგორია
+					</option>
 					{categories.map((c) => (
-						<SelectItem value={c.slug} key={c.slug}>
+						<option value={c.slug} key={c.slug}>
 							{c.name}
 							{!c.is_active ? " (დამალული)" : ""}
-						</SelectItem>
+						</option>
 					))}
 				</Select>
 			</Field>
-			<Field label="SKU / კოდი">
+			<Field label="SKU / კოდი" hint="შიდა კოდი, სურვილისამებრ.">
 				<Input name="sku" maxLength={100} defaultValue={product?.sku || ""} />
 			</Field>
 		</>

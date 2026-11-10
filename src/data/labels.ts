@@ -11,9 +11,9 @@ export const statusLabels = {
 } as const;
 
 export const categoryIconLabels = {
-	wind: "თმა",
-	sparkles: "ეპილაცია",
-	droplet: "სახე",
+	wind: "ჰაერის ტალღა",
+	sparkles: "ვარსკვლავები",
+	droplet: "წვეთი",
 	smile: "ღიმილი",
 } as const;
 
