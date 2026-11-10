@@ -1,8 +1,9 @@
 import { Crisp, type CrispClass } from "crisp-sdk-web";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { finalPrice, type PublicProduct } from "../data/catalog.ts";
 
 const connectTimeoutMs = 20_000;
+const autoLoadDelayMs = 1_000;
 
 const productMessage = (product: PublicProduct) =>
 	[
@@ -13,6 +14,7 @@ const productMessage = (product: PublicProduct) =>
 
 export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 	let loading: Promise<void> | undefined;
+	let opening: Promise<void> | undefined;
 
 	async function connect() {
 		if (!websiteId) throw new Error("Crisp website ID is missing");
@@ -38,19 +40,35 @@ export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 			throw error;
 		}));
 
-	async function open(product?: PublicProduct) {
-		await load();
-		sdk.chat.show();
-		sdk.chat.open();
-		if (product) sdk.message.sendText(productMessage(product));
+	function open(product?: PublicProduct) {
+		// Share an in-flight request so repeated taps cannot send duplicate orders.
+		return (opening ??= load()
+			.then(() => {
+				sdk.chat.show();
+				sdk.chat.open();
+				if (product) sdk.message.sendText(productMessage(product));
+			})
+			.finally(() => {
+				opening = undefined;
+			}));
 	}
 
-	return { load, open };
+	function scheduleLoad() {
+		if (!websiteId) return () => {};
+		const timer = setTimeout(() => {
+			void load().catch(() => {});
+		}, autoLoadDelayMs);
+		return () => clearTimeout(timer);
+	}
+
+	return { load, open, scheduleLoad };
 }
 
 const chat = createChatLauncher(import.meta.env?.VITE_CRISP_WEBSITE_ID ?? "");
 
 export function useChatLauncher(onError: (error: unknown) => void) {
+	useEffect(() => chat.scheduleLoad(), []);
+
 	return useCallback(
 		(product?: PublicProduct) => chat.open(product).catch(onError),
 		[onError],

@@ -34,6 +34,49 @@ function browser(t) {
 	return { chat, scripts, loaded, messages };
 }
 
+test("chat loads automatically after 1 second without opening the conversation", async (t) => {
+	t.mock.timers.enable({ apis: ["setTimeout"] });
+	const { chat, scripts, loaded, messages } = browser(t);
+	chat.scheduleLoad();
+	t.mock.timers.tick(999);
+	assert.equal(scripts.length, 0);
+	t.mock.timers.tick(1);
+	assert.equal(scripts.length, 1);
+	loaded();
+	await chat.load();
+	assert.equal(messages().length, 0);
+	assert.equal(
+		window.$crisp.filter((command) => command[1] === "chat:open").length,
+		0,
+	);
+});
+
+test("unmounting cancels the scheduled load", (t) => {
+	t.mock.timers.enable({ apis: ["setTimeout"] });
+	const { chat, scripts } = browser(t);
+	const cancel = chat.scheduleLoad();
+	cancel();
+	t.mock.timers.tick(1_000);
+	assert.equal(scripts.length, 0);
+});
+
+test("clicking before the automatic load connects immediately and shares the loader", async (t) => {
+	t.mock.timers.enable({ apis: ["setTimeout"] });
+	const { chat, scripts, loaded, messages } = browser(t);
+	chat.scheduleLoad();
+	const pending = chat.open(product);
+	assert.equal(scripts.length, 1);
+	t.mock.timers.tick(1_000);
+	assert.equal(scripts.length, 1);
+	loaded();
+	await pending;
+	assert.equal(messages().length, 1);
+	assert.equal(
+		window.$crisp.filter((command) => command[1] === "chat:open").length,
+		1,
+	);
+});
+
 test("official SDK injects one loader and sends product details only after session readiness", async (t) => {
 	const { chat, scripts, loaded, messages } = browser(t);
 	const pending = chat.open(product);
@@ -75,6 +118,23 @@ test("ordinary contact opens chat without sending or replacing any message", asy
 		],
 	);
 	assert.equal(messages().length, 0);
+});
+
+test("repeated clicks while connecting send the requested product only once", async (t) => {
+	const { chat, scripts, loaded, messages } = browser(t);
+	const first = chat.open(product);
+	const repeated = chat.open(product);
+	assert.equal(first, repeated);
+	assert.equal(scripts.length, 1);
+	loaded();
+	await Promise.all([first, repeated]);
+	assert.equal(messages().length, 1);
+	assert.equal(
+		window.$crisp.filter((command) => command[1] === "chat:open").length,
+		1,
+	);
+	await chat.open(product);
+	assert.equal(messages().length, 2); // A later, deliberate action is still allowed.
 });
 
 test("a failed load does not queue a product to send unexpectedly later", async (t) => {
