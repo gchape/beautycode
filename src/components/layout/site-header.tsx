@@ -24,7 +24,7 @@ export function SiteHeader() {
 				/>
 				<span className="min-w-0 text-[1.0625rem] font-semibold tracking-[0.17em] max-[1100px]:text-[0.9375rem] max-[560px]:text-sm max-[560px]:tracking-[0.12em]">
 					BEAUTY CODE
-					<small className="mt-1.75 block text-xs font-normal tracking-[0.06em] max-[560px]:text-[0.8125rem]">
+					<small className="mt-1.75 block text-[0.8125rem] font-normal tracking-normal leading-relaxed text-muted-foreground">
 						სილამაზე შენებურად
 					</small>
 				</span>

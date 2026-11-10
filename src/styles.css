@@ -99,6 +99,7 @@
 		color: var(--foreground);
 		font-family: var(--font-sans);
 		font-size: 1rem;
+		line-height: 1.65;
 		overflow-wrap: anywhere;
 		-webkit-font-smoothing: antialiased;
 	}
@@ -108,25 +109,25 @@
 	}
 	button,
 	input,
+	textarea,
 	select {
 		font: inherit;
 	}
 	button,
 	a,
 	input,
+	textarea,
 	select,
 	summary {
 		-webkit-tap-highlight-color: transparent;
 	}
 	button {
 		cursor: pointer;
+		color: inherit;
 	}
 	button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-	}
-	button {
-		color: inherit;
 	}
 	a,
 	button {
@@ -137,6 +138,7 @@
 	button:focus-visible,
 	a:focus-visible,
 	input:focus-visible,
+	textarea:focus-visible,
 	select:focus-visible,
 	summary:focus-visible {
 		outline: 2px solid var(--ring);
@@ -153,19 +155,25 @@
 	h3 {
 		font-weight: 600;
 		text-wrap: balance;
+		line-height: 1.45;
 	}
 	p {
 		line-height: 1.75;
 	}
 	h1 {
-		font-size: clamp(30px, 4vw, 48px);
+		font-size: clamp(1.875rem, 1.25rem + 2vw, 3rem);
 		line-height: 1.5;
 	}
 	h2 {
-		font-size: 1.875rem;
+		font-size: clamp(1.5rem, 1.15rem + 1vw, 1.875rem);
 	}
 	h3 {
 		font-size: 1.125rem;
+	}
+	input,
+	textarea,
+	select {
+		scroll-margin-block: 6rem;
 	}
 }
 
@@ -205,14 +213,17 @@
 	}
 }
 
+@utility page-section {
+	min-height: 60vh;
+	padding-block: 1.5625rem 5rem;
+	& > h1 {
+		margin-block: 1rem 1.5rem;
+		font-size: clamp(1.875rem, 1.5rem + 1.25vw, 2.25rem);
+	}
+}
+
 .home-section {
 	padding-top: clamp(3rem, 6vw, 5rem);
-}
-.home-hero {
-	display: grid;
-	overflow: hidden;
-	border-radius: 1rem;
-	background: #f5eee8;
 }
 .home-benefit {
 	display: flex;
@@ -242,6 +253,8 @@ body {
 	background: linear-gradient(145deg, #fffdfb 15%, #faf2f4 65%, #fffdfb);
 }
 .home-hero {
+	display: grid;
+	overflow: hidden;
 	position: relative;
 	isolation: isolate;
 	border: 1px solid #ead9df;
@@ -349,6 +362,10 @@ body {
 		grid-template-columns: minmax(0, 1fr);
 	}
 	.hero-products {
+		grid-template-columns: repeat(
+				auto-fit,
+				minmax(min(100%, max(8rem, 44%)), 1fr)
+			);
 		width: min(520px, 100%);
 		margin-inline: auto;
 		padding: 0 1.25rem 2rem;
@@ -452,14 +469,6 @@ body {
 		grid-template-columns: repeat(
 				auto-fit,
 				minmax(min(100%, max(9.5rem, 45%)), 1fr)
-			);
-	}
-}
-@media (max-width: 1000px) {
-	.hero-products {
-		grid-template-columns: repeat(
-				auto-fit,
-				minmax(min(100%, max(8rem, 44%)), 1fr)
 			);
 	}
 }

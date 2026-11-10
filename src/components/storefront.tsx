@@ -10,7 +10,7 @@ export function Storefront({ children }: { children: ReactNode }) {
 		<ChatProvider>
 			<Link
 				to="/delivery"
-				className="flex min-h-10 flex-wrap items-center justify-center gap-3.75 bg-secondary px-4 py-1.75 text-sm tracking-wide max-[560px]:gap-1.75 max-[560px]:text-xs max-[560px]:[&>span]:hidden"
+				className="flex min-h-10 flex-wrap items-center justify-center gap-3.75 bg-secondary px-4 py-1.75 text-sm leading-relaxed max-[560px]:gap-1.75 max-[560px]:text-[0.8125rem] max-[560px]:[&>span]:hidden"
 			>
 				უფასო მიწოდება მთელ საქართველოში
 				<ArrowUpRight size={13} aria-hidden="true" />

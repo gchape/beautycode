@@ -22,7 +22,7 @@ export function FeaturedProducts({ products }: { products: PublicProduct[] }) {
 					</Link>
 				}
 			/>
-			<ProductGrid products={products} />
+			<ProductGrid products={products} prioritizeFirstImage={false} />
 		</section>
 	);
 }

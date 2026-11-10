@@ -3,6 +3,9 @@ import { site } from "../../data/site.ts";
 import { useCategories } from "../catalog/category-context.tsx";
 import { SocialIcon } from "../social-icon.tsx";
 
+const footerLink =
+	"flex min-h-11 items-center py-2 text-sm wrap-anywhere hover:underline underline-offset-4";
+
 export function SiteFooter() {
 	const categories = useCategories();
 	return (
@@ -39,7 +42,7 @@ export function SiteFooter() {
 					<h2>კატალოგი</h2>
 					{categories.map((c) => (
 						<Link
-							className="flex min-h-11 items-center py-2 text-sm wrap-anywhere hover:underline underline-offset-4"
+							className={footerLink}
 							key={c.slug}
 							to="/categories/$slug"
 							params={{ slug: c.slug }}
@@ -50,37 +53,22 @@ export function SiteFooter() {
 				</div>
 				<div>
 					<h2>ინფორმაცია</h2>
-					<Link
-						className="flex min-h-11 items-center py-2 text-sm wrap-anywhere hover:underline underline-offset-4"
-						to="/terms"
-					>
+					<Link className={footerLink} to="/terms">
 						წესები და პირობები
 					</Link>
-					<Link
-						className="flex min-h-11 items-center py-2 text-sm wrap-anywhere hover:underline underline-offset-4"
-						to="/returns"
-					>
+					<Link className={footerLink} to="/returns">
 						დაბრუნება
 					</Link>
-					<Link
-						className="flex min-h-11 items-center py-2 text-sm wrap-anywhere hover:underline underline-offset-4"
-						to="/delivery"
-					>
+					<Link className={footerLink} to="/delivery">
 						მიწოდება
 					</Link>
 				</div>
 				<div>
 					<h2>დაგვიკავშირდი</h2>
-					<a
-						className="flex min-h-11 items-center py-2 text-sm wrap-anywhere hover:underline underline-offset-4"
-						href={`tel:${site.phone.e164}`}
-					>
+					<a className={footerLink} href={`tel:${site.phone.e164}`}>
 						{site.phone.display}
 					</a>
-					<a
-						className="flex min-h-11 items-center py-2 text-sm wrap-anywhere hover:underline underline-offset-4"
-						href={`mailto:${site.email}`}
-					>
+					<a className={footerLink} href={`mailto:${site.email}`}>
 						{site.email}
 					</a>
 					<p>

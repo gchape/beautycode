@@ -4,7 +4,7 @@ import { Breadcrumb } from "./breadcrumb.tsx";
 export function PolicyPage({ page }: { page: keyof typeof policies }) {
 	const policy = policies[page];
 	return (
-		<article className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] max-w-215 min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
+		<article className="site-container page-section max-w-215">
 			<Breadcrumb title={policy.title} />
 			<span className="block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
 				BEAUTY CODE · ინფორმაცია

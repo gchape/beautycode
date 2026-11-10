@@ -9,9 +9,7 @@ export function SectionHeading({
 }) {
 	return (
 		<div className="mb-6 flex flex-wrap items-end justify-between gap-5">
-			<div>
-				<h2 className="m-0 text-2xl leading-relaxed sm:text-3xl">{title}</h2>
-			</div>
+			<h2 className="m-0 max-w-[32ch]">{title}</h2>
 			{action}
 		</div>
 	);
