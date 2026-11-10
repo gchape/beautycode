@@ -7,7 +7,7 @@ import { MobileMenu } from "./mobile-menu.tsx";
 export function SiteHeader() {
 	const categories = useCategories();
 	return (
-		<header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0 py-5 max-[560px]:gap-x-2 max-[560px]:py-3 site-container">
+		<header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-5 max-[560px]:gap-x-2 max-[560px]:py-3 site-container">
 			<Link
 				to="/"
 				className="flex min-w-0 w-fit items-center gap-2.25"
@@ -30,7 +30,7 @@ export function SiteHeader() {
 				</span>
 			</Link>
 			<nav
-				className="site-navigation col-span-2 row-start-2 mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border pt-3 text-sm leading-relaxed max-[1100px]:hidden"
+				className="site-navigation order-last mt-2 flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border pt-3 text-sm leading-relaxed max-[1100px]:hidden"
 				aria-label="მთავარი ნავიგაცია"
 			>
 				<Link to="/products" search={{}}>
@@ -42,7 +42,7 @@ export function SiteHeader() {
 					</Link>
 				))}
 			</nav>
-			<div className="col-start-2 row-start-1 flex shrink-0 items-center gap-3 max-[560px]:gap-0">
+			<div className="ml-auto flex shrink-0 items-center gap-3 max-[560px]:gap-0">
 				<Link
 					to="/products"
 					hash="search"
