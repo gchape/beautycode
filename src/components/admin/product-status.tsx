@@ -1,5 +1,6 @@
 import type { ProductStatus } from "../../data/labels.ts";
 import { statusLabels } from "../../data/labels.ts";
+import { Badge } from "../ui/badge.tsx";
 
 const colors = {
 	published: "bg-emerald-50 text-emerald-800 ring-emerald-200",
@@ -8,11 +9,12 @@ const colors = {
 };
 export function ProductStatusBadge({ status }: { status: ProductStatus }) {
 	return (
-		<span
-			className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs whitespace-nowrap ring-1 ring-inset ${colors[status]}`}
+		<Badge
+			variant="outline"
+			className={`max-w-full gap-1.5 border-0 px-2.5 py-1 text-[0.8125rem] font-normal whitespace-normal ring-1 ring-inset ${colors[status]}`}
 		>
-			<span className="size-1.5 rounded-full bg-current" />
+			<span className="size-1.5 shrink-0 rounded-full bg-current" />
 			{statusLabels[status]}
-		</span>
+		</Badge>
 	);
 }

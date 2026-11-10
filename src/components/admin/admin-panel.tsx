@@ -1,6 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { DatabaseBackup, History, LayoutGrid, Package } from "lucide-react";
+import {
+	DatabaseBackup,
+	History,
+	LayoutGrid,
+	LoaderCircle,
+	Package,
+	X,
+} from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useState } from "react";
 import { adminApi } from "../../lib/admin/api.ts";
@@ -17,112 +24,154 @@ const tabs = [
 	["audit", "ისტორია", History],
 ] as const;
 
-const isDevelopment = import.meta.env.DEV;
-
 export function AdminPanel() {
 	const client = useQueryClient();
 	const router = useRouter();
 	const [tab, setTab] = useState<"products" | "categories" | "audit">(
 		"products",
 	);
-	const [notice, setNotice] = useState("");
+	const [notice, setNotice] = useState<{
+		message: string;
+		error?: boolean;
+	} | null>(null);
 	const { products, categories, audit } = useAdminData(tab);
 	function handleSaved() {
-		setNotice("შენახულია");
+		setNotice({ message: "ცვლილებები შენახულია" });
 		void client.invalidateQueries({ queryKey: ["admin"] });
 		void router.invalidate();
 	}
 	const backup = useMutation({
 		mutationFn: () => adminApi("backup", {}),
-		onMutate: () => setNotice(""),
+		onMutate: () => setNotice(null),
 		onSuccess: () => {
-			setNotice("სარეზერვო ასლი შენახულია");
+			setNotice({ message: "სარეზერვო ასლი შენახულია" });
 			return client.invalidateQueries({ queryKey: ["admin", "audit"] });
 		},
-		onError: (error) => setNotice(error.message),
+		onError: (error) => setNotice({ message: error.message, error: true }),
 	});
-
 	const error = products.error || categories.error || audit.error;
+	const ready = products.data && categories.data;
 	return (
-		<section className="mx-auto w-[min(1240px,calc(100%-80px))] max-[1100px]:w-[calc(100%-48px)] max-[560px]:w-[calc(100%-32px)] min-h-[60vh] pt-8 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl max-w-300 [&_select]:w-full [&_select]:rounded-md [&_select]:border [&_select]:border-border [&_select]:bg-background [&_select]:p-2.5 [&_textarea]:w-full [&_textarea]:rounded-md [&_textarea]:border [&_textarea]:border-border [&_textarea]:bg-background [&_textarea]:p-2.5 **:[[role=alert]]:text-destructive">
-			<div className="flex flex-wrap items-end justify-between gap-4">
-				<div>
-					<p className="mb-2 text-xs font-medium tracking-[0.18em] text-muted-foreground">
-						BEAUTY CODE / ADMIN
-					</p>
-					<h1 className="m-0 text-3xl font-semibold tracking-tight sm:text-4xl">
-						კატალოგის მართვა
-					</h1>
-					<p className="mt-2 mb-0 text-sm text-muted-foreground">
-						პროდუქტები, კატეგორიები და ცვლილებები. ერთ სივრცეში.
-					</p>
-				</div>
+		<section
+			className="site-container min-h-[60vh] py-8 sm:py-10"
+			aria-labelledby="admin-title"
+		>
+			<div className="flex flex-wrap items-center justify-between gap-5">
+				<h1
+					id="admin-title"
+					className="m-0 text-[clamp(1.75rem,3vw,2.25rem)] leading-relaxed"
+				>
+					კატალოგის მართვა
+				</h1>
 				<Button
 					variant="outline"
-					size="sm"
+					className="min-h-11 gap-2 px-4 text-sm"
 					disabled={backup.isPending}
 					onClick={() => backup.mutate()}
 				>
-					<DatabaseBackup size={16} />
-					{backup.isPending ? "მიმდინარეობს…" : "სარეზერვო ასლი"}
+					{backup.isPending ? (
+						<LoaderCircle
+							size={17}
+							className="motion-safe:animate-spin"
+							aria-hidden="true"
+						/>
+					) : (
+						<DatabaseBackup size={17} aria-hidden="true" />
+					)}
+					{backup.isPending ? "იქმნება…" : "სარეზერვო ასლი"}
 				</Button>
 			</div>
 			<CatalogOverview
 				products={products.data || []}
 				pending={products.isPending}
 			/>
-			{isDevelopment && (
+			{import.meta.env.DEV && (
 				<p
-					className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900"
+					className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
 					role="status"
 				>
-					დეველოპმენტის მონაცემები დროებითია. ნაგულისხმევად ინახება data-dev/
-					საქაღალდეში და production-ზე არ აისახება. წასაშლელად გამოიყენეთ pnpm
-					clean:dev.
+					საცდელი გარემო — აქ შეტანილი ცვლილებები მთავარ საიტზე არ აისახება.
 				</p>
 			)}
 			<Tabs.Root
 				value={tab}
 				onValueChange={(value) => setTab(value as typeof tab)}
 			>
-				<div className="my-5 flex flex-wrap items-center gap-3 [&>input]:max-w-80 [&_select]:w-auto [&_select]:max-w-full">
-					<Tabs.List
-						className="flex w-full gap-1 overflow-x-auto border-b border-border"
-						aria-label="ადმინისტრირების სექციები"
-					>
-						{tabs.map(([value, label, Icon]) => (
-							<Tabs.Trigger
-								key={value}
-								value={value}
-								className="flex shrink-0 items-center gap-2 border-b-2 border-transparent bg-transparent px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-primary data-[state=active]:border-primary data-[state=active]:text-primary"
-							>
-								<Icon size={16} aria-hidden="true" />
-								{label}
-							</Tabs.Trigger>
-						))}
-					</Tabs.List>
-				</div>
+				<Tabs.List
+					className="grid grid-cols-3 border-b border-border sm:flex"
+					aria-label="ადმინისტრირების სექციები"
+				>
+					{tabs.map(([value, label, Icon]) => (
+						<Tabs.Trigger
+							key={value}
+							value={value}
+							className="flex min-w-0 items-center justify-center gap-2 border-b-2 border-transparent px-1 py-3 text-xs text-muted-foreground transition-colors hover:text-primary data-[state=active]:border-primary data-[state=active]:text-primary sm:px-5 sm:text-sm"
+						>
+							<Icon
+								size={17}
+								aria-hidden="true"
+								className="hidden shrink-0 sm:block"
+							/>
+							{label}
+						</Tabs.Trigger>
+					))}
+				</Tabs.List>
 				{notice && (
+					<div
+						role={notice.error ? "alert" : "status"}
+						className={`my-5 flex items-center gap-3 rounded-lg border p-3 text-sm ${notice.error ? "border-destructive/30 text-destructive" : "bg-muted"}`}
+					>
+						<span className="flex-1 leading-relaxed">{notice.message}</span>
+						<Button
+							variant="ghost"
+							size="icon-lg"
+							onClick={() => setNotice(null)}
+							aria-label="შეტყობინების დახურვა"
+						>
+							<X size={16} />
+						</Button>
+					</div>
+				)}
+				{error && (
+					<div role="alert" className="my-5 text-sm text-destructive">
+						<p className="mb-3">{error.message}</p>
+						<Button
+							variant="outline"
+							className="min-h-11 px-4 text-sm"
+							onClick={() =>
+								void client.invalidateQueries({ queryKey: ["admin"] })
+							}
+						>
+							ხელახლა ცდა
+						</Button>
+					</div>
+				)}
+				{!ready && !error && (
 					<p
 						role="status"
-						className="my-4 rounded-lg border border-border bg-muted px-4 py-3 text-sm"
+						className="my-8 flex items-center gap-3 text-sm text-muted-foreground"
 					>
-						{notice}
+						<LoaderCircle
+							size={19}
+							className="motion-safe:animate-spin"
+							aria-hidden="true"
+						/>
+						კატალოგი იტვირთება…
 					</p>
 				)}
-				{error && <p role="alert">{error.message}</p>}
-				{(products.isPending || categories.isPending) && (
-					<p role="status">იტვირთება…</p>
+				{ready && (
+					<>
+						<ProductSection
+							products={products.data || []}
+							categories={categories.data || []}
+							onSaved={handleSaved}
+						/>
+						<CategorySection
+							categories={categories.data || []}
+							onSaved={handleSaved}
+						/>
+					</>
 				)}
-				<ProductSection
-					products={products.data || []}
-					categories={categories.data || []}
-					onSaved={handleSaved}
-				/>
-				<CategorySection
-					categories={categories.data || []}
-					onSaved={handleSaved}
-				/>
 				<Tabs.Content value="audit">
 					<AuditLog entries={audit.data || []} pending={audit.isPending} />
 				</Tabs.Content>

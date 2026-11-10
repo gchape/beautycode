@@ -23,7 +23,11 @@ export function ProductSection({
 		onSaved();
 	}
 	return (
-		<Tabs.Content value="products">
+		<Tabs.Content
+			value="products"
+			forceMount
+			className="data-[state=inactive]:hidden"
+		>
 			{editingProduct ? (
 				<ProductEditor
 					key={editingProduct === "new" ? "new" : editingProduct.id}
@@ -37,12 +41,12 @@ export function ProductSection({
 					<div className="my-6 flex flex-wrap items-center justify-between gap-4">
 						<div>
 							<h2 className="m-0 text-xl font-semibold">პროდუქტები</h2>
-							<p className="mt-1 mb-0 text-xs text-muted-foreground">
+							<p className="mt-1 mb-0 text-sm text-muted-foreground">
 								მართეთ ფასები, მარაგი და გამოქვეყნების სტატუსი.
 							</p>
 						</div>
 						<Button
-							size="sm"
+							className="min-h-11 gap-2 px-4 text-sm"
 							onClick={() => setEditingProduct("new")}
 							disabled={!categories.length}
 						>

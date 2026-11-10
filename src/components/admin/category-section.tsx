@@ -21,7 +21,11 @@ export function CategorySection({
 		onSaved();
 	}
 	return (
-		<Tabs.Content value="categories">
+		<Tabs.Content
+			value="categories"
+			forceMount
+			className="data-[state=inactive]:hidden"
+		>
 			{editingCategory ? (
 				<CategoryEditor
 					key={editingCategory === "new" ? "new" : editingCategory.slug}
@@ -34,11 +38,14 @@ export function CategorySection({
 					<div className="my-6 flex flex-wrap items-center justify-between gap-4">
 						<div>
 							<h2 className="m-0 text-xl font-semibold">კატეგორიები</h2>
-							<p className="mt-1 mb-0 text-xs text-muted-foreground">
+							<p className="mt-1 mb-0 text-sm text-muted-foreground">
 								დაალაგეთ კატეგორიები და მართეთ მათი ხილვადობა.
 							</p>
 						</div>
-						<Button size="sm" onClick={() => setEditingCategory("new")}>
+						<Button
+							className="min-h-11 gap-2 px-4 text-sm"
+							onClick={() => setEditingCategory("new")}
+						>
 							<Plus size={16} /> კატეგორიის დამატება
 						</Button>
 					</div>
