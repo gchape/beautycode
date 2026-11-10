@@ -5,7 +5,6 @@ import { backup, DatabaseSync } from "node:sqlite";
 import { databasePath, isDevelopment } from "./config.ts";
 import { latestSchemaVersion } from "./migrations.ts";
 
-// Fails with EEXIST if the path is taken, so nothing is ever overwritten.
 async function reserveFile(path: string) {
 	await mkdir(dirname(path), { recursive: true });
 	await (await open(path, "wx", 0o600)).close();
@@ -45,14 +44,12 @@ function validateSnapshot(db: DatabaseSync) {
 	)
 		throw new Error("Backup schema version does not match this application");
 
-	// "ok" is only ever returned as a single row, so the first row is enough.
 	if (db.prepare("PRAGMA integrity_check").get()?.integrity_check !== "ok")
 		throw new Error("Backup database integrity check failed");
 
 	if (db.prepare("PRAGMA foreign_key_check").get())
 		throw new Error("Backup has invalid references");
 
-	// Reject unrelated SQLite files even if their version happens to match.
 	db.exec(`
 		SELECT p.id, c.slug, i.url, a.username
 			FROM products p, categories c, product_images i, admin_audit_log a LIMIT 0;
@@ -60,7 +57,6 @@ function validateSnapshot(db: DatabaseSync) {
 	`);
 }
 
-/** Returns the path of a safety copy of the existing target, if there was one. */
 async function prepareRestoreTarget(target: string) {
 	try {
 		await reserveFile(target);
@@ -79,8 +75,6 @@ async function prepareRestoreTarget(target: string) {
 	}
 }
 
-// The application must be stopped. SQLite handles target WAL files and commits
-// the replacement itself; do not copy or delete live database/WAL files manually.
 export async function restoreSnapshot(source: string, target: string) {
 	if (resolve(source) === resolve(target))
 		throw new Error("Backup and database paths must differ");

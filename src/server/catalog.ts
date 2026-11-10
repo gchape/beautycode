@@ -4,7 +4,6 @@ import { z } from "zod";
 const slugInput = z.object({ slug: z.string().min(1).max(200) });
 const searchInput = z.object({ query: z.string().max(200).optional() });
 
-// Dynamic imports keep the SQLite code out of the client bundle.
 async function products() {
 	const [{ getDatabase }, { queryPublicProducts, queryProduct }] =
 		await Promise.all([import("./database.ts"), import("./products.ts")]);

@@ -22,7 +22,6 @@ const sorters: Record<NonNullable<CatalogSearch["sort"]>, Compare> = {
 	"price-desc": (a, b) => byPrice(b, a),
 };
 
-/** Client-side filters. The text query `q` is applied in SQL by the server. */
 export function filterProducts(
 	products: readonly PublicProduct[],
 	{ category, discount, max, sort = "newest" }: CatalogSearch,

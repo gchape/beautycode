@@ -121,7 +121,6 @@ function productFields(input: ProductInput) {
 	};
 }
 
-// Column names come from productFields above, never from user input.
 function insertProduct(db: DatabaseSync, input: ProductInput, slug: string) {
 	const fields = { ...productFields(input), slug };
 	const columns = Object.keys(fields);

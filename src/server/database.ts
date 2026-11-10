@@ -18,7 +18,7 @@ function openDatabase() {
 			PRAGMA synchronous = NORMAL;
 		`);
 		migrateDatabase(db);
-		db.prepare("SELECT 1 FROM products_fts LIMIT 1").get(); // fail fast if FTS is broken
+		db.prepare("SELECT 1 FROM products_fts LIMIT 1").get();
 		return db;
 	} catch (error) {
 		db.close();

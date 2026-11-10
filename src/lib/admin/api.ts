@@ -9,7 +9,6 @@ function requestInit(data?: unknown): RequestInit {
 	const init: RequestInit = { credentials: "same-origin" };
 	if (data === undefined) return init;
 
-	// For FormData the browser sets the multipart Content-Type and boundary.
 	if (data instanceof FormData) return { ...init, method: "POST", body: data };
 
 	return {

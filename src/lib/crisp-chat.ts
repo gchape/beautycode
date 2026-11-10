@@ -36,12 +36,11 @@ export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 
 	const load = () =>
 		(loading ??= connect().catch((error: unknown) => {
-			loading = undefined; // allow retry after failure
+			loading = undefined;
 			throw error;
 		}));
 
 	function open(product?: PublicProduct) {
-		// Share an in-flight request so repeated taps cannot send duplicate orders.
 		if (opening) return opening;
 		opening = load()
 			.then(() => {

@@ -9,7 +9,6 @@ import { Badge } from "../ui/badge.tsx";
 import { Card } from "../ui/card.tsx";
 import { ProductPrice } from "./product-price.tsx";
 
-// Match the container gutters, grid gaps, and image padding at each breakpoint.
 const cardImageSizes =
 	"(max-width: 359px) calc(100vw - 64px), (max-width: 560px) calc((100vw - 47px) / 2 - 32px), (width < 640px) calc((100vw - 56px) / 2 - 32px), (max-width: 800px) calc((100vw - 72px) / 2 - 48px), (width < 1100px) calc((100vw - 96px) / 3 - 48px), (width < 1320px) calc((100vw - 128px) / 3 - 48px), 350px";
 

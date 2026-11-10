@@ -39,7 +39,6 @@ function Catalog() {
 			search: (previous) => ({ ...previous, ...values }),
 			resetScroll: false,
 		});
-	// Full-text search runs in SQLite; remaining filters sort/refine these results locally.
 	const products = useMemo(
 		() => filterProducts(allProducts, search),
 		[allProducts, search],

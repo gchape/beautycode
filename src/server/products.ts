@@ -18,7 +18,6 @@ const adminColumns = `${publicColumns}, ${prefixed("status sku is_featured")}`;
 
 type Row = Record<string, unknown>;
 
-/** One images query for all rows, grouped once instead of filtered per product. */
 function hydrate<T>(db: DatabaseSync, rows: Row[]): T[] {
 	if (!rows.length) return [];
 	const ids = rows.map((row) => row.id as number);

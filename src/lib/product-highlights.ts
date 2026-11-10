@@ -8,8 +8,6 @@ export const productHighlights = (product: Pick<PublicProduct, "features">) =>
 		.filter((feature) => !/გარანტია|მიწოდება/.test(feature))
 		.slice(0, 3);
 
-// Read the comparison from the editable catalog, so prices and specifications
-// stay consistent with the product pages instead of duplicating marketing copy.
 export const epilatorComparisonFields = [
 	{ label: "იმპულსები", pattern: /იმპულს/ },
 	{ label: "სიმძლავრე", pattern: /სიმძლავრ/ },

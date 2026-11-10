@@ -4,7 +4,6 @@ import { adminApi } from "./api.ts";
 const invalidImageMessage =
 	"აირჩიეთ JPG, PNG, WebP ან AVIF სურათი, მაქსიმუმ 5 MB";
 
-/** Send the original image; Cloudinary handles delivery transformations. */
 export async function uploadImage(file: File): Promise<string> {
 	const valid =
 		Object.hasOwn(imageTypes, file.type) &&

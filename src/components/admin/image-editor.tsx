@@ -45,7 +45,6 @@ export function ImageEditor({
 				multiple
 				aria-label="სურათების ატვირთვა"
 				onChange={(e) => {
-					// Snapshot the selection before clearing the input for repeat uploads.
 					void upload(Array.from(e.target.files ?? []));
 					e.target.value = "";
 				}}

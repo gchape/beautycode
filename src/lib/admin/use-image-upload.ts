@@ -35,7 +35,6 @@ export function useImageUpload(
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "ატვირთვა ვერ შესრულდა");
 		} finally {
-			// Keep images that uploaded before a later file failed.
 			if (added.length) onChange((current) => [...current, ...added]);
 			setBusy(false);
 			onBusy(false);

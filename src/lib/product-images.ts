@@ -1,7 +1,6 @@
 import { Cloudinary } from "@cloudinary/url-gen";
 import { scale } from "@cloudinary/url-gen/actions/resize";
 
-// Only original unsigned upload URLs are transformed. Preserve other URLs as-is.
 function parseCloudinaryImage(src: string) {
 	const match =
 		/^https:\/\/res\.cloudinary\.com\/([\w-]+)\/image\/upload\/(?:v(\d+)\/)?([^?#,]+)$/.exec(
@@ -30,7 +29,6 @@ function imageUrl(
 	return asset.toURL();
 }
 
-/** Shared by responsive images and social previews. */
 export function cloudinaryUrl(
 	src: string,
 	width: number,

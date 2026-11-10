@@ -4,7 +4,6 @@ import type { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { readServerEnvironment } from "./config.ts";
 
-// Lazy import keeps the AWS SDK out of the cold-start path for non-backup code.
 async function s3() {
 	const sdk = await import("@aws-sdk/client-s3");
 	const { AWS_REGION, S3_BACKUPS_BUCKET: Bucket } = readServerEnvironment();

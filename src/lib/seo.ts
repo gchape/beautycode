@@ -28,7 +28,6 @@ export function seoHead({
 	noindex?: boolean;
 }) {
 	const url = absoluteUrl(path);
-	// JPEG rather than f_auto: some social crawlers mishandle AVIF/WebP.
 	const shareImage = absoluteUrl(cloudinaryUrl(image, 1200, "jpg"));
 	return {
 		meta: [

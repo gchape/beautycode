@@ -14,7 +14,6 @@ export interface ProductImage {
 	alt: string;
 }
 
-/** What the public storefront receives. Never contains admin-only fields. */
 export interface PublicProduct {
 	id: number;
 	slug: string;
@@ -27,7 +26,6 @@ export interface PublicProduct {
 	stock_status: StockStatus;
 	meta_description: string;
 	features: string[];
-	/** Gallery in display order; the first image is the cover. */
 	images: ProductImage[];
 	created_at: string;
 	updated_at: string;
@@ -43,7 +41,6 @@ type Priced = Pick<PublicProduct, "price_minor" | "sale_price_minor">;
 
 export const finalPrice = (p: Priced) => p.sale_price_minor ?? p.price_minor;
 
-/** Derived from the two prices, so it can never disagree with them. */
 export const discountPercent = (p: Priced) =>
 	p.sale_price_minor !== null &&
 	p.price_minor > 0 &&

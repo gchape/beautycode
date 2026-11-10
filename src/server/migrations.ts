@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import { readServerEnvironment } from "./config.ts";
 import { withTransaction } from "./transaction.ts";
 
-// Native scripts resolve from this module; bundled deployments supply MIGRATIONS_DIR.
 const { MIGRATIONS_DIR } = readServerEnvironment();
 const migrationsDir = MIGRATIONS_DIR
 	? resolve(MIGRATIONS_DIR)
