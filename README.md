@@ -133,6 +133,10 @@ Chat buttons show a connecting state and prevent duplicate product messages whil
 
 Noto Sans Georgian is self-hosted through `@fontsource-variable/noto-sans-georgian`. `src/styles.css` declares Georgian, Latin, and extended Latin subsets (including the lari sign, `₾`) with `font-display: swap`. `src/routes/__root.tsx` preloads the same three WOFF2 files so font discovery does not wait for CSS. Keep the preload URLs aligned with the font-face declarations.
 
+Catalog loaders share TanStack Query keys with a 30-second freshness window. This deduplicates category reads between the root and category routes and reuses intent preloads. Category metadata and products load in parallel. Admin saves invalidate both admin and public catalog queries before the editor closes. Admin queries also consume cancellation signals.
+
+React 19 `Activity` boundaries preserve editor drafts and filters between admin tabs while cleaning up hidden effects. Admin search uses `useDeferredValue` and a memoized product table to keep typing responsive. Catalog navigation uses async transitions for visible loading feedback. Shared editor headers and sections keep form layout consistent. The Crisp SDK is imported when chat loading starts; featured images below the homepage hero stay lazy.
+
 Measure page performance against a production build using `pnpm build` followed by `pnpm preview`, rather than the Vite development server. Development serves unoptimized CSS and additional tooling; its transfer sizes and request timings do not represent production. When previewing outside Docker, set `MIGRATIONS_DIR` to the absolute path of the checkout's `migrations` directory.
 
 ## Production deployment
@@ -422,7 +426,6 @@ sequenceDiagram
     Admin->>App: Save product with URL
     Customer->>Cloudinary: Request optimized image
 ```
-
 
 Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`
 in the server environment. Docker Compose reads them from `.env`; recreate the

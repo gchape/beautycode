@@ -42,7 +42,7 @@ test("uploads validated bytes to Cloudinary and returns its secure URL", async (
 		assert.equal(options.overwrite, false);
 		assert.equal(options.api_secret, "test-value");
 		return new Writable({
-			write(chunk, encoding, done) {
+			write(chunk, _encoding, done) {
 				assert.deepEqual(chunk, png);
 				callback(undefined, { secure_url: url });
 				done();
@@ -51,10 +51,10 @@ test("uploads validated bytes to Cloudinary and returns its secure URL", async (
 	});
 	assert.equal(await saveUploadedImage(png, "image/png"), url);
 	cloudinary.uploader.upload_stream.mock.mockImplementation(
-		(options, callback) => {
+		(_options, callback) => {
 			callback({ message: "private provider details" });
 			return new Writable({
-				write(chunk, encoding, done) {
+				write(_chunk, _encoding, done) {
 					done();
 				},
 			});
