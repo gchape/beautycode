@@ -1,6 +1,6 @@
+import { useLocation } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "@tanstack/react-router";
 import { Button } from "../ui/button.tsx";
 import { Input } from "../ui/input.tsx";
 import { Label } from "../ui/label.tsx";

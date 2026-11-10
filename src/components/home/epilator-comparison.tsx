@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { coverImage, type PublicProduct } from "../../data/catalog.ts";
-import { productImageProps } from "../../lib/product-images.ts";
 import {
 	comparisonValue,
 	epilatorComparisonFields,
 } from "../../lib/product-highlights.ts";
+import { productImageProps } from "../../lib/product-images.ts";
 import { ProductPrice } from "../catalog/product-price.tsx";
 import { Button } from "../ui/button.tsx";
 import { DisclosureIndicator } from "./disclosure-indicator.tsx";

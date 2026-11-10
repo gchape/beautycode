@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BrandStory } from "../components/home/brand-story.tsx";
 import { CategoryShowcase } from "../components/home/category-showcase.tsx";
-import { FeaturedProducts } from "../components/home/featured-products.tsx";
 import { EpilatorComparison } from "../components/home/epilator-comparison.tsx";
+import { FeaturedProducts } from "../components/home/featured-products.tsx";
 import { HomeFaq } from "../components/home/home-faq.tsx";
 import { HomeHero } from "../components/home/home-hero.tsx";
 import { ServiceBenefits } from "../components/home/service-benefits.tsx";

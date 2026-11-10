@@ -42,7 +42,8 @@ export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 
 	function open(product?: PublicProduct) {
 		// Share an in-flight request so repeated taps cannot send duplicate orders.
-		return (opening ??= load()
+		if (opening) return opening;
+		opening = load()
 			.then(() => {
 				sdk.chat.show();
 				sdk.chat.open();
@@ -50,7 +51,8 @@ export function createChatLauncher(websiteId: string, sdk: CrispClass = Crisp) {
 			})
 			.finally(() => {
 				opening = undefined;
-			}));
+			});
+		return opening;
 	}
 
 	function scheduleLoad() {

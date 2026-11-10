@@ -45,34 +45,38 @@ export function HomeHero({ products }: { products: PublicProduct[] }) {
 				</div>
 			</div>
 			{highlights.length > 0 && (
-				<div className="hero-products" aria-label="აღმოაჩინე პროდუქტები">
+				<div className="hero-products">
 					<span className="hero-orbit" aria-hidden="true" />
-					{highlights.map((product, index) => (
-						<Link
-							key={product.id}
-							to="/products/$slug"
-							params={{ slug: product.slug }}
-							className={`hero-product hero-product-${index + 1}`}
-						>
-							<img
-								{...productImageProps(
-									coverImage(product)!,
-									"(max-width: 560px) 40vw, (max-width: 1000px) 220px, 240px",
-								)}
-								alt={product.images[0].alt || product.name}
-								width="300"
-								height="300"
-								loading={index === 0 ? "eager" : "lazy"}
-								fetchPriority={index === 0 ? "high" : undefined}
-								decoding="async"
-							/>
-							<div className="hero-product-caption">
-								<span>{product.name}</span>
-								<ProductPrice product={product} className="text-base" />
-								<ArrowRight size={16} aria-hidden="true" />
-							</div>
-						</Link>
-					))}
+					{highlights.map((product, index) => {
+						const image = coverImage(product);
+						if (!image) return null;
+						return (
+							<Link
+								key={product.id}
+								to="/products/$slug"
+								params={{ slug: product.slug }}
+								className={`hero-product hero-product-${index + 1}`}
+							>
+								<img
+									{...productImageProps(
+										image,
+										"(max-width: 560px) 40vw, (max-width: 1000px) 220px, 240px",
+									)}
+									alt={product.images[0].alt || product.name}
+									width="300"
+									height="300"
+									loading={index === 0 ? "eager" : "lazy"}
+									fetchPriority={index === 0 ? "high" : undefined}
+									decoding="async"
+								/>
+								<div className="hero-product-caption">
+									<span>{product.name}</span>
+									<ProductPrice product={product} className="text-base" />
+									<ArrowRight size={16} aria-hidden="true" />
+								</div>
+							</Link>
+						);
+					})}
 				</div>
 			)}
 		</section>

@@ -1,10 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Banknote, Check, ShieldCheck, Truck } from "lucide-react";
-import { ChatButton } from "../components/contact/chat-button.tsx";
 import { Breadcrumb } from "../components/breadcrumb";
 import { ProductFeatures } from "../components/catalog/product-features";
 import { ProductGallery } from "../components/catalog/product-gallery";
 import { ProductPrice } from "../components/catalog/product-price";
+import { ChatButton } from "../components/contact/chat-button.tsx";
 import {
 	Accordion,
 	AccordionContent,
@@ -12,12 +12,12 @@ import {
 	AccordionTrigger,
 } from "../components/ui/accordion";
 import { coverImage } from "../data/catalog.ts";
+import { stockLabels } from "../data/labels.ts";
 import policies from "../data/policies.json";
 import {
 	productHighlights,
 	productWarranty,
 } from "../lib/product-highlights.ts";
-import { stockLabels } from "../data/labels.ts";
 import { breadcrumbData, productData, productPath, seoHead } from "../lib/seo";
 import { getProduct } from "../server/catalog";
 
@@ -150,7 +150,7 @@ function ProductPage() {
 					</Accordion>
 				</div>
 			</div>
-			<div className="product-purchase-bar" aria-label="პროდუქტის შეკვეთა">
+			<div className="product-purchase-bar">
 				<div className="flex items-center justify-between gap-3">
 					<ProductPrice product={product} className="m-0 text-lg" />
 					<ChatButton
