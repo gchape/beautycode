@@ -7,11 +7,11 @@ import { HomeFaq } from "../components/home/home-faq.tsx";
 import { HomeHero } from "../components/home/home-hero.tsx";
 import { ServiceBenefits } from "../components/home/service-benefits.tsx";
 import { site } from "../data/site.ts";
+import { homeProductsQuery } from "../lib/catalog-queries.ts";
 import { absoluteUrl, seoHead } from "../lib/seo.ts";
-import { getHomeProducts } from "../server/catalog.ts";
 
 export const Route = createFileRoute("/")({
-	loader: () => getHomeProducts(),
+	loader: ({ context }) => context.queryClient.fetchQuery(homeProductsQuery),
 	component: Home,
 	head: () =>
 		seoHead({

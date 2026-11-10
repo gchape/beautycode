@@ -1,24 +1,25 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useTransition } from "react";
 import { Breadcrumb } from "../components/breadcrumb.tsx";
 import { CatalogFilters } from "../components/catalog/catalog-filters.tsx";
 import { CatalogSearchForm } from "../components/catalog/catalog-search-form.tsx";
 import { ProductGrid } from "../components/catalog/product-grid.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Card } from "../components/ui/card.tsx";
+import { productsQuery } from "../lib/catalog-queries.ts";
 import {
 	type CatalogSearch,
 	catalogSearchSchema,
 	filterProducts,
 } from "../lib/catalog-search.ts";
 import { seoHead } from "../lib/seo.ts";
-import { getProducts } from "../server/catalog.ts";
 
 export const Route = createFileRoute("/products/")({
 	validateSearch: catalogSearchSchema,
 	loaderDeps: ({ search }) => ({ q: search.q }),
-	loader: ({ deps }) => getProducts({ data: { query: deps.q } }),
+	loader: ({ deps, context }) =>
+		context.queryClient.fetchQuery(productsQuery(deps.q)),
 	head: ({ match }) =>
 		seoHead({
 			title: "ყველა პროდუქტი",
@@ -34,10 +35,17 @@ function Catalog() {
 	const allProducts = Route.useLoaderData();
 	const search = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
+	const [pending, startTransition] = useTransition();
 	const update = (values: Partial<CatalogSearch>) =>
-		navigate({
-			search: (previous) => ({ ...previous, ...values }),
-			resetScroll: false,
+		startTransition(async () => {
+			await navigate({
+				search: (previous) => ({ ...previous, ...values }),
+				resetScroll: false,
+			});
+		});
+	const clear = () =>
+		startTransition(async () => {
+			await navigate({ search: {}, resetScroll: false });
 		});
 	const products = useMemo(
 		() => filterProducts(allProducts, search),
@@ -47,12 +55,13 @@ function Catalog() {
 		search.q || search.category || search.discount || search.max !== undefined,
 	);
 	return (
-		<section className="site-container min-h-[60vh] pt-6.25 pb-20 [&>h1]:mt-4 [&>h1]:mb-6 [&>h1]:text-4xl max-[560px]:[&>h1]:text-3xl">
+		<section className="site-container page-section">
 			<Breadcrumb title="ყველა პროდუქტი" />
 			<h1>ყველა პროდუქტი</h1>
 			<CatalogSearchForm
 				key={search.q || ""}
 				defaultValue={search.q || ""}
+				pending={pending}
 				onSearch={(q) => {
 					void update({ q });
 				}}
@@ -60,28 +69,29 @@ function Catalog() {
 			<CatalogFilters search={search} onChange={update} />
 			<div className="my-7.5 flex min-h-11 flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
 				<span role="status" aria-live="polite">
-					{products.length} პროდუქტი
+					{pending ? "პროდუქტები იტვირთება…" : `${products.length} პროდუქტი`}
 				</span>
 				{(hasFilters || search.sort) && (
 					<Button
 						className="min-h-11 bg-transparent px-2 text-[length:inherit] underline hover:bg-transparent"
 						variant="ghost"
-						onClick={() => {
-							void navigate({ search: {}, resetScroll: false });
-						}}
+						onClick={clear}
 					>
 						ფილტრების გასუფთავება
 					</Button>
 				)}
 			</div>
 			{!products.length && hasFilters ? (
-				<Card className="block rounded-lg border border-border bg-[#faf6f6] px-5.5 py-13.75 text-center shadow-none [&>svg]:mx-auto [&>svg]:mb-5 [&>svg]:text-[#a77a8a] [&_h2]:text-[1.375rem] [&_p]:text-[0.9375rem] [&_p]:text-muted-foreground max-[560px]:px-4.5 max-[560px]:py-10 max-[560px]:[&_h2]:text-[1.1875rem]">
+				<Card variant="empty">
 					<Search size={32} />
 					<h2>პროდუქტი ვერ მოიძებნა</h2>
 					<p>სცადე სხვა სიტყვა ან შეცვალე ფილტრები.</p>
+					<Button variant="outline" onClick={clear}>
+						ფილტრების გასუფთავება
+					</Button>
 				</Card>
 			) : (
-				<div>
+				<div aria-busy={pending} className={pending ? "opacity-60" : undefined}>
 					<h2 className="sr-only">პროდუქტების სია</h2>
 					<ProductGrid products={products} />
 				</div>

@@ -1,22 +1,30 @@
 import { PackageOpen } from "lucide-react";
 import { coverImage, type PublicProduct } from "../../data/catalog.ts";
-import { ContactButton } from "../contact/contact-button.tsx";
+import { ChatButton } from "../contact/chat-button.tsx";
 import { Card } from "../ui/card.tsx";
 import { ProductCard } from "./product-card.tsx";
 
-export function ProductGrid({ products }: { products: PublicProduct[] }) {
+export function ProductGrid({
+	products,
+	prioritizeFirstImage = true,
+}: {
+	products: PublicProduct[];
+	prioritizeFirstImage?: boolean;
+}) {
 	if (!products.length)
 		return (
-			<Card className="block rounded-lg border border-border bg-[#faf6f6] px-5.5 py-13.75 text-center shadow-none [&>svg]:mx-auto [&>svg]:mb-5 [&>svg]:text-[#a77a8a] [&_h2]:text-[1.375rem] [&_p]:text-[0.9375rem] [&_p]:text-muted-foreground max-[560px]:px-4.5 max-[560px]:py-10 max-[560px]:[&_h2]:text-[1.1875rem]">
+			<Card variant="empty">
 				<PackageOpen size={36} strokeWidth={1} />
 				<h2>პროდუქტები მალე დაემატება</h2>
 				<p>დამატებითი ინფორმაციისთვის დაგვიკავშირდი.</p>
-				<ContactButton />
+				<ChatButton variant="outline">დაგვიკავშირდი</ChatButton>
 			</Card>
 		);
-	const firstImageIndex = products.findIndex((product) => coverImage(product));
+	const firstImageIndex = prioritizeFirstImage
+		? products.findIndex((product) => coverImage(product))
+		: -1;
 	return (
-		<div className="product-grid grid grid-cols-3 gap-6 max-[800px]:grid-cols-2 max-[560px]:gap-3 max-[359px]:grid-cols-1">
+		<div className="product-grid grid grid-cols-3 gap-6 max-[560px]:gap-3">
 			{products.map((product, index) => (
 				<ProductCard
 					key={product.id}

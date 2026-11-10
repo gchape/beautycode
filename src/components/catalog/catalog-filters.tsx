@@ -110,7 +110,7 @@ export function CatalogFilters({
 							step="0.01"
 							value={max}
 							onChange={(event) => setMax(event.target.value)}
-							className="min-h-11 bg-background text-base"
+							className="bg-background text-base"
 						/>
 					</Label>
 					<Button type="submit" className="min-h-11 px-4 text-sm">

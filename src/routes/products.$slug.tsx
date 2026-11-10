@@ -14,16 +14,18 @@ import {
 import { coverImage } from "../data/catalog.ts";
 import { stockLabels } from "../data/labels.ts";
 import policies from "../data/policies.json";
+import { productQuery } from "../lib/catalog-queries.ts";
 import {
 	productHighlights,
 	productWarranty,
 } from "../lib/product-highlights.ts";
 import { breadcrumbData, productData, productPath, seoHead } from "../lib/seo";
-import { getProduct } from "../server/catalog";
 
 export const Route = createFileRoute("/products/$slug")({
-	loader: async ({ params }) => {
-		const product = await getProduct({ data: { slug: params.slug } });
+	loader: async ({ params, context }) => {
+		const product = await context.queryClient.fetchQuery(
+			productQuery(params.slug),
+		);
 		if (!product) throw notFound();
 		return product;
 	},
@@ -124,7 +126,7 @@ function ProductPage() {
 					<p className="text-base whitespace-pre-line text-muted-foreground">
 						{product.description}
 					</p>
-					<ProductFeatures features={product.features ?? []} />
+					<ProductFeatures features={product.features} />
 					<Accordion
 						type="multiple"
 						className="**:data-[slot=accordion-item]:border-t **:data-[slot=accordion-item]:border-b-0 **:data-[slot=accordion-item]:border-border **:data-[slot=accordion-trigger]:py-5 **:data-[slot=accordion-trigger]:text-[0.9375rem] **:data-[slot=accordion-trigger]:font-normal **:data-[slot=accordion-content]:text-[0.9375rem] [&_a]:underline [&_p]:mt-3.75"
