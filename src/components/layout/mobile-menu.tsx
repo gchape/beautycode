@@ -1,9 +1,9 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { ChevronRight, Grid2X2, Menu, MessageCircle } from "lucide-react";
+import { ChevronRight, Grid2X2, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCategories } from "../catalog/category-context.tsx";
 import { categoryIcons } from "../category-icons.ts";
-import { useOpenChat } from "../contact/contact-context.tsx";
+import { ChatButton } from "../contact/chat-button.tsx";
 import { Button } from "../ui/button.tsx";
 import {
 	Sheet,
@@ -15,7 +15,6 @@ import {
 
 export function MobileMenu() {
 	const [menu, setMenu] = useState(false);
-	const openChat = useOpenChat();
 	const router = useRouter();
 	useEffect(
 		() => router.subscribe("onResolved", () => setMenu(false)),
@@ -37,7 +36,7 @@ export function MobileMenu() {
 				side="right"
 				className="w-[min(380px,calc(100vw-28px))] max-w-none gap-0 overflow-y-auto px-6 py-7.5 sm:max-w-none"
 			>
-				<div className="pr-7">
+				<div className="pr-12">
 					<SheetTitle className="m-0 text-xl leading-[1.6] font-medium">
 						აღმოაჩინე შენი რჩეული
 					</SheetTitle>
@@ -48,15 +47,14 @@ export function MobileMenu() {
 				<MobileNavigation onNavigate={() => setMenu(false)} />
 				<div className="mt-auto pt-8 [&_p]:mb-3 [&_p]:text-[0.8125rem] [&_p]:text-muted-foreground [&_button]:w-full">
 					<p>არჩევაში დაგეხმარებით</p>
-					<Button
+					<ChatButton
 						variant="outline"
 						onClick={() => {
 							setMenu(false);
-							void openChat();
 						}}
 					>
-						<MessageCircle size={18} /> მოგვწერე
-					</Button>
+						მოგვწერე
+					</ChatButton>
 				</div>
 			</SheetContent>
 		</Sheet>
