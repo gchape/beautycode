@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "@tanstack/react-router";
 import { Button } from "../ui/button.tsx";
 import { Input } from "../ui/input.tsx";
 import { Label } from "../ui/label.tsx";
@@ -12,6 +13,11 @@ export function CatalogSearchForm({
 	onSearch: (query?: string) => void;
 }) {
 	const [query, setQuery] = useState(defaultValue);
+	const input = useRef<HTMLInputElement>(null);
+	const hash = useLocation({ select: (location) => location.hash });
+	useEffect(() => {
+		if (hash === "search") input.current?.focus({ preventScroll: true });
+	}, [hash]);
 	return (
 		<form
 			className="mb-6 flex items-center gap-3.75 rounded-lg border border-border p-1.75 pl-5 max-[560px]:gap-2 max-[560px]:pl-3"
@@ -27,9 +33,11 @@ export function CatalogSearchForm({
 			<Input
 				className="h-auto min-w-0 flex-1 border-0 bg-transparent p-2.5 text-[length:inherit] shadow-none outline-offset-0 md:text-[length:inherit]"
 				id="search"
+				ref={input}
+				enterKeyHint="search"
 				type="search"
 				autoComplete="off"
-				placeholder="რას ეძებ?"
+				placeholder="მაგ. ეპილატორი"
 				value={query}
 				maxLength={200}
 				onChange={(e) => setQuery(e.target.value)}

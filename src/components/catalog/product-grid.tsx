@@ -16,7 +16,7 @@ export function ProductGrid({ products }: { products: PublicProduct[] }) {
 		);
 	const firstImageIndex = products.findIndex((product) => coverImage(product));
 	return (
-		<div className="grid grid-cols-3 gap-6 max-[800px]:grid-cols-2 max-[560px]:gap-3.75 max-[400px]:grid-cols-1">
+		<div className="grid grid-cols-3 gap-6 max-[800px]:grid-cols-2 max-[560px]:gap-3 max-[359px]:grid-cols-1">
 			{products.map((product, index) => (
 				<ProductCard
 					key={product.id}

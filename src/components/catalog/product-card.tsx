@@ -1,18 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { MessageCircle, PackageOpen } from "lucide-react";
+import { PackageOpen } from "lucide-react";
 import type { PublicProduct } from "../../data/catalog.ts";
 import { coverImage, discountPercent } from "../../data/catalog.ts";
 import { stockLabels } from "../../data/labels.ts";
 import { productImageProps } from "../../lib/product-images.ts";
-import { useOpenChat } from "../contact/contact-context.tsx";
+import { ChatButton } from "../contact/chat-button.tsx";
 import { Badge } from "../ui/badge.tsx";
-import { Button } from "../ui/button.tsx";
 import { Card } from "../ui/card.tsx";
 import { ProductPrice } from "./product-price.tsx";
 
 // Match the container gutters, grid gaps, and image padding at each breakpoint.
 const cardImageSizes =
-	"(max-width: 400px) calc(100vw - 64px), (max-width: 560px) calc((100vw - 47px) / 2 - 32px), (width < 640px) calc((100vw - 56px) / 2 - 32px), (max-width: 800px) calc((100vw - 72px) / 2 - 48px), (width < 1100px) calc((100vw - 96px) / 3 - 48px), (width < 1320px) calc((100vw - 128px) / 3 - 48px), 350px";
+	"(max-width: 359px) calc(100vw - 64px), (max-width: 560px) calc((100vw - 47px) / 2 - 32px), (width < 640px) calc((100vw - 56px) / 2 - 32px), (max-width: 800px) calc((100vw - 72px) / 2 - 48px), (width < 1100px) calc((100vw - 96px) / 3 - 48px), (width < 1320px) calc((100vw - 128px) / 3 - 48px), 350px";
 
 export function ProductCard({
 	product,
@@ -21,7 +20,6 @@ export function ProductCard({
 	product: PublicProduct;
 	priority?: boolean;
 }) {
-	const openChat = useOpenChat();
 	const image = coverImage(product);
 	const discount = discountPercent(product);
 	return (
@@ -52,7 +50,7 @@ export function ProductCard({
 						</Badge>
 					)}
 				</div>
-				<h3 className="mt-4 mb-3 text-base leading-relaxed max-[560px]:text-sm">
+				<h3 className="mt-3 mb-2 text-base font-medium leading-relaxed max-[560px]:text-sm">
 					{product.name}
 				</h3>
 				<ProductPrice className="mt-auto text-[1.0625rem]" product={product} />
@@ -60,14 +58,14 @@ export function ProductCard({
 					<small>{stockLabels[product.stock_status]}</small>
 				)}
 			</Link>
-			<Button
+			<ChatButton
 				variant="outline"
-				className="mt-4 w-full gap-2 px-3 max-[560px]:text-xs"
-				onClick={() => openChat(product)}
+				className="mt-4 w-full gap-2 px-3 text-sm"
+				product={product}
 				disabled={product.stock_status === "out_of_stock"}
 			>
-				<MessageCircle size={17} /> შეკვეთა ჩატში
-			</Button>
+				შეკვეთა ჩატში
+			</ChatButton>
 		</Card>
 	);
 }

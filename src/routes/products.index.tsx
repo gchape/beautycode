@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
+import { useMemo } from "react";
 import { Breadcrumb } from "../components/breadcrumb.tsx";
 import { CatalogFilters } from "../components/catalog/catalog-filters.tsx";
 import { CatalogSearchForm } from "../components/catalog/catalog-search-form.tsx";
@@ -34,9 +35,15 @@ function Catalog() {
 	const search = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 	const update = (values: Partial<CatalogSearch>) =>
-		navigate({ search: (previous) => ({ ...previous, ...values }) });
+		navigate({
+			search: (previous) => ({ ...previous, ...values }),
+			resetScroll: false,
+		});
 	// Full-text search runs in SQLite; remaining filters sort/refine these results locally.
-	const products = filterProducts(allProducts, search);
+	const products = useMemo(
+		() => filterProducts(allProducts, search),
+		[allProducts, search],
+	);
 	const hasFilters = Boolean(
 		search.q || search.category || search.discount || search.max !== undefined,
 	);
@@ -52,7 +59,7 @@ function Catalog() {
 				}}
 			/>
 			<CatalogFilters search={search} onChange={update} />
-			<div className="my-7.5 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+			<div className="my-7.5 flex min-h-11 flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
 				<span role="status" aria-live="polite">
 					{products.length} პროდუქტი
 				</span>
@@ -61,7 +68,7 @@ function Catalog() {
 						className="min-h-11 bg-transparent px-2 text-[length:inherit] underline hover:bg-transparent"
 						variant="ghost"
 						onClick={() => {
-							void navigate({ search: {} });
+							void navigate({ search: {}, resetScroll: false });
 						}}
 					>
 						ფილტრების გასუფთავება
