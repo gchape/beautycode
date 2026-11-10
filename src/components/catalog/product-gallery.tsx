@@ -15,7 +15,7 @@ export function ProductGallery({ product }: { product: PublicProduct }) {
 					<img
 						{...productImageProps(
 							current.url,
-							"(max-width: 800px) 100vw, 600px",
+							"(max-width: 639px) calc(100vw - 80px), (max-width: 800px) calc(100vw - 96px), (max-width: 1099px) calc((100vw - 96px) / 2 - 48px), (max-width: 1319px) calc((100vw - 128px) / 2 - 48px), 548px",
 						)}
 						fetchPriority="high"
 						alt={current.alt || product.name}
