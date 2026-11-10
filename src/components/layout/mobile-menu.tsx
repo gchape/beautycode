@@ -1,4 +1,4 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useBlocker, useRouter } from "@tanstack/react-router";
 import { ChevronRight, Grid2X2, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCategories } from "../catalog/category-context.tsx";
@@ -16,6 +16,15 @@ import {
 export function MobileMenu() {
 	const [menu, setMenu] = useState(false);
 	const router = useRouter();
+	useBlocker({
+		disabled: !menu,
+		enableBeforeUnload: false,
+		shouldBlockFn: ({ action }) => {
+			if (action !== "BACK") return false;
+			setMenu(false);
+			return true;
+		},
+	});
 	useEffect(
 		() => router.subscribe("onResolved", () => setMenu(false)),
 		[router],

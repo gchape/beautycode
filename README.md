@@ -125,7 +125,9 @@ Component styling lives in Tailwind classes. Edit route files rather than genera
 
 The homepage features two epilators from the public catalog, upright captions, and a short image animation that respects reduced-motion preferences. An expandable comparison reads specifications and prices from the same catalog data. Service links, featured products, categories, guidance, and FAQs follow. The hero selection is independent of the six featured products.
 
-The catalog keeps two product columns from 360px up, uses category shortcuts and native sorting, and applies the optional price limit on form submission. Header search opens and focuses the catalog search field. Product pages put key features and the order button beside the price, with delivery, payment, and product-specific warranty information; mobile pages also show a fixed order bar with space reserved for the chat launcher. Sale prices remain larger than crossed-out original prices in every context.
+The catalog uses two product columns on common phone widths and adapts to a single column for narrow screens or enlarged text. Category shortcuts and native sorting simplify browsing; the optional price limit is applied on form submission. Header search opens and focuses the catalog search field. Product pages put key features and the order button beside the price, with delivery, payment, and product-specific warranty information; mobile pages also show a fixed order bar with space reserved for the chat launcher. Sale prices remain larger than crossed-out original prices in every context.
+
+The mobile menu closes on browser Back before navigating away, and the header can wrap when text is enlarged. Form controls keep a visible border against the rose and cream surfaces.
 
 Chat buttons show a connecting state and prevent duplicate product messages while an opening request is pending. Chat still starts loading automatically after one second and loads immediately on an earlier click. Customer reviews and demo media should use approved real content; an analytics destination and order-completion integration are needed before reporting conversion data.
 
