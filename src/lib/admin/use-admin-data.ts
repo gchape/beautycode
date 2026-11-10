@@ -6,7 +6,8 @@ import { adminApi } from "./api.ts";
 const useAdminQuery = <T>(resource: string, enabled = true) =>
 	useQuery({
 		queryKey: ["admin", resource],
-		queryFn: () => adminApi<T>(resource),
+		queryFn: ({ signal }) => adminApi<T>(resource, undefined, signal),
+		staleTime: 30_000,
 		enabled,
 		retry: false,
 	});

@@ -16,17 +16,11 @@ import { ImageRow } from "./image-row.tsx";
 export function ImageEditor({
 	images,
 	onChange,
-	onBusy,
 }: {
 	images: EditableImage[];
 	onChange: Dispatch<SetStateAction<EditableImage[]>>;
-	onBusy: (busy: boolean) => void;
 }) {
-	const { busy, error, upload } = useImageUpload(
-		images.length,
-		onChange,
-		onBusy,
-	);
+	const { busy, error, upload } = useImageUpload(images.length, onChange);
 	const full = images.length >= maxImagesPerProduct;
 	function move(index: number, delta: number) {
 		if (
@@ -52,12 +46,12 @@ export function ImageEditor({
 			>
 				<Input
 					type="file"
-					className="h-auto min-h-11 py-2"
+					className="py-2"
 					accept={imageTypeNames.join(",")}
 					multiple
 					disabled={full}
 					onChange={(event) => {
-						void upload(Array.from(event.target.files ?? []));
+						upload(Array.from(event.target.files ?? []));
 						event.target.value = "";
 					}}
 				/>

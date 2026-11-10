@@ -21,8 +21,10 @@ const labels: Record<string, string> = {
 
 export function FormError({ error }: { error: unknown }) {
 	const summary = useRef<HTMLDivElement>(null);
+	const focusedError = useRef<unknown>(null);
 	useEffect(() => {
-		if (error) {
+		if (error && error !== focusedError.current) {
+			focusedError.current = error;
 			summary.current?.focus({ preventScroll: true });
 			summary.current?.scrollIntoView({ block: "center" });
 		}

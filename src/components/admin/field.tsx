@@ -1,4 +1,6 @@
 import { cloneElement, type ReactElement, useId } from "react";
+import { Checkbox } from "../ui/checkbox.tsx";
+import { Label } from "../ui/label.tsx";
 
 export function Field({
 	label,
@@ -15,7 +17,8 @@ export function Field({
 		"aria-describedby"?: string;
 	}>;
 }) {
-	const id = useId();
+	const generatedId = useId();
+	const id = children.props.id ?? generatedId;
 	const describedBy =
 		[children.props["aria-describedby"], hint ? `${id}-hint` : ""]
 			.filter(Boolean)
@@ -42,6 +45,42 @@ export function Field({
 					{hint}
 				</p>
 			)}
+		</div>
+	);
+}
+
+export function CheckboxField({
+	label,
+	hint,
+	name,
+	defaultChecked,
+}: {
+	label: string;
+	hint: string;
+	name: string;
+	defaultChecked?: boolean;
+}) {
+	const id = useId();
+	return (
+		<div className="col-span-full flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
+			<Checkbox
+				id={id}
+				name={name}
+				defaultChecked={defaultChecked}
+				className="mt-3 size-5 rounded-md"
+				aria-describedby={`${id}-hint`}
+			/>
+			<div className="min-w-0">
+				<Label htmlFor={id} className="min-h-11 leading-relaxed">
+					{label}
+				</Label>
+				<p
+					id={`${id}-hint`}
+					className="m-0 text-sm leading-relaxed text-muted-foreground"
+				>
+					{hint}
+				</p>
+			</div>
 		</div>
 	);
 }

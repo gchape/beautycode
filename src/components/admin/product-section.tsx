@@ -13,14 +13,14 @@ export function ProductSection({
 }: {
 	products: AdminProduct[];
 	categories: Category[];
-	onSaved: () => void;
+	onSaved: () => Promise<void>;
 }) {
 	const [editingProduct, setEditingProduct] = useState<
 		AdminProduct | "new" | null
 	>(null);
-	function handleSaved() {
+	async function handleSaved() {
+		await onSaved();
 		setEditingProduct(null);
-		onSaved();
 	}
 	return (
 		<Tabs.Content

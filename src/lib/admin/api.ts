@@ -19,8 +19,15 @@ function requestInit(data?: unknown): RequestInit {
 	};
 }
 
-export async function adminApi<T>(path: string, data?: unknown): Promise<T> {
-	const response = await fetch(`/admin/api/${path}`, requestInit(data));
+export async function adminApi<T>(
+	path: string,
+	data?: unknown,
+	signal?: AbortSignal,
+): Promise<T> {
+	const response = await fetch(`/admin/api/${path}`, {
+		...requestInit(data),
+		signal,
+	});
 
 	if (!response.ok) {
 		const body = await response.json().catch(() => null);

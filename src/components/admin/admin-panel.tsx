@@ -9,9 +9,10 @@ import {
 	X,
 } from "lucide-react";
 import { Tabs } from "radix-ui";
-import { useState } from "react";
+import { Activity, useState } from "react";
 import { adminApi } from "../../lib/admin/api.ts";
 import { useAdminData } from "../../lib/admin/use-admin-data.ts";
+import { catalogQueryKey } from "../../lib/catalog-queries.ts";
 import { Button } from "../ui/button.tsx";
 import { AuditLog } from "./audit-log.tsx";
 import { CatalogOverview } from "./catalog-overview.tsx";
@@ -35,10 +36,13 @@ export function AdminPanel() {
 		error?: boolean;
 	} | null>(null);
 	const { products, categories, audit } = useAdminData(tab);
-	function handleSaved() {
+	async function handleSaved() {
+		await Promise.all([
+			client.invalidateQueries({ queryKey: ["admin"] }),
+			client.invalidateQueries({ queryKey: catalogQueryKey }),
+		]);
+		await router.invalidate();
 		setNotice({ message: "ცვლილებები შენახულია" });
-		void client.invalidateQueries({ queryKey: ["admin"] });
-		void router.invalidate();
 	}
 	const backup = useMutation({
 		mutationFn: () => adminApi("backup", {}),
@@ -161,15 +165,19 @@ export function AdminPanel() {
 				)}
 				{ready && (
 					<>
-						<ProductSection
-							products={products.data || []}
-							categories={categories.data || []}
-							onSaved={handleSaved}
-						/>
-						<CategorySection
-							categories={categories.data || []}
-							onSaved={handleSaved}
-						/>
+						<Activity mode={tab === "products" ? "visible" : "hidden"}>
+							<ProductSection
+								products={products.data || []}
+								categories={categories.data || []}
+								onSaved={handleSaved}
+							/>
+						</Activity>
+						<Activity mode={tab === "categories" ? "visible" : "hidden"}>
+							<CategorySection
+								categories={categories.data || []}
+								onSaved={handleSaved}
+							/>
+						</Activity>
 					</>
 				)}
 				<Tabs.Content value="audit">

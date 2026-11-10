@@ -1,14 +1,10 @@
-import { useId } from "react";
 import type { AdminProduct } from "../../data/catalog.ts";
 import { statusLabels, stockLabels } from "../../data/labels.ts";
-import { Checkbox } from "../ui/checkbox.tsx";
 import { Input } from "../ui/input.tsx";
-import { Label } from "../ui/label.tsx";
 import { Select } from "../ui/select.tsx";
-import { Field } from "./field.tsx";
+import { CheckboxField, Field } from "./field.tsx";
 
 export function ProductPricingFields({ product }: { product?: AdminProduct }) {
-	const featuredId = useId();
 	return (
 		<>
 			<Field label="ფასი (₾)">
@@ -62,26 +58,12 @@ export function ProductPricingFields({ product }: { product?: AdminProduct }) {
 					))}
 				</Select>
 			</Field>
-			<div className="col-span-full flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
-				<Checkbox
-					id={featuredId}
-					name="is_featured"
-					defaultChecked={product?.is_featured}
-					className="mt-3 size-5 rounded-md"
-					aria-describedby={`${featuredId}-hint`}
-				/>
-				<div className="min-w-0">
-					<Label htmlFor={featuredId} className="min-h-11 leading-relaxed">
-						მთავარ გვერდზე გამოჩენა
-					</Label>
-					<p
-						id={`${featuredId}-hint`}
-						className="m-0 text-sm leading-relaxed text-muted-foreground"
-					>
-						შერჩეული კოლექციისთვის. საჭიროა გამოქვეყნებული სტატუსი.
-					</p>
-				</div>
-			</div>
+			<CheckboxField
+				name="is_featured"
+				label="მთავარ გვერდზე გამოჩენა"
+				hint="შერჩეული კოლექციისთვის. საჭიროა გამოქვეყნებული სტატუსი."
+				defaultChecked={product?.is_featured}
+			/>
 		</>
 	);
 }

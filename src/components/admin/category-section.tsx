@@ -11,14 +11,14 @@ export function CategorySection({
 	onSaved,
 }: {
 	categories: Category[];
-	onSaved: () => void;
+	onSaved: () => Promise<void>;
 }) {
 	const [editingCategory, setEditingCategory] = useState<
 		Category | "new" | null
 	>(null);
-	function handleSaved() {
+	async function handleSaved() {
+		await onSaved();
 		setEditingCategory(null);
-		onSaved();
 	}
 	return (
 		<Tabs.Content

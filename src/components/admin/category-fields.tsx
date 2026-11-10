@@ -1,15 +1,11 @@
-import { useId } from "react";
 import type { Category } from "../../data/catalog.ts";
 import { categoryIconLabels } from "../../data/labels.ts";
-import { Checkbox } from "../ui/checkbox.tsx";
 import { Input } from "../ui/input.tsx";
-import { Label } from "../ui/label.tsx";
 import { Select } from "../ui/select.tsx";
 import { Textarea } from "../ui/textarea.tsx";
-import { Field } from "./field.tsx";
+import { CheckboxField, Field } from "./field.tsx";
 
 export function CategoryFields({ category }: { category?: Category }) {
-	const id = useId();
 	return (
 		<>
 			<Field label="დასახელება" className="col-span-full">
@@ -57,26 +53,12 @@ export function CategoryFields({ category }: { category?: Category }) {
 					))}
 				</Select>
 			</Field>
-			<div className="col-span-full flex items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
-				<Checkbox
-					id={id}
-					name="is_active"
-					defaultChecked={category ? category.is_active : true}
-					className="mt-3 size-5 rounded-md"
-					aria-describedby={`${id}-hint`}
-				/>
-				<div className="min-w-0">
-					<Label htmlFor={id} className="min-h-11 leading-relaxed">
-						საიტზე გამოჩენა
-					</Label>
-					<p
-						id={`${id}-hint`}
-						className="m-0 text-sm leading-relaxed text-muted-foreground"
-					>
-						კატეგორია და პროდუქტები საიტზე გამოჩნდება.
-					</p>
-				</div>
-			</div>
+			<CheckboxField
+				name="is_active"
+				label="საიტზე გამოჩენა"
+				hint="კატეგორია და პროდუქტები საიტზე გამოჩნდება."
+				defaultChecked={category ? category.is_active : true}
+			/>
 		</>
 	);
 }
