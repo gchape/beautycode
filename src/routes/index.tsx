@@ -2,15 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BrandStory } from "../components/home/brand-story.tsx";
 import { CategoryShowcase } from "../components/home/category-showcase.tsx";
 import { FeaturedProducts } from "../components/home/featured-products.tsx";
+import { EpilatorComparison } from "../components/home/epilator-comparison.tsx";
 import { HomeFaq } from "../components/home/home-faq.tsx";
 import { HomeHero } from "../components/home/home-hero.tsx";
 import { ServiceBenefits } from "../components/home/service-benefits.tsx";
 import { site } from "../data/site.ts";
 import { absoluteUrl, seoHead } from "../lib/seo.ts";
-import { getFeaturedProducts } from "../server/catalog.ts";
+import { getHomeProducts } from "../server/catalog.ts";
 
 export const Route = createFileRoute("/")({
-	loader: () => getFeaturedProducts(),
+	loader: () => getHomeProducts(),
 	component: Home,
 	head: () =>
 		seoHead({
@@ -39,12 +40,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-	const products = Route.useLoaderData();
+	const { featured, epilators } = Route.useLoaderData();
 	return (
 		<>
-			<HomeHero />
+			<HomeHero products={epilators} />
 			<ServiceBenefits />
-			<FeaturedProducts products={products} />
+			<EpilatorComparison products={epilators} />
+			<FeaturedProducts products={featured} />
 			<CategoryShowcase />
 			<BrandStory />
 			<HomeFaq />

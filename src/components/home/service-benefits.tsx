@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { ListChecks, RotateCcw, Truck } from "lucide-react";
+import { Banknote, RotateCcw, Truck } from "lucide-react";
 
 export function ServiceBenefits() {
 	return (
 		<section
-			className="site-container grid gap-6 border-b border-border py-7 sm:grid-cols-3 sm:gap-4"
+			className="site-container grid gap-3 border-b border-border py-4 sm:grid-cols-3 sm:gap-4 sm:py-6"
 			aria-label="ჩვენი მომსახურება"
 		>
 			<Link className="home-benefit" to="/delivery">
@@ -19,10 +19,10 @@ export function ServiceBenefits() {
 					დაბრუნების პირობები<small>გაეცანი შეკვეთამდე</small>
 				</span>
 			</Link>
-			<Link className="home-benefit" to="/products" search={{}}>
-				<ListChecks aria-hidden="true" />
+			<Link className="home-benefit" to="/delivery">
+				<Banknote aria-hidden="true" />
 				<span>
-					პროდუქტის დეტალები<small>აღწერა და მახასიათებლები</small>
+					გადახდის არჩევანი<small>გადარიცხვა ან ნაღდი</small>
 				</span>
 			</Link>
 		</section>

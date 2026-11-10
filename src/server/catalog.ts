@@ -34,6 +34,16 @@ export const getFeaturedProducts = createServerFn({ method: "GET" }).handler(
 	async () => (await products()).list({ featured: true, limit: 6 }),
 );
 
+export const getHomeProducts = createServerFn({ method: "GET" }).handler(
+	async () => {
+		const catalog = await products();
+		return {
+			featured: catalog.list({ featured: true, limit: 6 }),
+			epilators: catalog.list({ category: "ეპილატორები", limit: 2 }),
+		};
+	},
+);
+
 export const getCategories = createServerFn({ method: "GET" }).handler(
 	async () => {
 		const [{ getDatabase }, { queryCategories }] = await Promise.all([
