@@ -9,12 +9,17 @@ export function ProductPrice({
 }) {
 	const price = finalPrice(product);
 	return (
-		<p className={className}>
+		<p
+			className={`flex flex-wrap items-baseline gap-x-2 gap-y-0 ${className ?? ""}`}
+		>
+			<span className="sr-only">
+				{price < product.price_minor ? "ფასი ფასდაკლებით:" : "ფასი:"}
+			</span>
 			<span className="font-semibold tabular-nums text-foreground">
 				{money(price)}
 			</span>{" "}
 			{price < product.price_minor && (
-				<del className="ml-3 text-base font-medium tabular-nums text-ring decoration-1">
+				<del className="text-[0.8em] font-normal tabular-nums text-muted-foreground decoration-1">
 					{money(product.price_minor)}
 				</del>
 			)}

@@ -48,7 +48,7 @@
 	--primary-foreground: #fff;
 	--secondary: #f0dbe4;
 	--muted: #f8f1f3;
-	--muted-foreground: #80696e;
+	--muted-foreground: #70535d;
 	--border: #e9dfe1;
 	--ring: #63303e;
 	--radius: 0.75rem;
@@ -151,11 +151,11 @@
 	h1,
 	h2,
 	h3 {
-		font-weight: 500;
+		font-weight: 600;
 		text-wrap: balance;
 	}
 	p {
-		line-height: 1.9;
+		line-height: 1.75;
 	}
 	h1 {
 		font-size: clamp(30px, 4vw, 48px);
@@ -221,7 +221,7 @@
 	gap: 1rem;
 	min-height: 44px;
 	text-align: left;
-	font-size: 0.8125rem;
+	font-size: 0.875rem;
 }
 .home-benefit > svg {
 	width: 24px;
@@ -232,9 +232,14 @@
 .home-benefit small {
 	display: block;
 	margin-top: 0.25rem;
-	font-size: 0.75rem;
+	font-size: 0.8125rem;
 	color: var(--muted-foreground);
 }
 .home-benefit:hover {
 	color: #986074;
+}
+
+/* A quiet rose wash gives the catalog a warmer setting without competing with imagery. */
+body {
+	background: linear-gradient(145deg, #fffdfb 15%, #faf2f4 65%, #fffdfb);
 }
