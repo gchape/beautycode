@@ -123,7 +123,11 @@ Component styling lives in Tailwind classes. Edit route files rather than genera
 
 ### Storefront and font loading
 
-The homepage has a text-only hero with catalog and chat actions, followed by service links, featured products, categories, guidance, and FAQs. Product cards show the current price prominently and strike through the original price when discounted. Card images zoom slightly on hover, respecting reduced-motion preferences. Header navigation retains an active-page indicator without a hover underline.
+The homepage features two epilators from the public catalog, upright captions, and a short image animation that respects reduced-motion preferences. An expandable comparison reads specifications and prices from the same catalog data. Service links, featured products, categories, guidance, and FAQs follow. The hero selection is independent of the six featured products.
+
+The catalog keeps two product columns from 360px up, uses category shortcuts and native sorting, and applies the optional price limit on form submission. Header search opens and focuses the catalog search field. Product pages put key features and the order button beside the price, with delivery, payment, and product-specific warranty information; mobile pages also show a fixed order bar with space reserved for the chat launcher. Sale prices remain larger than crossed-out original prices in every context.
+
+Chat buttons show a connecting state and prevent duplicate product messages while an opening request is pending. Chat still starts loading automatically after one second and loads immediately on an earlier click. Customer reviews and demo media should use approved real content; an analytics destination and order-completion integration are needed before reporting conversion data.
 
 Noto Sans Georgian is self-hosted through `@fontsource-variable/noto-sans-georgian`. `src/styles.css` declares Georgian, Latin, and extended Latin subsets (including the lari sign, `₾`) with `font-display: swap`. `src/routes/__root.tsx` preloads the same three WOFF2 files so font discovery does not wait for CSS. Keep the preload URLs aligned with the font-face declarations.
 
@@ -238,7 +242,7 @@ Edit `.env` with your real `DOMAIN` and the Terraform outputs recorded in step 2
 | `CLOUDINARY_API_SECRET` | Cloudinary API credentials  | Server-only secret; never use a `VITE_` prefix         |
 | `MIGRATIONS_DIR`        | `/app/migrations` in Docker | SQL directory inside the container                     |
 
-Set `VITE_CRISP_WEBSITE_ID=58954312-2322-4477-a9b3-21af29c98ff1` in `.env` for the Crisp chat widget. This is a public website identifier, not a secret. The official `crisp-sdk-web` package loads the widget only when a visitor opens chat; product chat buttons send the product name, current price, and URL into the conversation. General contact buttons only open chat. Compose passes the identifier into the frontend build, so rebuild the image after changing it. No private Crisp API key is needed or exposed.
+Set `VITE_CRISP_WEBSITE_ID=58954312-2322-4477-a9b3-21af29c98ff1` in `.env` for the Crisp chat widget. This is a public website identifier, not a secret. The official `crisp-sdk-web` package starts loading the widget automatically 1 second after the storefront mounts, without opening the conversation. Clicking a chat button loads it immediately if needed; product chat buttons send the product name, current price, and URL into the conversation. General contact buttons only open chat. Compose passes the identifier into the frontend build, so rebuild the image after changing it. No private Crisp API key is needed or exposed.
 
 The server parses environment variables with Zod on the first request and reports invalid values. Production requires `SITE_URL`, `AWS_REGION`, `S3_BACKUPS_BUCKET`, `DB_PATH`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET`; Compose derives `SITE_URL` and the build's `VITE_SITE_URL` from `DOMAIN`. Compose overrides `MIGRATIONS_DIR` with `/app/migrations` inside the container. It also sets `NODE_ENV`, `HOST`, `PORT`, and `DB_PATH`. Compose still supplies `UPLOADS_DIR` for historical compatibility, but the application upload service no longer uses it. Changing `DOMAIN` updates nginx and the app's canonical origin on the next build and restart.
 
