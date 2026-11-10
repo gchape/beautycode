@@ -26,17 +26,22 @@ export const serverEnvironmentSchema = z.object({
 	MIGRATIONS_DIR: optionalNonEmpty,
 });
 
+const productionEnvironmentSchema = serverEnvironmentSchema
+	.required({
+		DB_PATH: true,
+		SITE_URL: true,
+		AWS_REGION: true,
+		S3_BACKUPS_BUCKET: true,
+		CLOUDINARY_CLOUD_NAME: true,
+		CLOUDINARY_API_KEY: true,
+		CLOUDINARY_API_SECRET: true,
+	})
+	.extend({ NODE_ENV: z.literal("production") });
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
-export type ProductionServerEnvironment = ServerEnvironment & {
-	NODE_ENV: "production";
-	DB_PATH: string;
-	SITE_URL: string;
-	AWS_REGION: string;
-	S3_BACKUPS_BUCKET: string;
-	CLOUDINARY_CLOUD_NAME: string;
-	CLOUDINARY_API_KEY: string;
-	CLOUDINARY_API_SECRET: string;
-};
+export type ProductionServerEnvironment = z.infer<
+	typeof productionEnvironmentSchema
+>;
 
 export function readServerEnvironment(
 	source: NodeJS.ProcessEnv = process.env,
@@ -57,21 +62,12 @@ export function validateProductionEnvironment(
 	const env = readServerEnvironment(source);
 	if (env.NODE_ENV !== "production") return env;
 
-	const required = [
-		"DB_PATH",
-		"SITE_URL",
-		"AWS_REGION",
-		"S3_BACKUPS_BUCKET",
-		"CLOUDINARY_CLOUD_NAME",
-		"CLOUDINARY_API_KEY",
-		"CLOUDINARY_API_SECRET",
-	] as const;
-	const missing = required.filter((key) => !env[key]);
-	if (missing.length)
+	const parsed = productionEnvironmentSchema.safeParse(env);
+	if (!parsed.success)
 		throw new Error(
-			`Missing required production environment variables: ${missing.join(", ")}`,
+			`Missing required production environment variables: ${parsed.error.issues.map((issue) => issue.path.join(".")).join(", ")}`,
 		);
-	return env as ProductionServerEnvironment;
+	return parsed.data;
 }
 
 export const isDevelopment = () =>
