@@ -2,6 +2,7 @@
 
 Georgian product storefront and catalog admin built with React, TanStack Start, SQLite, and Tailwind CSS. Customers browse products and contact the shop through chat. There is no checkout or customer-account system.
 
+- [Promotional media](#promotional-media)
 - [Local development](#local-development)
 - [Application architecture](#application-architecture)
 - [Production deployment](#production-deployment)
@@ -9,6 +10,20 @@ Georgian product storefront and catalog admin built with React, TanStack Start, 
 - [Backups and recovery](#backups-and-recovery)
 - [Image storage and Cloudinary](#image-storage-and-cloudinary)
 - [Troubleshooting](#troubleshooting)
+
+## Promotional media
+
+### Promo image
+
+Georgian promotional image featuring the storefront and the captured Lighthouse scores.
+
+<!-- Upload the promo image in GitHub's README editor and paste its generated Markdown here. -->
+
+### Promo video
+
+<!-- Upload the promo video in GitHub's README editor and paste its attachment URL here. -->
+
+13.8-second, 1080p tour of the actual website with Georgian captions, smooth page transitions, gentle music, and a 2-second social links end card.
 
 ## Local development
 
