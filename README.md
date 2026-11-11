@@ -184,7 +184,7 @@ Use an AWS account with permission to create VPC, EC2, IAM, and S3 resources. Se
 
 ### 2. Create the infrastructure with Terraform
 
-Install Terraform 1.17 or newer and configure AWS credentials using the AWS CLI profile, environment, or another standard provider method. From the repository root:
+Install Terraform 1.17.1 or newer and configure AWS credentials using the AWS CLI profile, environment, or another standard provider method. From the repository root:
 
 ```sh
 cd infra/terraform
@@ -467,7 +467,8 @@ version in its HTTPS delivery URL; saving the product persists that URL unchange
 The shared delivery helper preserves the version and generates responsive sizes
 with automatic format and quality for cards, galleries, and admin thumbnails;
 social previews request JPEG. Other HTTPS URLs remain unchanged. The homepage
-hero is text-only and does not require product artwork.
+hero uses catalog images for up to two epilators. The first image loads eagerly
+with high fetch priority; the second loads lazily.
 
 Existing `/uploads/` files remain served by nginx for compatibility. Removing an
 image from a product removes its database reference, not the Cloudinary asset.
