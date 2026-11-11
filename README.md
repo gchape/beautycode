@@ -17,11 +17,11 @@ Georgian product storefront and catalog admin built with React, TanStack Start, 
 
 Georgian promotional image featuring the storefront and the captured Lighthouse scores.
 
-<!-- Upload the promo image in GitHub's README editor and paste its generated Markdown here. -->
+<img width="1672" height="941" alt="beautycode-promo-ka" src="https://github.com/user-attachments/assets/7e163516-3379-4a35-9de6-e1c8c1a69900" />
 
 ### Promo video
 
-<!-- Upload the promo video in GitHub's README editor and paste its attachment URL here. -->
+https://github.com/user-attachments/assets/a44e55ab-4551-4b4e-b235-a11089eb43df
 
 13.8-second, 1080p tour of the actual website with Georgian captions, smooth page transitions, gentle music, and a 2-second social links end card.
 
