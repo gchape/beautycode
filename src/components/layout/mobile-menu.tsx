@@ -1,6 +1,6 @@
 import { Link, useBlocker, useRouter } from "@tanstack/react-router";
 import { ChevronRight, Grid2X2, Menu } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useCategories } from "../catalog/category-context.tsx";
 import { categoryIcons } from "../category-icons.ts";
 import { ChatButton } from "../contact/chat-button.tsx";
@@ -15,7 +15,22 @@ import {
 
 export function MobileMenu() {
 	const [menu, setMenu] = useState(false);
+	const trigger = useRef<HTMLButtonElement>(null);
+	const menuId = useId();
+	const [placement, setPlacement] = useState({ top: 56, right: 0 });
 	const router = useRouter();
+	const positionMenu = () => {
+		const rect = trigger.current?.getBoundingClientRect();
+		if (!rect) return;
+		setPlacement({
+			top: Math.max(8, rect.top - 16),
+			right: Math.max(0, window.innerWidth - rect.right - 16),
+		});
+	};
+	const changeMenu = (open: boolean) => {
+		if (open) positionMenu();
+		setMenu(open);
+	};
 	useBlocker({
 		disabled: !menu,
 		enableBeforeUnload: false,
@@ -29,10 +44,27 @@ export function MobileMenu() {
 		() => router.subscribe("onResolved", () => setMenu(false)),
 		[router],
 	);
+	useEffect(() => {
+		if (!menu) return;
+		const resize = () => {
+			if (window.innerWidth > 1100) setMenu(false);
+			else {
+				const rect = trigger.current?.getBoundingClientRect();
+				if (rect)
+					setPlacement({
+						top: Math.max(8, rect.top - 16),
+						right: Math.max(0, window.innerWidth - rect.right - 16),
+					});
+			}
+		};
+		window.addEventListener("resize", resize);
+		return () => window.removeEventListener("resize", resize);
+	}, [menu]);
 	return (
-		<Sheet open={menu} onOpenChange={setMenu}>
+		<Sheet open={menu} onOpenChange={changeMenu}>
 			<SheetTrigger asChild>
 				<Button
+					ref={trigger}
 					variant="ghost"
 					size="icon"
 					className="size-11 min-h-11 items-center justify-center gap-0 bg-transparent p-0 hidden max-[1100px]:inline-flex"
@@ -42,19 +74,28 @@ export function MobileMenu() {
 				</Button>
 			</SheetTrigger>
 			<SheetContent
+				id={menuId}
+				onOpenAutoFocus={(event) => {
+					event.preventDefault();
+					document
+						.getElementById(menuId)
+						?.querySelector<HTMLAnchorElement>("nav a")
+						?.focus({ preventScroll: true });
+				}}
 				side="right"
-				className="w-[min(380px,calc(100vw-28px))] max-w-none gap-0 overflow-y-auto px-6 py-7.5 sm:max-w-none"
+				style={{ top: placement.top, right: placement.right, bottom: 12 }}
+				className="h-auto w-[min(380px,calc(100vw-24px))] max-w-none gap-0 overflow-y-auto rounded-2xl border border-border bg-background p-0 shadow-[0_20px_80px_#2e000324] sm:max-w-none"
 			>
-				<div className="pr-12">
-					<SheetTitle className="m-0 text-xl leading-[1.6] font-medium">
+				<div className="border-b border-border/60 px-5 pt-5 pb-4 pr-16">
+					<SheetTitle className="m-0 text-lg leading-relaxed font-medium">
 						აღმოაჩინე შენი რჩეული
 					</SheetTitle>
+					<SheetDescription className="mt-1 mb-0 text-sm leading-relaxed">
+						აირჩიე პროდუქტის კატეგორია
+					</SheetDescription>
 				</div>
-				<SheetDescription className="mt-2 mb-6 leading-[1.8]">
-					აირჩიე პროდუქტის კატეგორია
-				</SheetDescription>
 				<MobileNavigation onNavigate={() => setMenu(false)} />
-				<div className="mt-auto pt-8 [&_p]:mb-3 [&_p]:text-[0.8125rem] [&_p]:text-muted-foreground [&_button]:w-full">
+				<div className="mx-5 mt-auto border-t border-border/60 pt-4 pb-5 [&_p]:mb-2 [&_p]:text-[0.8125rem] [&_p]:text-muted-foreground [&_button]:w-full">
 					<p>არჩევაში დაგეხმარებით</p>
 					<ChatButton
 						variant="outline"
@@ -74,11 +115,11 @@ function MobileNavigation({ onNavigate }: { onNavigate: () => void }) {
 	const categories = useCategories();
 	return (
 		<nav
-			className="flex flex-col gap-1.5 border-0 px-0 py-3 [&_a]:flex [&_a]:items-center [&_a]:gap-3 [&_a]:rounded-[10px] [&_a]:px-2.5 [&_a]:py-3 [&_a]:text-sm [&_a]:leading-[1.6] [&_a:hover]:bg-muted [&_a[aria-current=page]]:bg-muted"
+			className="flex flex-col gap-1 p-3 [&_a]:flex [&_a]:min-h-11 [&_a]:items-center [&_a]:gap-3 [&_a]:rounded-xl [&_a]:px-3 [&_a]:py-2.5 [&_a]:text-sm [&_a]:leading-relaxed [&_a:hover]:bg-muted [&_a[aria-current=page]]:bg-muted"
 			aria-label="მობილური ნავიგაცია"
 		>
 			<Link to="/products" search={{}} onClick={onNavigate}>
-				<span className="grid size-9.5 shrink-0 place-items-center rounded-[10px] bg-muted text-primary">
+				<span className="grid size-8 shrink-0 place-items-center rounded-lg bg-muted text-primary">
 					<Grid2X2 size={20} />
 				</span>
 				<span>ყველა პროდუქტი</span>
@@ -96,7 +137,7 @@ function MobileNavigation({ onNavigate }: { onNavigate: () => void }) {
 						params={{ slug: c.slug }}
 						onClick={onNavigate}
 					>
-						<span className="grid size-9.5 shrink-0 place-items-center rounded-[10px] bg-muted text-primary">
+						<span className="grid size-8 shrink-0 place-items-center rounded-lg bg-muted text-primary">
 							<Icon size={20} />
 						</span>
 						<span>{c.name}</span>
