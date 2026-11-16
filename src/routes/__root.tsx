@@ -1,6 +1,3 @@
-import georgianFont from "@fontsource-variable/noto-sans-georgian/files/noto-sans-georgian-georgian-wght-normal.woff2?url";
-import latinExtFont from "@fontsource-variable/noto-sans-georgian/files/noto-sans-georgian-latin-ext-wght-normal.woff2?url";
-import latinFont from "@fontsource-variable/noto-sans-georgian/files/noto-sans-georgian-latin-wght-normal.woff2?url";
 import type { QueryClient } from "@tanstack/react-query";
 import {
 	createRootRouteWithContext,
@@ -8,6 +5,8 @@ import {
 	Link,
 	Scripts,
 } from "@tanstack/react-router";
+import regularFont from "../assets/fonts/mersad-regular.woff2?url";
+import semiboldFont from "../assets/fonts/mersad-semibold.woff2?url";
 import { CategoryProvider } from "../components/catalog/category-context.tsx";
 import { Storefront } from "../components/storefront.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -30,7 +29,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 				},
 			],
 			links: [
-				...[georgianFont, latinFont, latinExtFont].map((href) => ({
+				...[regularFont, semiboldFont].map((href) => ({
 					rel: "preload",
 					href,
 					as: "font",
