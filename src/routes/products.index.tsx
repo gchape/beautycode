@@ -67,13 +67,13 @@ function Catalog() {
 				}}
 			/>
 			<CatalogFilters search={search} onChange={update} />
-			<div className="my-7.5 flex min-h-11 flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+			<div className="my-4 flex min-h-9 flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
 				<span role="status" aria-live="polite">
 					{pending ? "პროდუქტები იტვირთება…" : `${products.length} პროდუქტი`}
 				</span>
 				{(hasFilters || search.sort) && (
 					<Button
-						className="min-h-11 bg-transparent px-2 text-[length:inherit] underline hover:bg-transparent"
+						className="min-h-9 bg-transparent px-2 py-1.5 text-[length:inherit] underline hover:bg-transparent"
 						variant="ghost"
 						onClick={clear}
 					>
