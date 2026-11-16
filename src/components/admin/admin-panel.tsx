@@ -1,18 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import {
-	DatabaseBackup,
-	History,
-	LayoutGrid,
-	LoaderCircle,
-	Package,
-	X,
-} from "lucide-react";
+import { DatabaseBackup, History, LayoutGrid, Package, X } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { Activity, useState } from "react";
 import { adminApi } from "../../lib/admin/api.ts";
 import { useAdminData } from "../../lib/admin/use-admin-data.ts";
 import { catalogQueryKey } from "../../lib/catalog-queries.ts";
+import { LoadingSpinner } from "../motion/loading-spinner.tsx";
 import { Button } from "../ui/button.tsx";
 import { AuditLog } from "./audit-log.tsx";
 import { CatalogOverview } from "./catalog-overview.tsx";
@@ -74,11 +68,7 @@ export function AdminPanel() {
 					onClick={() => backup.mutate()}
 				>
 					{backup.isPending ? (
-						<LoaderCircle
-							size={17}
-							className="motion-safe:animate-spin"
-							aria-hidden="true"
-						/>
+						<LoadingSpinner size={17} />
 					) : (
 						<DatabaseBackup size={17} aria-hidden="true" />
 					)}
@@ -155,11 +145,7 @@ export function AdminPanel() {
 						role="status"
 						className="my-8 flex items-center gap-3 text-sm text-muted-foreground"
 					>
-						<LoaderCircle
-							size={19}
-							className="motion-safe:animate-spin"
-							aria-hidden="true"
-						/>
+						<LoadingSpinner size={19} />
 						კატალოგი იტვირთება…
 					</p>
 				)}

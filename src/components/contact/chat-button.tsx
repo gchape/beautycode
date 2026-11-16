@@ -1,6 +1,7 @@
-import { LoaderCircle, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import type { ComponentProps } from "react";
 import type { PublicProduct } from "../../data/catalog.ts";
+import { LoadingSpinner } from "../motion/loading-spinner.tsx";
 import { Button } from "../ui/button.tsx";
 import { useChatPending, useOpenChat } from "./contact-context.tsx";
 
@@ -27,11 +28,7 @@ export function ChatButton({
 			}}
 		>
 			{busy ? (
-				<LoaderCircle
-					size={18}
-					className="motion-safe:animate-spin"
-					aria-hidden="true"
-				/>
+				<LoadingSpinner />
 			) : (
 				<MessageCircle size={18} aria-hidden="true" />
 			)}

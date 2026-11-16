@@ -1,4 +1,3 @@
-import { LoaderCircle } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
 import {
 	imageTypeNames,
@@ -10,6 +9,7 @@ import {
 	useImageUpload,
 } from "../../lib/admin/use-image-upload.ts";
 import { Input } from "../ui/input.tsx";
+import { LoadingSpinner } from "../motion/loading-spinner.tsx";
 import { Field } from "./field.tsx";
 import { ImageRow } from "./image-row.tsx";
 
@@ -66,11 +66,7 @@ export function ImageEditor({
 					role="status"
 					className="mt-4 flex items-center gap-2 text-sm text-muted-foreground"
 				>
-					<LoaderCircle
-						size={17}
-						className="motion-safe:animate-spin"
-						aria-hidden="true"
-					/>
+					<LoadingSpinner size={17} />
 					ფოტოები იტვირთება…
 				</p>
 			)}
