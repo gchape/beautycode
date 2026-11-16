@@ -1,5 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { DisclosureIndicator } from "./disclosure-indicator.tsx";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "../ui/accordion.tsx";
 
 const questions = [
 	{
@@ -58,7 +63,7 @@ export function HomeFaq() {
 			<div>
 				<h2
 					id="faq-title"
-					className="mb-3 text-2xl leading-relaxed sm:text-3xl"
+					className="mb-3 text-[1.375rem] leading-relaxed sm:text-3xl"
 				>
 					ხშირად დასმული კითხვები
 				</h2>
@@ -66,17 +71,25 @@ export function HomeFaq() {
 					ყველაფერი, რაც შეკვეთამდე უნდა იცოდე.
 				</p>
 			</div>
-			<div className="grid gap-3 [&_a]:underline [&_a]:underline-offset-4">
+			<Accordion
+				type="multiple"
+				className="grid gap-3 [&_a]:underline [&_a]:underline-offset-4"
+			>
 				{questions.map(({ question, answer }) => (
-					<details key={question} className="home-disclosure">
-						<summary>
-							<span>{question}</span>
-							<DisclosureIndicator />
-						</summary>
-						<div className="disclosure-content">{answer}</div>
-					</details>
+					<AccordionItem
+						key={question}
+						value={question}
+						className="rounded-2xl border border-border bg-background last:border-b data-[state=open]:border-[#d5b4c1]"
+					>
+						<AccordionTrigger className="min-h-16 items-center gap-3 px-4 py-4 text-[0.9375rem] leading-relaxed hover:no-underline [&>span:last-child]:m-0 [&>span:last-child]:grid [&>span:last-child]:size-8 [&>span:last-child]:place-items-center [&>span:last-child]:rounded-full [&>span:last-child]:bg-muted">
+							{question}
+						</AccordionTrigger>
+						<AccordionContent className="mx-4 border-t border-border pt-3 pb-4 text-[0.9375rem] leading-relaxed text-muted-foreground [&_p]:m-0">
+							{answer}
+						</AccordionContent>
+					</AccordionItem>
 				))}
-			</div>
+			</Accordion>
 		</section>
 	);
 }

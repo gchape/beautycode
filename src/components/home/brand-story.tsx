@@ -5,7 +5,7 @@ export function BrandStory() {
 		<section className="site-container home-section">
 			<div className="grid gap-8 rounded-xl bg-rose-surface px-6 py-10 sm:p-10 lg:grid-cols-2 lg:gap-16 lg:p-14">
 				<div>
-					<h2 className="m-0 text-2xl leading-relaxed sm:text-3xl">
+					<h2 className="m-0 text-[1.375rem] leading-relaxed sm:text-3xl">
 						ზრუნვას არ სჭირდება
 						<br />
 						განსაკუთრებული მიზეზი.
