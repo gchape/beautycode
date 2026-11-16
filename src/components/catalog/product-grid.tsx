@@ -1,8 +1,8 @@
 import { PackageOpen } from "lucide-react";
 import { coverImage, type PublicProduct } from "../../data/catalog.ts";
 import { ChatButton } from "../contact/chat-button.tsx";
-import { Card } from "../ui/card.tsx";
 import { Reveal } from "../motion/reveal.tsx";
+import { Card } from "../ui/card.tsx";
 import { ProductCard } from "./product-card.tsx";
 
 export function ProductGrid({

@@ -4,7 +4,7 @@ import {
 	useReducedMotion,
 } from "motion/react";
 import * as m from "motion/react-m";
-import { useEffect, useRef, type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { revealTransition } from "../../lib/motion.ts";
 
 export function Reveal({

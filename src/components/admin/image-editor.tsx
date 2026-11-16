@@ -8,8 +8,8 @@ import {
 	type EditableImage,
 	useImageUpload,
 } from "../../lib/admin/use-image-upload.ts";
-import { Input } from "../ui/input.tsx";
 import { LoadingSpinner } from "../motion/loading-spinner.tsx";
+import { Input } from "../ui/input.tsx";
 import { Field } from "./field.tsx";
 import { ImageRow } from "./image-row.tsx";
 

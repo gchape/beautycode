@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import * as m from "motion/react-m";
-import { HoverCard } from "../motion/hover-card.tsx";
-import { Reveal } from "../motion/reveal.tsx";
 import { useCategories } from "../catalog/category-context.tsx";
 import { categoryIcons } from "../category-icons.ts";
+import { HoverCard } from "../motion/hover-card.tsx";
+import { Reveal } from "../motion/reveal.tsx";
 import { SectionHeading } from "./section-heading.tsx";
 
 export function CategoryShowcase() {

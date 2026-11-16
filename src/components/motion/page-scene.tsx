@@ -1,6 +1,6 @@
 import { useLocation } from "@tanstack/react-router";
 import { useAnimate, useReducedMotion } from "motion/react";
-import { useEffect, useRef, type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { cinematicEase } from "../../lib/motion.ts";
 
 export function PageScene({ children }: { children: ReactNode }) {

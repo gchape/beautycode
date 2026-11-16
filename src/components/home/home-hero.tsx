@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useAnimationControls, useReducedMotion } from "motion/react";
-import { useEffect } from "react";
 import * as m from "motion/react-m";
+import { useEffect } from "react";
 import { coverImage, type PublicProduct } from "../../data/catalog.ts";
 import { cinematicEase } from "../../lib/motion.ts";
 import { productImageProps } from "../../lib/product-images.ts";
