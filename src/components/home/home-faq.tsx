@@ -61,13 +61,10 @@ export function HomeFaq() {
 			className="site-container home-section mb-16 grid gap-8 lg:grid-cols-[1fr_1.5fr] lg:gap-16"
 		>
 			<div>
-				<h2
-					id="faq-title"
-					className="mb-3 text-[1.375rem] leading-relaxed sm:text-3xl"
-				>
+				<h2 id="faq-title" className="heading-section mb-3">
 					ხშირად დასმული კითხვები
 				</h2>
-				<p className="text-base text-muted-foreground">
+				<p className="text-body text-muted-foreground">
 					ყველაფერი, რაც შეკვეთამდე უნდა იცოდე.
 				</p>
 			</div>
@@ -81,10 +78,10 @@ export function HomeFaq() {
 						value={question}
 						className="rounded-2xl border border-border bg-background last:border-b data-[state=open]:border-[#d5b4c1]"
 					>
-						<AccordionTrigger className="min-h-16 items-center gap-3 px-4 py-4 text-[0.9375rem] leading-relaxed hover:no-underline [&>span:last-child]:m-0 [&>span:last-child]:grid [&>span:last-child]:size-8 [&>span:last-child]:place-items-center [&>span:last-child]:rounded-full [&>span:last-child]:bg-muted">
+						<AccordionTrigger className="min-h-16 items-center gap-3 px-4 py-4 text-body leading-relaxed hover:no-underline">
 							{question}
 						</AccordionTrigger>
-						<AccordionContent className="mx-4 border-t border-border pt-3 pb-4 text-[0.9375rem] leading-relaxed text-muted-foreground [&_p]:m-0">
+						<AccordionContent className="mx-4 border-t border-border pt-3 pb-4 text-body leading-relaxed text-muted-foreground [&_p]:m-0">
 							{answer}
 						</AccordionContent>
 					</AccordionItem>

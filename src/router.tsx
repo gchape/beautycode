@@ -12,6 +12,15 @@ export function getRouter() {
 		scrollRestoration: true,
 		defaultPreload: "intent",
 		defaultPreloadStaleTime: 0,
+		defaultViewTransition: {
+			types: ({ pathChanged, fromLocation, toLocation }) =>
+				pathChanged &&
+				!fromLocation?.pathname.startsWith("/admin") &&
+				!toLocation.pathname.startsWith("/admin") &&
+				!window.matchMedia("(prefers-reduced-motion: reduce)").matches
+					? ["storefront"]
+					: false,
+		},
 	});
 
 	setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient });

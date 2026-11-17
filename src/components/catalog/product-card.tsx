@@ -1,14 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { PackageOpen } from "lucide-react";
-import * as m from "motion/react-m";
 import type { PublicProduct } from "../../data/catalog.ts";
 import { coverImage, discountPercent } from "../../data/catalog.ts";
 import { stockLabels } from "../../data/labels.ts";
 import { productImageProps } from "../../lib/product-images.ts";
-import { ChatButton } from "../contact/chat-button.tsx";
-import { HoverCard } from "../motion/hover-card.tsx";
 import { Badge } from "../ui/badge.tsx";
 import { Card } from "../ui/card.tsx";
+import { ProductOrderButton } from "./product-order-button.tsx";
 import { ProductPrice } from "./product-price.tsx";
 
 const cardImageSizes =
@@ -24,56 +22,49 @@ export function ProductCard({
 	const image = coverImage(product);
 	const discount = discountPercent(product);
 	return (
-		<m.div layout="position" className="h-full min-w-0">
-			<HoverCard>
-				<Card className="group flex h-full min-w-0 flex-col gap-0 wrap-anywhere border-0 bg-transparent p-0 shadow-none">
-					<Link
-						className="flex flex-1 flex-col rounded-lg"
-						to="/products/$slug"
-						params={{ slug: product.slug }}
-					>
-						<div className="relative grid aspect-square place-items-center overflow-hidden rounded-xl bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-4 sm:[&_img]:p-6">
-							{image ? (
-								<m.img
-									variants={{ rest: { scale: 1 }, hover: { scale: 1.025 } }}
-									{...productImageProps(image, cardImageSizes)}
-									alt={product.name}
-									width="400"
-									height="400"
-									loading={priority ? "eager" : "lazy"}
-									fetchPriority={priority ? "high" : undefined}
-									decoding="async"
-								/>
-							) : (
-								<PackageOpen size={55} strokeWidth={1} />
-							)}
-							{discount > 0 && (
-								<Badge className="absolute top-3 left-3 h-auto rounded-[5px] border-0 bg-secondary px-2.5 py-1.5 text-sm text-primary">
-									−{discount}%
-								</Badge>
-							)}
-						</div>
-						<h3 className="mt-3 mb-2 text-base font-medium leading-relaxed max-[560px]:text-sm">
-							{product.name}
-						</h3>
-						<ProductPrice
-							className="mt-auto text-[1.0625rem]"
-							product={product}
-						/>
-						{product.stock_status === "out_of_stock" && (
-							<small>{stockLabels[product.stock_status]}</small>
+		<div className="h-full min-w-0">
+			<Card className="group flex h-full min-w-0 flex-col gap-0 wrap-anywhere border-0 bg-transparent p-0 shadow-none">
+				<Link
+					className="product-image-link flex flex-1 flex-col rounded-lg"
+					to="/products/$slug"
+					params={{ slug: product.slug }}
+				>
+					<div className="relative grid aspect-square place-items-center overflow-hidden rounded-xl bg-[#f5eef0] text-[#a67f8e] [&_img]:size-full [&_img]:object-contain [&_img]:p-4 sm:[&_img]:p-6">
+						{image ? (
+							<img
+								className="product-image"
+								{...productImageProps(image, cardImageSizes)}
+								alt={product.name}
+								width="400"
+								height="400"
+								loading={priority ? "eager" : "lazy"}
+								fetchPriority={priority ? "high" : undefined}
+								decoding="async"
+							/>
+						) : (
+							<PackageOpen size={55} strokeWidth={1} />
 						)}
-					</Link>
-					<ChatButton
-						variant="outline"
-						className="mt-4 w-full gap-2 px-3 text-sm"
+						{discount > 0 && (
+							<Badge className="absolute top-3 left-3 h-auto rounded-[5px] border-0 bg-secondary px-2.5 py-1.5 text-sm text-primary">
+								−{discount}%
+							</Badge>
+						)}
+					</div>
+					<h3 className="product-card-title mt-4 mb-2">{product.name}</h3>
+					<ProductPrice
+						className="mt-auto mb-0 text-subheading"
 						product={product}
-						disabled={product.stock_status === "out_of_stock"}
-					>
-						შეკვეთა ჩატში
-					</ChatButton>
-				</Card>
-			</HoverCard>
-		</m.div>
+					/>
+					{product.stock_status === "out_of_stock" && (
+						<small>{stockLabels[product.stock_status]}</small>
+					)}
+				</Link>
+				<ProductOrderButton
+					variant="outline"
+					className="mt-4 w-full gap-2 px-3 text-sm"
+					product={product}
+				/>
+			</Card>
+		</div>
 	);
 }

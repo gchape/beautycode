@@ -1,14 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { LayoutGroup, useReducedMotion } from "motion/react";
-import * as m from "motion/react-m";
 import { useCategories } from "../catalog/category-context.tsx";
 import { ChatButton } from "../contact/chat-button.tsx";
 import { MobileMenu } from "./mobile-menu.tsx";
 
 export function SiteHeader() {
 	const categories = useCategories();
-	const reducedMotion = useReducedMotion();
 	return (
 		<header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-5 max-[560px]:gap-x-2 max-[560px]:py-3 site-container">
 			<Link
@@ -25,61 +22,36 @@ export function SiteHeader() {
 					width="68"
 					height="68"
 				/>
-				<span className="min-w-0 text-[1.0625rem] font-semibold tracking-[0.17em] max-[1100px]:text-[0.9375rem] max-[560px]:text-sm max-[560px]:tracking-[0.12em] max-[360px]:text-[0.8125rem] max-[360px]:tracking-[0.08em]">
+				<span className="min-w-0 text-base font-semibold tracking-[0.17em] max-[1100px]:text-sm max-[560px]:text-sm max-[560px]:tracking-[0.12em] max-[360px]:text-caption max-[360px]:tracking-[0.08em]">
 					BEAUTY CODE
-					<small className="mt-1.75 block text-[0.8125rem] font-normal tracking-normal leading-relaxed text-muted-foreground max-[360px]:text-xs">
+					<small className="mt-1.75 block text-caption font-normal tracking-normal leading-relaxed text-muted-foreground max-[360px]:text-xs">
 						სილამაზე შენებურად
 					</small>
 				</span>
 			</Link>
-			<LayoutGroup id="site-navigation">
-				<nav
-					className="site-navigation order-last mt-2 flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border pt-3 text-sm leading-relaxed max-[1100px]:hidden"
-					aria-label="მთავარი ნავიგაცია"
+			<nav
+				className="site-navigation order-last mt-2 flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-1 border-t border-border pt-3 text-sm leading-relaxed max-[1100px]:hidden"
+				aria-label="მთავარი ნავიგაცია"
+			>
+				<Link
+					to="/products"
+					activeOptions={{ exact: true, includeSearch: false }}
+					search={{}}
 				>
-					<Link to="/products" search={{}} className="relative">
-						{({ isActive }) => (
-							<>
-								ყველა პროდუქტი
-								{isActive && (
-									<m.span
-										layoutId="active-link"
-										className="absolute inset-x-0 -bottom-0.5 h-0.5 bg-primary"
-										aria-hidden="true"
-									/>
-								)}
-							</>
-						)}
+					ყველა პროდუქტი
+				</Link>
+				{categories.map((c) => (
+					<Link key={c.slug} to="/categories/$slug" params={{ slug: c.slug }}>
+						{c.name}
 					</Link>
-					{categories.map((c) => (
-						<Link
-							key={c.slug}
-							to="/categories/$slug"
-							params={{ slug: c.slug }}
-							className="relative"
-						>
-							{({ isActive }) => (
-								<>
-									{c.name}
-									{isActive && (
-										<m.span
-											layoutId="active-link"
-											className="absolute inset-x-0 -bottom-0.5 h-0.5 bg-primary"
-											aria-hidden="true"
-										/>
-									)}
-								</>
-							)}
-						</Link>
-					))}
-				</nav>
-			</LayoutGroup>
+				))}
+			</nav>
 			<div className="ml-auto flex shrink-0 items-center gap-3 max-[560px]:gap-0">
 				<Link
 					to="/products"
 					hash="search"
 					hashScrollIntoView={{
-						behavior: reducedMotion ? "auto" : "smooth",
+						behavior: "auto",
 						block: "start",
 					}}
 					onClick={() =>

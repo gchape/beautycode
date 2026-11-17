@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useMemo, useTransition } from "react";
 import { Breadcrumb } from "../components/breadcrumb.tsx";
+import { ActiveFilters } from "../components/catalog/active-filters.tsx";
 import { CatalogFilters } from "../components/catalog/catalog-filters.tsx";
 import { CatalogSearchForm } from "../components/catalog/catalog-search-form.tsx";
 import { ProductGrid } from "../components/catalog/product-grid.tsx";
@@ -59,7 +60,6 @@ function Catalog() {
 			<Breadcrumb title="ყველა პროდუქტი" />
 			<h1>ყველა პროდუქტი</h1>
 			<CatalogSearchForm
-				key={search.q || ""}
 				defaultValue={search.q || ""}
 				pending={pending}
 				onSearch={(q) => {
@@ -67,19 +67,20 @@ function Catalog() {
 				}}
 			/>
 			<CatalogFilters search={search} onChange={update} />
-			<div className="my-4 flex min-h-9 flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+			<ActiveFilters search={search} onChange={update} />
+			<div className="catalog-status">
 				<span role="status" aria-live="polite">
 					{pending ? "პროდუქტები იტვირთება…" : `${products.length} პროდუქტი`}
 				</span>
-				{(hasFilters || search.sort) && (
+				{
 					<Button
-						className="min-h-9 bg-transparent px-2 py-1.5 text-[length:inherit] underline hover:bg-transparent"
+						className={`min-h-11 sm:min-h-9 bg-transparent px-2 py-1.5 text-[length:inherit] underline hover:bg-transparent ${hasFilters || search.sort ? "" : "invisible"}`}
 						variant="ghost"
 						onClick={clear}
 					>
 						ფილტრების გასუფთავება
 					</Button>
-				)}
+				}
 			</div>
 			{!products.length && hasFilters ? (
 				<Card variant="empty">
@@ -91,7 +92,7 @@ function Catalog() {
 					</Button>
 				</Card>
 			) : (
-				<div aria-busy={pending} className={pending ? "opacity-60" : undefined}>
+				<div aria-busy={pending} className="catalog-results">
 					<h2 className="sr-only">პროდუქტების სია</h2>
 					<ProductGrid products={products} />
 				</div>

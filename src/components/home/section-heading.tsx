@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Reveal } from "../motion/reveal.tsx";
 
 export function SectionHeading({
 	title,
@@ -9,9 +8,9 @@ export function SectionHeading({
 	action?: ReactNode;
 }) {
 	return (
-		<Reveal className="mb-6 flex flex-wrap items-end justify-between gap-5">
-			<h2 className="m-0 max-w-[32ch]">{title}</h2>
+		<div className="mb-5 flex flex-wrap items-end justify-between gap-3 sm:mb-8 sm:gap-5">
+			<h2 className="heading-section m-0 max-w-[32ch]">{title}</h2>
 			{action}
-		</Reveal>
+		</div>
 	);
 }

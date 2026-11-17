@@ -1,8 +1,8 @@
 import { MessageCircle } from "lucide-react";
 import type { ComponentProps } from "react";
 import type { PublicProduct } from "../../data/catalog.ts";
-import { LoadingSpinner } from "../motion/loading-spinner.tsx";
 import { Button } from "../ui/button.tsx";
+import { LoadingSpinner } from "../ui/loading-spinner.tsx";
 import { useChatPending, useOpenChat } from "./contact-context.tsx";
 
 export function ChatButton({
@@ -32,7 +32,12 @@ export function ChatButton({
 			) : (
 				<MessageCircle size={18} aria-hidden="true" />
 			)}
-			{busy ? "ვუკავშირდებით…" : children}
+			{children}
+			{busy && (
+				<span className="sr-only" role="status">
+					ვუკავშირდებით…
+				</span>
+			)}
 		</Button>
 	);
 }

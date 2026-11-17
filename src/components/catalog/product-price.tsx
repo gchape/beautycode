@@ -19,7 +19,7 @@ export function ProductPrice({
 				{money(price)}
 			</span>{" "}
 			{price < product.price_minor && (
-				<del className="text-[0.8em] font-normal tabular-nums text-muted-foreground decoration-1">
+				<del className="text-sm font-normal tabular-nums text-muted-foreground decoration-1">
 					{money(product.price_minor)}
 				</del>
 			)}

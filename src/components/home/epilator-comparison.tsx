@@ -19,13 +19,13 @@ export function EpilatorComparison({
 	return (
 		<section
 			id="epilator-comparison"
-			className="site-container pt-6 scroll-mt-6"
+			className="site-container home-section scroll-mt-6"
 			aria-label="ეპილატორების შედარება"
 		>
 			<details className="home-disclosure">
 				<summary className="comparison-summary">
 					<div>
-						<h2 className="mb-1 text-xl leading-relaxed sm:text-2xl">
+						<h2 className="mb-2 text-subheading">
 							რომელი ეპილატორი შეგეფერება?
 						</h2>
 						<p className="m-0 text-sm text-muted-foreground">
@@ -79,7 +79,7 @@ export function EpilatorComparison({
 												</span>
 												<ProductPrice
 													product={product}
-													className="mt-2 text-base sm:text-xl"
+													className="mt-2 text-subheading"
 												/>
 											</Link>
 										</th>

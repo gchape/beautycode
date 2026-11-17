@@ -45,9 +45,9 @@ function Home() {
 		<>
 			<HomeHero products={epilators} />
 			<ServiceBenefits />
-			<EpilatorComparison products={epilators} />
 			<FeaturedProducts products={featured} />
 			<CategoryShowcase />
+			<EpilatorComparison products={epilators} />
 			<BrandStory />
 			<HomeFaq />
 		</>
