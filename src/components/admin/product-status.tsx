@@ -11,7 +11,7 @@ export function ProductStatusBadge({ status }: { status: ProductStatus }) {
 	return (
 		<Badge
 			variant="outline"
-			className={`max-w-full gap-1.5 border-0 px-2.5 py-1 text-[0.8125rem] font-normal whitespace-normal ring-1 ring-inset ${colors[status]}`}
+			className={`max-w-full gap-1.5 border-0 px-2.5 py-1 text-caption font-normal whitespace-normal ring-1 ring-inset ${colors[status]}`}
 		>
 			<span className="size-1.5 shrink-0 rounded-full bg-current" />
 			{statusLabels[status]}

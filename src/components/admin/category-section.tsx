@@ -5,6 +5,7 @@ import type { Category } from "../../data/catalog.ts";
 import { Button } from "../ui/button.tsx";
 import { CategoryEditor } from "./category-editor.tsx";
 import { CategoryList } from "./category-list.tsx";
+import { AdminSectionHeader } from "./section-header.tsx";
 
 export function CategorySection({
 	categories,
@@ -35,20 +36,18 @@ export function CategorySection({
 				/>
 			) : (
 				<>
-					<div className="my-6 flex flex-wrap items-center justify-between gap-4">
-						<div>
-							<h2 className="m-0 text-xl font-semibold">კატეგორიები</h2>
-							<p className="mt-1 mb-0 text-sm text-muted-foreground">
-								დაალაგეთ კატეგორიები და მართეთ მათი ხილვადობა.
-							</p>
-						</div>
+					<AdminSectionHeader
+						title="კატეგორიები"
+						description="დაალაგეთ კატეგორიები და მართეთ მათი ხილვადობა."
+					>
 						<Button
-							className="min-h-11 gap-2 px-4 text-sm"
+							size="compact"
+							className="px-4"
 							onClick={() => setEditingCategory("new")}
 						>
 							<Plus size={16} /> კატეგორიის დამატება
 						</Button>
-					</div>
+					</AdminSectionHeader>
 					<CategoryList categories={categories} onEdit={setEditingCategory} />
 				</>
 			)}

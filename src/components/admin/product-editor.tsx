@@ -59,11 +59,7 @@ export function ProductEditor({
 				onCancel={onCancel}
 			>
 				{product?.status === "published" && (
-					<Button
-						asChild
-						variant="outline"
-						className="min-h-11 gap-2 px-3 text-sm"
-					>
+					<Button size="compact" asChild variant="outline">
 						<Link
 							to="/products/$slug"
 							params={{ slug: product.slug }}

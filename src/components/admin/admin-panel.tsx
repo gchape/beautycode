@@ -6,8 +6,8 @@ import { Activity, useState } from "react";
 import { adminApi } from "../../lib/admin/api.ts";
 import { useAdminData } from "../../lib/admin/use-admin-data.ts";
 import { catalogQueryKey } from "../../lib/catalog-queries.ts";
-import { LoadingSpinner } from "../motion/loading-spinner.tsx";
 import { Button } from "../ui/button.tsx";
+import { LoadingSpinner } from "../ui/loading-spinner.tsx";
 import { AuditLog } from "./audit-log.tsx";
 import { CatalogOverview } from "./catalog-overview.tsx";
 import { CategorySection } from "./category-section.tsx";
@@ -51,19 +51,17 @@ export function AdminPanel() {
 	const ready = products.data && categories.data;
 	return (
 		<section
-			className="site-container min-h-[60vh] py-8 sm:py-10"
+			className="admin-panel site-container page-section"
 			aria-labelledby="admin-title"
 		>
 			<div className="flex flex-wrap items-center justify-between gap-5">
-				<h1
-					id="admin-title"
-					className="m-0 text-[clamp(1.75rem,3vw,2.25rem)] leading-relaxed"
-				>
+				<h1 id="admin-title" className="heading-section m-0">
 					კატალოგის მართვა
 				</h1>
 				<Button
+					size="compact"
 					variant="outline"
-					className="min-h-11 gap-2 px-4 text-sm"
+					className="min-w-44 px-4"
 					disabled={backup.isPending}
 					onClick={() => backup.mutate()}
 				>
@@ -81,7 +79,7 @@ export function AdminPanel() {
 			/>
 			{import.meta.env.DEV && (
 				<p
-					className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+					className="mb-4 border-l-2 border-ring/30 pl-3 text-sm text-muted-foreground"
 					role="status"
 				>
 					საცდელი გარემო — აქ შეტანილი ცვლილებები მთავარ საიტზე არ აისახება.
@@ -92,14 +90,14 @@ export function AdminPanel() {
 				onValueChange={(value) => setTab(value as typeof tab)}
 			>
 				<Tabs.List
-					className="grid grid-cols-3 border-b border-border sm:flex"
+					className="catalog-toolbar grid grid-cols-3 gap-1.5 p-1.5 sm:flex"
 					aria-label="ადმინისტრირების სექციები"
 				>
 					{tabs.map(([value, label, Icon]) => (
 						<Tabs.Trigger
 							key={value}
 							value={value}
-							className="flex min-w-0 items-center justify-center gap-2 border-b-2 border-transparent px-1 py-3 text-xs text-muted-foreground transition-colors hover:text-primary data-[state=active]:border-primary data-[state=active]:text-primary sm:px-5 sm:text-sm"
+							className="flex min-h-11 min-w-0 items-center sm:min-h-9 justify-center gap-2 rounded-lg border border-border px-2 py-2 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-primary data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:px-6 sm:text-sm"
 						>
 							<Icon
 								size={17}
@@ -113,7 +111,7 @@ export function AdminPanel() {
 				{notice && (
 					<div
 						role={notice.error ? "alert" : "status"}
-						className={`my-5 flex items-center gap-3 rounded-lg border p-3 text-sm ${notice.error ? "border-destructive/30 text-destructive" : "bg-muted"}`}
+						className={`admin-notice flex items-center gap-3 rounded-lg border bg-background p-3 text-sm ${notice.error ? "border-destructive/30 text-destructive" : "bg-muted"}`}
 					>
 						<span className="flex-1 leading-relaxed">{notice.message}</span>
 						<Button
@@ -130,8 +128,9 @@ export function AdminPanel() {
 					<div role="alert" className="my-5 text-sm text-destructive">
 						<p className="mb-3">{error.message}</p>
 						<Button
+							size="compact"
 							variant="outline"
-							className="min-h-11 px-4 text-sm"
+							className="px-4"
 							onClick={() =>
 								void client.invalidateQueries({ queryKey: ["admin"] })
 							}
@@ -143,7 +142,7 @@ export function AdminPanel() {
 				{!ready && !error && (
 					<p
 						role="status"
-						className="my-8 flex items-center gap-3 text-sm text-muted-foreground"
+						className="my-8 flex min-h-64 items-start gap-3 text-sm text-muted-foreground"
 					>
 						<LoadingSpinner size={19} />
 						კატალოგი იტვირთება…

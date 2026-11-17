@@ -45,7 +45,7 @@ export function CategoryList({
 											<span className="text-sm font-medium leading-relaxed">
 												{category.name}
 											</span>
-											<p className="mt-1 mb-0 text-[0.8125rem] text-muted-foreground">
+											<p className="mt-1 mb-0 text-caption text-muted-foreground">
 												{category.description}
 											</p>
 										</div>
@@ -63,8 +63,8 @@ export function CategoryList({
 								{onEdit && (
 									<td>
 										<Button
+											size="compact"
 											variant="outline"
-											className="min-h-11 gap-2 px-3 text-sm"
 											onClick={() => onEdit(category)}
 											aria-label={`${category.name} — რედაქტირება`}
 										>

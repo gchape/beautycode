@@ -40,7 +40,7 @@ export function Field({
 			{hint && (
 				<p
 					id={`${id}-hint`}
-					className="m-0 text-[0.8125rem] leading-relaxed text-muted-foreground"
+					className="m-0 text-caption leading-relaxed text-muted-foreground"
 				>
 					{hint}
 				</p>

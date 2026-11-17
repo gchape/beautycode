@@ -26,7 +26,7 @@ export function EditorHeader({
 		heading.current?.scrollIntoView({ block: "start" });
 	}, []);
 	return (
-		<div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+		<div className="mb-4 flex flex-wrap items-start justify-between gap-4">
 			<div className="flex min-w-0 items-start gap-3">
 				<Button
 					variant="ghost"
@@ -41,7 +41,7 @@ export function EditorHeader({
 					<h2
 						ref={heading}
 						tabIndex={-1}
-						className="m-0 scroll-mt-6 text-2xl leading-relaxed outline-none"
+						className="heading-section m-0 scroll-mt-6 outline-none"
 					>
 						{title}
 					</h2>
@@ -63,8 +63,10 @@ export function EditorSection({
 	children: ReactNode;
 }) {
 	return (
-		<Card className="gap-5 p-4 shadow-none sm:p-6">
-			<h3 className="m-0 text-lg">{title}</h3>
+		<Card className="gap-4 p-4 shadow-none sm:p-5">
+			<h3 className="m-0 border-b border-border pb-3 text-subheading font-semibold">
+				{title}
+			</h3>
 			{children}
 		</Card>
 	);

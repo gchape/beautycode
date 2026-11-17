@@ -5,6 +5,7 @@ import type { AdminProduct, Category } from "../../data/catalog.ts";
 import { Button } from "../ui/button.tsx";
 import { ProductEditor } from "./product-editor.tsx";
 import { ProductList } from "./product-list.tsx";
+import { AdminSectionHeader } from "./section-header.tsx";
 
 export function ProductSection({
 	products,
@@ -38,21 +39,19 @@ export function ProductSection({
 				/>
 			) : (
 				<>
-					<div className="my-6 flex flex-wrap items-center justify-between gap-4">
-						<div>
-							<h2 className="m-0 text-xl font-semibold">პროდუქტები</h2>
-							<p className="mt-1 mb-0 text-sm text-muted-foreground">
-								მართეთ ფასები, მარაგი და გამოქვეყნების სტატუსი.
-							</p>
-						</div>
+					<AdminSectionHeader
+						title="პროდუქტები"
+						description="მართეთ ფასები, მარაგი და გამოქვეყნების სტატუსი."
+					>
 						<Button
-							className="min-h-11 gap-2 px-4 text-sm"
+							size="compact"
+							className="px-4"
 							onClick={() => setEditingProduct("new")}
 							disabled={!categories.length}
 						>
 							<Plus size={16} /> პროდუქტის დამატება
 						</Button>
-					</div>
+					</AdminSectionHeader>
 					<ProductList
 						products={products}
 						categories={categories}

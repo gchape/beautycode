@@ -8,8 +8,8 @@ import {
 	type EditableImage,
 	useImageUpload,
 } from "../../lib/admin/use-image-upload.ts";
-import { LoadingSpinner } from "../motion/loading-spinner.tsx";
 import { Input } from "../ui/input.tsx";
+import { LoadingSpinner } from "../ui/loading-spinner.tsx";
 import { Field } from "./field.tsx";
 import { ImageRow } from "./image-row.tsx";
 
@@ -46,7 +46,7 @@ export function ImageEditor({
 			>
 				<Input
 					type="file"
-					className="py-2"
+					className="cursor-pointer border-dashed bg-muted/40 p-3 text-sm file:mr-3 file:rounded-md file:bg-secondary file:px-3 file:text-primary"
 					accept={imageTypeNames.join(",")}
 					multiple
 					disabled={full}
@@ -79,7 +79,7 @@ export function ImageEditor({
 				</p>
 			)}
 			{images.length > 0 && (
-				<p className="mt-5 mb-3 text-[0.8125rem] text-muted-foreground">
+				<p className="mt-5 mb-3 text-caption text-muted-foreground">
 					{images.length} / {maxImagesPerProduct} ფოტო · ისრებით შეცვალეთ
 					თანმიმდევრობა
 				</p>

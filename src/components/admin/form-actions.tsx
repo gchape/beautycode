@@ -15,16 +15,18 @@ export function FormActions({
 	return (
 		<div className="sticky bottom-0 z-10 mt-6 flex flex-wrap justify-end gap-3 border-t border-border bg-background py-4">
 			<Button
+				size="compact"
 				variant="outline"
-				className="min-h-11 flex-1 px-4 sm:flex-none"
+				className="flex-1 px-4 sm:flex-none"
 				disabled={busy}
 				onClick={onCancel}
 			>
 				გაუქმება
 			</Button>
 			<Button
+				size="compact"
 				type="submit"
-				className="min-h-11 flex-1 gap-2 px-4 sm:flex-none"
+				className="min-w-32 flex-1 px-4 sm:flex-none"
 				disabled={busy || !canSubmit}
 			>
 				{pending ? "ინახება…" : uploading ? "იტვირთება…" : "შენახვა"}

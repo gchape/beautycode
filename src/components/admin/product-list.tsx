@@ -48,15 +48,16 @@ export function ProductList({
 	}
 	return (
 		<>
-			<div className="mb-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_200px_220px]">
+			<div className="catalog-toolbar mb-2 grid gap-2 p-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_200px_220px]">
 				<div className="relative col-span-full lg:col-span-1">
 					<Search
 						size={18}
-						className="pointer-events-none absolute top-3.5 left-3 text-muted-foreground"
+						className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
 						aria-hidden="true"
 					/>
 					<Input
-						className="pl-10 text-base"
+						density="compact"
+						className="pl-10"
 						type="search"
 						aria-label="პროდუქტის ძებნა"
 						placeholder="დასახელება ან კოდი"
@@ -66,6 +67,7 @@ export function ProductList({
 					/>
 				</div>
 				<Select
+					density="compact"
 					aria-label="სტატუსით გაფილტვრა"
 					value={status}
 					onChange={(event) => setStatus(event.target.value)}
@@ -78,6 +80,7 @@ export function ProductList({
 					))}
 				</Select>
 				<Select
+					density="compact"
 					aria-label="კატეგორიით გაფილტვრა"
 					value={category}
 					onChange={(event) => setCategory(event.target.value)}
@@ -90,16 +93,12 @@ export function ProductList({
 					))}
 				</Select>
 			</div>
-			<div className="mb-3 flex min-h-11 items-center justify-between gap-3 text-sm">
+			<div className="mb-2 flex min-h-9 flex-wrap items-center justify-between gap-3 text-sm">
 				<span role="status" className="text-muted-foreground">
 					ნაჩვენებია {rows.length} / {products.length} პროდუქტი
 				</span>
 				{filtered && (
-					<Button
-						variant="ghost"
-						className="min-h-11 gap-2 px-3 text-sm"
-						onClick={clear}
-					>
+					<Button size="compact" variant="ghost" onClick={clear}>
 						<X size={15} aria-hidden="true" />
 						გასუფთავება
 					</Button>
@@ -116,12 +115,12 @@ export function ProductList({
 						className="mx-auto mb-4 text-muted-foreground"
 						aria-hidden="true"
 					/>
-					<h3 className="mb-2 text-lg">პროდუქტი ვერ მოიძებნა</h3>
+					<h3 className="mb-2 text-subheading">პროდუქტი ვერ მოიძებნა</h3>
 					<p className="mb-5 text-sm text-muted-foreground">
 						შეცვალეთ საძიებო სიტყვა ან გაასუფთავეთ ფილტრები.
 					</p>
 					{filtered && (
-						<Button variant="outline" onClick={clear}>
+						<Button size="compact" variant="outline" onClick={clear}>
 							ფილტრების გასუფთავება
 						</Button>
 					)}
@@ -158,13 +157,13 @@ const ProductTable = memo(function ProductTable({
 							<tr key={product.id}>
 								<td className="lg:w-2/5">
 									<div className="flex min-w-0 items-center gap-3">
-										<div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl border border-border/60 bg-muted/50">
+										<div className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-xl border border-border/60 bg-muted/50">
 											{cover ? (
 												<img
-													{...productImageProps(cover, "56px", "thumbnail")}
+													{...productImageProps(cover, "44px", "thumbnail")}
 													alt=""
-													width="56"
-													height="56"
+													width="44"
+													height="44"
 													className="size-full object-contain p-1"
 													loading="lazy"
 												/>
@@ -187,7 +186,7 @@ const ProductTable = memo(function ProductTable({
 													aria-label="მთავარ გვერდზე"
 												/>
 											)}
-											<p className="mt-1 mb-0 text-[0.8125rem] text-muted-foreground">
+											<p className="mt-1 mb-0 text-caption text-muted-foreground">
 												{product.sku || product.brand || "კოდის გარეშე"}
 											</p>
 										</div>
@@ -198,7 +197,7 @@ const ProductTable = memo(function ProductTable({
 								</td>
 								<td>
 									<ProductStatusBadge status={product.status} />
-									<p className="mt-2 mb-0 text-[0.8125rem] text-muted-foreground">
+									<p className="mt-2 mb-0 text-caption text-muted-foreground">
 										{stockLabels[product.stock_status]}
 									</p>
 								</td>
@@ -206,7 +205,7 @@ const ProductTable = memo(function ProductTable({
 									<td>
 										<Button
 											variant="outline"
-											className="min-h-11 gap-2 px-3 text-sm"
+											size="compact"
 											onClick={() => onEdit(product)}
 											aria-label={`${product.name} — რედაქტირება`}
 										>
