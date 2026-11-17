@@ -10,7 +10,7 @@ const cardVariants = cva(
 			variant: {
 				default: "",
 				empty:
-					"block rounded-lg border border-border bg-[#faf6f6] px-5.5 py-13.75 text-center shadow-none [&>svg]:mx-auto [&>svg]:mb-5 [&>svg]:text-[#a77a8a] [&_h2]:text-[1.375rem] [&_p]:text-[0.9375rem] [&_p]:text-muted-foreground max-[560px]:px-4.5 max-[560px]:py-10 max-[560px]:[&_h2]:text-[1.1875rem]",
+					"block rounded-lg border border-border bg-[#faf6f6] px-6 py-14 text-center shadow-none [&>svg]:mx-auto [&>svg]:mb-5 [&>svg]:text-[#a77a8a] [&_h2]:text-subheading [&_p]:text-sm [&_p]:text-muted-foreground max-[560px]:px-4 max-[560px]:py-10",
 			},
 		},
 		defaultVariants: { variant: "default" },
@@ -51,7 +51,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="card-title"
-			className={cn("leading-none font-semibold", className)}
+			className={cn("text-subheading font-semibold", className)}
 			{...props}
 		/>
 	);

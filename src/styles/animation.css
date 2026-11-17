@@ -1,0 +1,219 @@
+/* CSS-only motion: preserve the page geometry; animate feedback and scene changes.
+   Content remains visible with reduced motion or without View Transition support. */
+:root {
+	--duration-feedback: 160ms;
+	--duration-enter: 220ms;
+	--duration-exit: 120ms;
+	--duration-page: 280ms;
+	--ease-enter: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.site-navigation a[aria-current="page"] {
+	border-bottom-color: var(--primary);
+}
+.ui-chevron[data-open="true"],
+[data-slot="accordion-trigger"][data-state="open"] .ui-chevron {
+	transform: rotate(180deg);
+}
+[data-slot="sheet-content"] {
+	--panel-x: 0px;
+	--panel-y: 0px;
+}
+[data-slot="sheet-content"][data-side="right"] {
+	--panel-x: 8px;
+}
+[data-slot="sheet-content"][data-side="left"] {
+	--panel-x: -8px;
+}
+[data-slot="sheet-content"][data-side="top"] {
+	--panel-y: -8px;
+}
+[data-slot="sheet-content"][data-side="bottom"] {
+	--panel-y: 8px;
+}
+
+@keyframes ui-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@keyframes ui-fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+@keyframes home-enter {
+	from {
+		transform: translateY(8px);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+@keyframes panel-enter {
+	from {
+		opacity: 0;
+		transform: translate(var(--panel-x), var(--panel-y));
+	}
+	to {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+}
+@keyframes panel-exit {
+	from {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	to {
+		opacity: 0;
+		transform: translate(var(--panel-x), var(--panel-y));
+	}
+}
+@keyframes accordion-open {
+	from {
+		height: 0;
+		opacity: 0;
+	}
+	to {
+		height: var(--radix-accordion-content-height);
+		opacity: 1;
+	}
+}
+@keyframes accordion-close {
+	from {
+		height: var(--radix-accordion-content-height);
+		opacity: 1;
+	}
+	to {
+		height: 0;
+		opacity: 0;
+	}
+}
+@keyframes ui-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Let hash navigation glide to search; keep other route scrolling unchanged. */
+	html:has(#search:target) {
+		scroll-behavior: smooth;
+	}
+	.ui-fade-in {
+		animation: ui-fade-in var(--duration-feedback) ease-out;
+	}
+	.home-entrance {
+		animation: home-enter var(--duration-page) var(--ease-enter);
+	}
+	.ui-spinner {
+		animation: ui-spin 800ms linear infinite;
+	}
+	.ui-chevron,
+	.action-arrow,
+	.product-image {
+		transition: transform var(--duration-feedback) var(--ease-enter);
+	}
+	.action-link:focus-visible .action-arrow {
+		transform: translateX(3px);
+	}
+	/* Radix Presence keeps closing elements mounted until these animations finish. */
+	[data-slot="sheet-overlay"][data-state="open"] {
+		animation: ui-fade-in var(--duration-enter) ease-out;
+	}
+	[data-slot="sheet-overlay"][data-state="closed"] {
+		animation: ui-fade-out var(--duration-exit) ease-in;
+	}
+	[data-slot="sheet-content"][data-state="open"] {
+		animation: panel-enter var(--duration-enter) var(--ease-enter);
+	}
+	[data-slot="sheet-content"][data-state="closed"] {
+		animation: panel-exit var(--duration-exit) ease-in;
+	}
+	[data-slot="accordion-content"][data-state="open"] {
+		animation: accordion-open var(--duration-enter) var(--ease-enter);
+	}
+	[data-slot="accordion-content"][data-state="closed"] {
+		animation: accordion-close var(--duration-exit) ease-in;
+	}
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (
+		pointer: fine
+	) {
+	.action-link:hover .action-arrow {
+		transform: translateX(3px);
+	}
+	.product-image-link:hover .product-image {
+		transform: scale(1.025);
+	}
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+}
+
+/* Progressive enhancement: only path navigations receive the storefront type. */
+@supports selector(:active-view-transition-type(storefront)) {
+	:root:active-view-transition-type(storefront) {
+		view-transition-name: none;
+	}
+	:root:active-view-transition-type(storefront) #main {
+		view-transition-name: storefront;
+	}
+	::view-transition-group(storefront) {
+		animation: none;
+	}
+	::view-transition-old(storefront) {
+		animation: ui-fade-out var(--duration-page) ease-out both;
+	}
+	::view-transition-new(storefront) {
+		animation: ui-fade-in var(--duration-page) ease-out both;
+	}
+}
+@media (prefers-reduced-motion: no-preference) {
+	.catalog-results {
+		transition: opacity var(--duration-feedback) ease-out;
+	}
+	.disclosure-indicator {
+		transition: transform var(--duration-feedback) var(--ease-enter);
+	}
+	[data-slot="popover-content"] {
+		transform-origin: var(--radix-popover-content-transform-origin);
+		--panel-x: 0px;
+		--panel-y: -4px;
+	}
+	[data-slot="popover-content"][data-side="top"] {
+		--panel-y: 4px;
+	}
+	[data-slot="popover-content"][data-state="open"] {
+		animation: panel-enter var(--duration-feedback) var(--ease-enter);
+	}
+	[data-slot="popover-content"][data-state="closed"] {
+		animation: panel-exit var(--duration-exit) ease-in;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		/* biome-ignore lint/complexity/noImportantStyles: User motion preferences must override component effects. */
+		animation: none !important;
+		/* biome-ignore lint/complexity/noImportantStyles: User motion preferences must override component effects. */
+		transition: none !important;
+		/* biome-ignore lint/complexity/noImportantStyles: User motion preferences must override smooth scrolling. */
+		scroll-behavior: auto !important;
+	}
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		/* biome-ignore lint/complexity/noImportantStyles: User motion preferences must override component effects. */
+		animation: none !important;
+	}
+}

@@ -1,12 +1,15 @@
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 
+import { formControlVariants } from "./form-control.ts";
+
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
 	return (
 		<textarea
 			data-slot="textarea"
 			className={cn(
-				"flex min-h-24 w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-base leading-relaxed shadow-xs outline-none transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive",
+				formControlVariants(),
+				"flex min-h-24 resize-y sm:min-h-24",
 				className,
 			)}
 			{...props}

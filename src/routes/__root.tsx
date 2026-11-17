@@ -5,8 +5,6 @@ import {
 	Link,
 	Scripts,
 } from "@tanstack/react-router";
-import regularFont from "../assets/fonts/mersad-regular.woff2?url";
-import semiboldFont from "../assets/fonts/mersad-semibold.woff2?url";
 import { CategoryProvider } from "../components/catalog/category-context.tsx";
 import { Storefront } from "../components/storefront.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -29,13 +27,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 				},
 			],
 			links: [
-				...[regularFont, semiboldFont].map((href) => ({
-					rel: "preload",
-					href,
-					as: "font",
-					type: "font/woff2",
-					crossOrigin: "anonymous" as const,
-				})),
 				{ rel: "stylesheet", href: appCss },
 				{ rel: "icon", href: "/favicon.ico", sizes: "16x16 32x32 48x48" },
 				{
@@ -56,7 +47,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 		notFoundComponent: () => (
 			<Card asChild variant="empty" className="site-container">
 				<section>
-					<span className="block text-[0.8125rem] font-medium tracking-[0.13em] max-[560px]:text-xs">
+					<span className="block text-caption font-medium tracking-[0.13em] max-[560px]:text-xs">
 						404
 					</span>
 					<h1>გვერდი ვერ მოიძებნა</h1>
@@ -88,7 +79,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<a
 					href="#main"
-					className="fixed -top-25 left-3.75 z-10 bg-white p-3 focus:top-2.5"
+					className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-[70] focus:rounded-lg focus:bg-background focus:px-4 focus:py-3 focus:text-sm focus:shadow-lg"
 				>
 					მთავარ შინაარსზე გადასვლა
 				</a>
