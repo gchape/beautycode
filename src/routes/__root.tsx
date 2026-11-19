@@ -75,6 +75,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 		<html lang="ka">
 			<head>
 				<HeadContent />
+				<script
+					src="https://analytics.ahrefs.com/analytics.js"
+					data-key="oNtEiR9nW9i/cN0SoaR8gA"
+					async
+				/>
 			</head>
 			<body>
 				<a
