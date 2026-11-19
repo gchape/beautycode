@@ -84,7 +84,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<a
 					href="#main"
-					className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-[70] focus:rounded-lg focus:bg-background focus:px-4 focus:py-3 focus:text-sm focus:shadow-lg"
+					className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-70 focus:rounded-lg focus:bg-background focus:px-4 focus:py-3 focus:text-sm focus:shadow-lg"
 				>
 					მთავარ შინაარსზე გადასვლა
 				</a>
